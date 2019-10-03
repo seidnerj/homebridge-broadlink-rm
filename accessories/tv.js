@@ -78,12 +78,15 @@ class TVAccessory extends BroadlinkRMAccessory {
 
     if (!pingIPAddress) return;
 
+    this.log('Sending ping to {pingIPAddress}');
     // Setup Ping-based State
     ping(pingIPAddress, pingFrequency, this.pingCallback.bind(this));
   }
 
   pingCallback(active) {
     const { config, state, serviceManager } = this;
+    
+    this.log('Found ping status of active: {active}');
     
     if (this.stateChangeInProgress){ 
       return; 
