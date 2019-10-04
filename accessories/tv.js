@@ -8,7 +8,10 @@ class TVAccessory extends BroadlinkRMAccessory {
   constructor(log, config = {}, serviceManagerType) {
     super(log, config, serviceManagerType);
 
-    if (!config.isUnitTest) this.checkPing(ping);
+    if (!config.isUnitTest) {
+      console.log('\x1b[35m[PINGDEBUG] \x1b[0mStarting ping monitoring...');
+      this.checkPing(ping);
+    }
   }
 
   setDefaults() {
@@ -16,6 +19,8 @@ class TVAccessory extends BroadlinkRMAccessory {
     config.pingFrequency = config.pingFrequency || 1;
     config.pingGrace = config.pingGrace || 10;
 
+    console.log('\x1b[35m[PINGDEBUG] \x1b[0mFound pingIPAddress of '+config.pingIPAddress);    
+    
     config.offDuration = config.offDuration || 60;
     config.onDuration = config.onDuration || 60;
 
