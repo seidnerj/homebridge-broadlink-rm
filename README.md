@@ -1,4 +1,4 @@
-# Homebridge Broadlink RM [TV+AC File Fork]
+# Homebridge Broadlink RM [TV+AC Pro Fork]
 
 # About this fork
 
@@ -8,7 +8,7 @@ This fork also contains updates the to Air Conditioner accessory, as detailed in
 
 If you want to use this fork, use this command: 
 
-`npm i -g homebridge-broadlink-rm-tv`
+`npm i -g homebridge-broadlink-rm-pro`
 
 
 # Homebridge Broadlink RM [[Original](https://github.com/lprhodes/homebridge-broadlink-rm)]
