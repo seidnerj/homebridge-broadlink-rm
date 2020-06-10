@@ -3,6 +3,7 @@
 ## 4.2.5
 
 - [Bug] Updated to use new kiwicam-broadlinkjs-rm version with RM4 bug fixes (Learn Mode)
+- [Model] Added `Broadlink RM Mini 4 S` support
 
 ## 4.2.3
 
