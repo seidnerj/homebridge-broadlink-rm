@@ -1,8 +1,9 @@
 # Changes
 
-## 4.2.6-beta.1
+## 4.2.6
 
-- [Bug] Fixed headers on all RM4 Devices
+- [Bug] Fix for RM4 SendCode issues
+- [Improvement] Adds command acknowledgement messages
 
 ## 4.2.5
 
