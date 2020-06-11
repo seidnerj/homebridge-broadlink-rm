@@ -1,5 +1,10 @@
 # Changes
 
+## 4.2.6
+
+- [Bug] Fix for RM4 SendCode issues
+- [Improvement] Adds command acknowledgement messages
+
 ## 4.2.5
 
 - [Bug] Updated to use new kiwicam-broadlinkjs-rm version with RM4 bug fixes (Learn Mode)
