@@ -1,5 +1,9 @@
 # Changes
 
+## 4.2.7-beta.1
+
+- [Improvement] Adds support for RM4 RF devices (e.g. RM4 Pro)
+
 ## 4.2.6
 
 - [Bug] Fix for RM4 SendCode issues
