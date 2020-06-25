@@ -24,7 +24,7 @@
     "url": "git@github.com:kiwi-cam/homebridge-broadlink-rm.git"
   },
   "dependencies": {
-    "kiwicam-broadlinkjs-rm": "^0.8.7-beta.3",
+    "kiwicam-broadlinkjs-rm": "^0.8.7-beta.4",
     "chai": "^4.1.2",
     "find-key": "^2.0.1",
     "github-version-checker": "^1.2.0",
