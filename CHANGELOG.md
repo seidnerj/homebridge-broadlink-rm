@@ -3,6 +3,7 @@
 ## 4.2.7-beta.1
 
 - [Improvement] Adds support for RM4 RF devices (e.g. RM4 Pro)
+- [Improvement] Adds temperature support for RM4 devices (Untested)
 
 ## 4.2.6
 
