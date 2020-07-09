@@ -1,5 +1,10 @@
 # Changes
 
+## 4.2.7
+- [Improvement] Adds IR Learn support for RM4 devices
+- [Improvement] Adds additional Debug information
+- [Model] Added `Broadlink RM4 Mini 4 KR` support
+
 ## 4.2.6
 
 - [Bug] Fix for RM4 SendCode issues
