@@ -18,6 +18,14 @@ Welcome to the Broadlink RM Mini and Broadlink RM Pro plugin for [Homebridge](ht
 
 This plugin allows you to control your RM Mini and RM Pro with HomeKit using the Home app and Siri.
 
+## Like this plugin?
+
+If you like this plugin and want to show your support then please star the Github repo, or better yet; buy me a drink using [Paypal](paypal.me/kiwicamRM).
+
+Working on open source projects like this is full-time for me so every bit helps.
+
+Thank you, sincerely!
+
 ## Documentation
 
 Full documentation can be found [here](https://lprhodes.github.io/slate/). With the following additional configuration options available:
