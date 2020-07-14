@@ -1,5 +1,8 @@
 # Changes
 
+## 4.2.8
+- [Model] Added `Broadlink RM4 4 Pro` 649b support
+
 ## 4.2.7
 - [Improvement] Adds IR Learn support for RM4 devices
 - [Improvement] Adds additional Debug information
