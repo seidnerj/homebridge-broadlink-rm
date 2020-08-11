@@ -1,5 +1,9 @@
 # Changes
 
+## 4.2.9
+- [Model] Added `Broadlink RM Mini 4 C` 610f support
+- [Improvement] Added notes about IHC setup/reset process 
+
 ## 4.2.8
 - [Model] Added `Broadlink RM4 4 Pro` 649b support
 
