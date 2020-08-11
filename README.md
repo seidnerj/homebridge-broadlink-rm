@@ -26,7 +26,14 @@ Thank you!
 
 ## Documentation
 
-Full documentation can be found [here](https://lprhodes.github.io/slate/). With the following additional configuration options available:
+If the plugin is unable to discover your device, it's likely you've registered the device with the cloud so it no longer accepts local connections. In this case, follow these steps:
+1. Hold the reset button on your broadlink device until the light flashes
+2. In the IHC app ([iOS](https://apps.apple.com/nz/app/intelligent-home-center/id1084990073) / [Android](https://play.google.com/store/apps/details?id=cn.com.broadlink.econtrol.plus&hl=en)) Go through the "Add Device" steps
+3. When you reach the step to add the device to a room - quit the IHC app
+
+This plugin should now be able to discover your device.
+
+Base documentation can be found [here](https://lprhodes.github.io/slate/). With the following additional configuration options available in this fork:
 
 ### Switch Accessory
 
