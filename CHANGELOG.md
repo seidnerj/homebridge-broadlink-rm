@@ -1,5 +1,8 @@
 # Changes
 
+# 4.3.0-beta.1
+- [Improvement] Adds support for RM4 Temperature sensors
+
 ## 4.2.7-beta.1
 
 - [Improvement] Adds support for RM4 RF devices (e.g. RM4 Pro)
