@@ -391,13 +391,13 @@ class AirConAccessory extends BroadlinkRMAccessory {
   }
 
   addTemperatureCallbackToQueue (callback) {
-    const { config, host, log, name, state } = this;
+    const { config, host, debug, log, name, state } = this;
     const { mqttURL, temperatureFilePath, w1DeviceID } = config;
 
     // Clear the previous callback
     if (Object.keys(this.temperatureCallbackQueue).length > 1) {
       if (state.currentTemperature) {
-        log(`${name} addTemperatureCallbackToQueue (clearing previous callback, using existing temperature)`);
+        if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} addTemperatureCallbackToQueue (clearing previous callback, using existing temperature)`);
 
         this.processQueuedTemperatureCallbacks(state.currentTemperature);
       }
@@ -444,7 +444,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     }
 
     device.checkTemperature();
-    log(`${name} addTemperatureCallbackToQueue (requested temperature from device, waiting)`);
+    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} addTemperatureCallbackToQueue (requested temperature from device, waiting)`);
   }
 
   updateTemperatureFromFile () {
@@ -519,19 +519,19 @@ class AirConAccessory extends BroadlinkRMAccessory {
     serviceManager.refreshCharacteristicUI(Characteristic.CurrentTemperature)
   }
 
-        getCurrentTemperature (callback) {
-    const { config, host, log, name, state } = this;
+  getCurrentTemperature (callback) {
+    const { config, host, debug, log, name, state } = this;
     const { pseudoDeviceTemperature } = config;
 
     // Some devices don't include a thermometer and so we can use `pseudoDeviceTemperature` instead
     if (pseudoDeviceTemperature !== undefined) {
-      log(`${name} getCurrentTemperature (using pseudoDeviceTemperature ${pseudoDeviceTemperature} from config)`);
+      if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} getCurrentTemperature (using pseudoDeviceTemperature ${pseudoDeviceTemperature} from config)`);
 
       return callback(null, pseudoDeviceTemperature);
     }
 
     this.addTemperatureCallbackToQueue(callback);
-        }
+  }
 
   async checkTemperatureForAutoOnOff (temperature) {
     const { config, host, log, name, serviceManager, state } = this;
