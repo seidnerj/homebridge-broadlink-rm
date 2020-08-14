@@ -22,6 +22,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
       auto: Characteristic.TargetHeatingCoolingState.AUTO
     };
     this.HeatingCoolingStates = HeatingCoolingStates;
+    this.heatOnly = config.heatOnly || false;
 
     const HeatingCoolingConfigKeys = {};
     HeatingCoolingConfigKeys[Characteristic.TargetHeatingCoolingState.OFF] = 'off';
@@ -84,8 +85,8 @@ class AirConAccessory extends BroadlinkRMAccessory {
       assert.isAbove(config.pseudoDeviceTemperature, config.minTemperature - 1, `\x1b[31m[CONFIG ERROR] \x1b[33mpseudoDeviceTemperature\x1b[0m (${config.pseudoDeviceTemperature}) must be more than the minTemperature (${config.minTemperature})`)
     }
 
-    // minTemperature can't be more than 10 or HomeKit throws a fit
-    assert.isBelow(config.minTemperature, 11, `\x1b[31m[CONFIG ERROR] \x1b[33mminTemperature\x1b[0m (${config.minTemperature}) must be <= 10`)
+    // minTemperature can't be more than 10 or HomeKit throws a fit - This limitation has been removed
+    //assert.isBelow(config.minTemperature, 11, `\x1b[31m[CONFIG ERROR] \x1b[33mminTemperature\x1b[0m (${config.minTemperature}) must be <= 10`)
 
     // maxTemperature > minTemperature
     assert.isBelow(config.minTemperature, config.maxTemperature, `\x1b[31m[CONFIG ERROR] \x1b[33mmaxTemperature\x1b[0m (${config.minTemperature}) must be more than minTemperature (${config.minTemperature})`)
@@ -683,6 +684,15 @@ class AirConAccessory extends BroadlinkRMAccessory {
         ignorePreviousValue: true
       }
     });
+    
+    if (this.heatOnly) {
+	    this.service.getCharacteristic(Characteristic.TargetHeatingCoolingState)
+	      .setProps({
+	        minValue: 0,
+	        maxValue: 1,
+	        validValues: [0,1]	
+				});
+		}
 
     this.serviceManager.addGetCharacteristic({
       name: 'currentTemperature',
@@ -697,7 +707,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
       method: this.getTemperatureDisplayUnits,
       bind: this
     })
-
+    
     this.serviceManager
       .getCharacteristic(Characteristic.TargetTemperature)
       .setProps({
