@@ -1,5 +1,10 @@
 # Changes
 
+## 4.3.0
+- [Improvement] Adds HeatOnly mode for Aircon accessories
+- [Improvement] Adds support for RM4 Temperature sensors
+- [Improvement] Improves support for RM4 RF devices (e.g. RM4 Pro)
+
 ## 4.2.9
 - [Model] Added `Broadlink RM Mini 4 C` 610f support
 - [Improvement] Added notes about IHC setup/reset process 
