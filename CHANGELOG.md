@@ -3,9 +3,9 @@
 ## 4.3.1
 - [Bug] Fixes issue in heatOnly mode for Aircon accessories
 - [Improvement] Adds coolOnly mode for Aircon accessories
-- [Improvement] Fixes TV Display issue in iOS14
+- [Improvement] Fixes TV Display issue in iOS14. *All TVs are now seperate accessories. Previously the first TV connected via Homebridge as a bridge. This means that after updating, that first TV will need to be removed and re-added to HomeKit.*
 - [Improvement] Adds TV subType to display STB, Receiver, or Stick types 
-- [Bug] Fixes MAC address order error
+- [Bug] Fixes MAC address order error. *If you specify a HOST in your config.json by MAC address, you'll likely need to correct this value after you update.*
 
 ## 4.3.0
 - [Improvement] Adds HeatOnly mode for Aircon accessories
