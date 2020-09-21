@@ -1,5 +1,12 @@
 # Homebridge Broadlink RM [TV+AC Pro Fork]
 
+## Version 4.3.1+ notes
+There are a couple of changes made in version 4.3.1 which might cause issues when you upgrade.
+1. There was a bug in how MAC addresses were stored in the plugin. If you specify a HOST in your config.json by MAC address, you'll likely need to correct this value after you update.
+2. In order to fix an issue in iOS 14, all TVs are not seperate accessories. Previously the first TV connected via Homebridge as a bridge. This means that after updating, that first TV will need to be removed and re-added to HomeKit.
+
+For other changes, refer to the Change Log [here](https://github.com/kiwi-cam/homebridge-broadlink-rm/blob/master/CHANGELOG.md).
+
 # About this fork
 
 This fork adds support for the TV type indroduced in iOS 12.2. I'm only give support for this specific accessory type!
