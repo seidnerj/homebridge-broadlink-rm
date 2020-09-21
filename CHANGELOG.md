@@ -1,5 +1,11 @@
 # Changes
 
+## 4.3.3
+- [Bug] Fixes error in heombridge-platform-helper "ReferenceError: log is not defined"
+
+## 4.3.2
+- [Improvement] Updated documentation around TV changes
+
 ## 4.3.1
 - [Bug] Fixes issue in heatOnly mode for Aircon accessories
 - [Improvement] Adds coolOnly mode for Aircon accessories
