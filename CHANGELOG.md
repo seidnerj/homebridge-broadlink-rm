@@ -1,8 +1,5 @@
 # Changes
 
-## 4.3.3
-- [Bug] Fixes error in heombridge-platform-helper "ReferenceError: log is not defined"
-
 ## 4.3.2
 - [Improvement] Updated documentation around TV changes
 
