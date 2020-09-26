@@ -358,6 +358,30 @@ class AirConAccessory extends BroadlinkRMAccessory {
     this.updateTemperatureUI();
     if (!config.isUnitTest) setInterval(this.updateTemperatureUI.bind(this), config.temperatureUpdateFrequency * 1000)
   }
+	
+  async monitorHumidity () {
+    const { config, host, log, name, state } = this;
+    const { temperatureFilePath, pseudoDeviceTemperature, w1DeviceID } = config;
+
+    const device = getDevice({ host, log });
+
+    // Try again in a second if we don't have a device yet
+    if (!device) {
+      await delayForDuration(1);
+
+      this.monitorHumidity();
+
+      return;
+    }
+
+    log(`${name} monitorHumidity`);
+
+    device.on('humidity', this.onHumidity.bind(this));
+    device.checkHumidity();
+
+    this.updateHumidityUI();
+    //if (!config.isUnitTest) setInterval(this.updateTemperatureUI.bind(this), config.temperatureUpdateFrequency * 1000)
+  }
 
   onTemperature (temperature) {
     const { config, host, log, name, state } = this;
@@ -389,6 +413,22 @@ class AirConAccessory extends BroadlinkRMAccessory {
     assert.isAbove(temperature, config.minTemperature - 1, `\x1b[31m[CONFIG ERROR] \x1b[33mminTemperature\x1b[0m (${config.maxTemperature}) must be less than the reported temperature (${temperature})`)
 
     this.processQueuedTemperatureCallbacks(temperature);
+  }
+	
+  onHumidity (humidity) {
+    const { config, host, log, name, state } = this;
+    const { minTemperature, maxTemperature, humidityAdjustment } = config;
+
+    // onTemperature is getting called twice. No known cause currently.
+    // This helps prevent the same temperature from being processed twice
+    if (Object.keys(this.humidityCallbackQueue).length === 0) return;
+
+    humidity += humidityAdjustment
+
+    state.currentHumidity = humidity;
+
+    log(`${name} onHumidity (${humidity})`);
+    this.processQueuedHumidityCallbacks(humidity);
   }
 
   addTemperatureCallbackToQueue (callback) {
@@ -448,6 +488,41 @@ class AirConAccessory extends BroadlinkRMAccessory {
     if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} addTemperatureCallbackToQueue (requested temperature from device, waiting)`);
   }
 
+addHumidityCallbackToQueue (callback) {
+    const { config, host, debug, log, name, state } = this;
+    const { mqttURL, temperatureFilePath, w1DeviceID } = config;
+
+    // Clear the previous callback
+    if (Object.keys(this.humidityCallbackQueue).length > 1) {
+      if (state.currentHumidity) {
+        if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} addHumidityCallbackToQueue (clearing previous callback, using existing humidity)`);
+
+        this.processQueuedHumidityCallbacks(state.currentHumidity);
+      }
+    }
+
+    // Add a new callback
+    const callbackIdentifier = uuid.v4();
+    this.humidityCallbackQueue[callbackIdentifier] = callback;
+
+    // Read humidity from Broadlink RM device
+    // If the device is no longer available, use previous tempeature
+    const device = getDevice({ host, log });
+
+    if (!device || device.state === 'inactive') {
+      if (device && device.state === 'inactive') {
+        log(`${name} addHumidityCallbackToQueue (device no longer active, using existing humidity)`);
+      }
+
+      this.processQueuedHumidityCallbacks(state.currentHumidity || 0);
+
+      return;
+    }
+
+    device.checkHumidity();
+    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} addHumidityCallbackToQueue (requested Humidity from device, waiting)`);
+  }
+	
   updateTemperatureFromFile () {
     const { config, debug, host, log, name, state } = this;
     const { temperatureFilePath } = config;
@@ -513,11 +588,30 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     this.checkTemperatureForAutoOnOff(temperature);
   }
+	
+  processQueuedHumidityCallbacks (humidity) {
+    if (Object.keys(this.humidityCallbackQueue).length === 0) return;
+
+    Object.keys(this.humidityCallbackQueue).forEach((callbackIdentifier) => {
+      const callback = this.humidityCallbackQueue[callbackIdentifier];
+
+      callback(null, humidity);
+      delete this.humidityCallbackQueue[callbackIdentifier];
+    })
+
+    this.humidityCallbackQueue = {};
+  }
 
   updateTemperatureUI () {
     const { serviceManager } = this;
 
     serviceManager.refreshCharacteristicUI(Characteristic.CurrentTemperature)
+  }
+	
+  updateHumidityUI () {
+    const { serviceManager } = this;
+
+    serviceManager.refreshCharacteristicUI(Characteristic.CurrentRelativeHumidity)
   }
 
   getCurrentTemperature (callback) {
@@ -532,6 +626,12 @@ class AirConAccessory extends BroadlinkRMAccessory {
     }
 
     this.addTemperatureCallbackToQueue(callback);
+  }
+	
+  getCurrentHumidity (callback) {
+    const { config, host, debug, log, name, state } = this;
+
+    this.addHumidityCallbackToQueue(callback);
   }
 
   async checkTemperatureForAutoOnOff (temperature) {
@@ -709,6 +809,13 @@ class AirConAccessory extends BroadlinkRMAccessory {
       name: 'currentTemperature',
       type: Characteristic.CurrentTemperature,
       method: this.getCurrentTemperature,
+      bind: this
+    })
+	 
+    this.serviceManager.addGetCharacteristic({
+      name: 'currentHumidity',
+      type: Characteristic.CurrentRelativeHumidity,
+      method: this.getCurrentHumidity,
       bind: this
     })
 
