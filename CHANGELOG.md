@@ -2,7 +2,8 @@
 
 ## 4.3.3
 - [Bug] Fixes error in heombridge-platform-helper "ReferenceError: log is not defined"
-- [Improvement] Addeds Humidity information to the Aircon accessory
+- [Improvement] Adds Humidity information to the Aircon accessory
+- [Improvement] Adds TemperatureSensor accessory to give temperature and humidity information from Broadlink sensors
 
 ## 4.3.2
 - [Improvement] Updated documentation around TV changes
