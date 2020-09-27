@@ -80,6 +80,14 @@ Adds a temperature and humidity sensor using the Broadlink device's sensors.
 key | description | example | default
 --- | ----------- | ------- | -------
 noHumidity (optional) | Removes Humidity information from the device. It will be removed when using w1Device or temperatureFilePath | true | false
+tempertureAdjustment (optional) | An adjustment value to tune the value from the value the broadlink returns | -5 | 0 
+humidityAdjustment (optional) | An adjustment value to tune the value from the value the broadlink returns | -5 | 0 
+
+### HumiditySensor Accessory
+Adds a temperature and humidity sensor using the Broadlink device's sensors.
+key | description | example | default
+--- | ----------- | ------- | -------
+humidityAdjustment (optional) | An adjustment value to tune the value from the value the broadlink returns | -5 | 0 
 
 ### TV Accessory
 
