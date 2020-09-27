@@ -4,6 +4,7 @@
 - [Bug] Fixes error in heombridge-platform-helper "ReferenceError: log is not defined"
 - [Improvement] Adds Humidity information to the Aircon accessory
 - [Improvement] Adds TemperatureSensor accessory to give temperature and humidity information from Broadlink sensors
+- [Improvement] Adds HumiditySensor accessory to give humidity information from Broadlink sensors
 - [Improvement] Adds AirPurifier and HumidifierDehumidifier accessory from the original fork
 
 ## 4.3.2
