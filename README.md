@@ -75,6 +75,12 @@ key | description
 data | Hex data stored as string.
 pseudo-mode (optional) | The mode we set when this hex is sent. i.e. "heat" or "cool". For graphical purposes only (hence use of the term "pseudo"). Not recommended for ModeX key-values.
 
+### TemperatureSensor Accessory
+Adds a temperature and humidity sensor using the Broadlink device's sensors.
+key | description | example | default
+--- | ----------- | ------- | -------
+noHumidity (optional) | Removes Humidity information from the device. It will be removed when using w1Device or temperatureFilePath | true | false
+
 ### TV Accessory
 
 key | description | example | default
