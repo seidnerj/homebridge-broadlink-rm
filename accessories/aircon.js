@@ -71,7 +71,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     config.defaultCoolTemperature = config.defaultCoolTemperature || 16;
     config.defaultHeatTemperature = config.defaultHeatTemperature || 30;
     // ignore Humidity if set to not use it, or using Temperature source that doesn't support it
-    if(config.noHumidity || config.w1Device || config.fileTemperature){
+    if(config.noHumidity || config.w1Device || config.temperatureFilePath){
       config.noHumidity = true;
     } else {
       config.noHumidity = false;
