@@ -57,6 +57,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     config.temperatureUpdateFrequency = config.temperatureUpdateFrequency || 10;
     config.units = config.units ? config.units.toLowerCase() : 'c';
     config.temperatureAdjustment = config.temperatureAdjustment || 0;
+    config.humidityAdjustment = config.humidityAdjustment || 0;
     config.autoSwitchName = config.autoSwitch || config.autoSwitchName;
 
     if (config.preventResendHex === undefined && config.allowResend === undefined) {
@@ -69,6 +70,12 @@ class AirConAccessory extends BroadlinkRMAccessory {
     // default temperatures
     config.defaultCoolTemperature = config.defaultCoolTemperature || 16;
     config.defaultHeatTemperature = config.defaultHeatTemperature || 30;
+    // ignore Humidity if set to not use it, or using Temperature source that doesn't support it
+    if(config.noHumidity || config.w1Device || config.fileTemperature){
+      config.noHumidity = true;
+    } else {
+      config.noHumidity = false;
+    }
 
     // Used to determine when we should use the defaultHeatTemperature or the
     // defaultHeatTemperature
@@ -189,14 +196,14 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
       return;
     }
-    
+
     if (previousValue === Characteristic.TargetHeatingCoolingState.OFF) this.previouslyOff = true;
-      
+
     // If the air-conditioner is turned off then turn it on first and try this again
     if (this.checkTurnOnWhenOff()) {
       this.turnOnWhenOffDelayPromise = delayForDuration(.3);
       await this.turnOnWhenOffDelayPromise
-    } 
+    }
 
     // Perform the auto -> cool/heat conversion if `replaceAutoMode` is specified
     if (replaceAutoMode && targetHeatingCoolingState === 'auto') {
@@ -208,7 +215,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     let temperature = state.targetTemperature;
     let mode = HeatingCoolingConfigKeys[state.targetHeatingCoolingState];
-    
+
     if (state.currentHeatingCoolingState !== state.targetHeatingCoolingState){
       // Selecting a heating/cooling state allows a default temperature to be used for the given state.
       if (state.targetHeatingCoolingState === Characteristic.TargetHeatingCoolingState.HEAT) {
@@ -216,20 +223,20 @@ class AirConAccessory extends BroadlinkRMAccessory {
       } else if (state.targetHeatingCoolingState === Characteristic.TargetHeatingCoolingState.COOL) {
         temperature = defaultCoolTemperature;
       }
-      
+
       //Set the mode, and send the mode hex
       this.updateServiceCurrentHeatingCoolingState(state.targetHeatingCoolingState);
       if (data.heat && mode === 'heat'){
-        await this.performSend(data.heat);        
+        await this.performSend(data.heat);
       } else if (data.cool && mode === 'cool'){
-        await this.performSend(data.cool);        
+        await this.performSend(data.cool);
       } else if (data.auto && mode === 'auto'){
         await this.performSend(data.auto);
       } else if (hexData) {
         //Just send the provided temperature hex if no mode codes are set
         await this.performSend(hexData);
       }
-      
+
       this.log(`${name} sentMode (${mode})`);
 
       //Force Temperature send
@@ -238,7 +245,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
         serviceManager.refreshCharacteristicUI(Characteristic.TargetTemperature);
       });
     }
-    
+
     serviceManager.refreshCharacteristicUI(Characteristic.CurrentHeatingCoolingState);
     serviceManager.refreshCharacteristicUI(Characteristic.TargetHeatingCoolingState);
   }
@@ -353,26 +360,33 @@ class AirConAccessory extends BroadlinkRMAccessory {
     log(`${name} monitorTemperature`);
 
     device.on('temperature', this.onTemperature.bind(this));
-    device.on('humidity', this.onHumidity.bind(this));
     device.checkTemperature();
 
     this.updateTemperatureUI();
     if (!config.isUnitTest) setInterval(this.updateTemperatureUI.bind(this), config.temperatureUpdateFrequency * 1000)
   }
-	
-  onTemperature (temperature) {
+
+  onTemperature (temperature,humidity) {
     const { config, host, log, name, state } = this;
-    const { minTemperature, maxTemperature, temperatureAdjustment } = config;
+    const { minTemperature, maxTemperature, temperatureAdjustment, humidityAdjustment, noHumidity } = config;
 
     // onTemperature is getting called twice. No known cause currently.
     // This helps prevent the same temperature from being processed twice
     if (Object.keys(this.temperatureCallbackQueue).length === 0) return;
 
-    temperature += temperatureAdjustment
-
+    temperature += temperatureAdjustment;
     state.currentTemperature = temperature;
-
     log(`${name} onTemperature (${temperature})`);
+
+    if(humidity) {
+      if(noHumidity){
+        noHumidity = false;
+        log (`${name} Humidity found, adding support`);
+      }
+      humidity += humidityAdjustment;
+      state.currentHumidity = humidity;
+      log(`${name} onHumidity (` + humidity + `)`);
+    }
 
     if (temperature > config.maxTemperature) {
       log(`\x1b[36m[INFO]\x1b[0m Reported temperature (${temperature}) is too high, setting to \x1b[33mmaxTemperature\x1b[0m (${maxTemperature}).`)
@@ -390,22 +404,6 @@ class AirConAccessory extends BroadlinkRMAccessory {
     assert.isAbove(temperature, config.minTemperature - 1, `\x1b[31m[CONFIG ERROR] \x1b[33mminTemperature\x1b[0m (${config.maxTemperature}) must be less than the reported temperature (${temperature})`)
 
     this.processQueuedTemperatureCallbacks(temperature);
-  }
-	
-  onHumidity (humidity) {
-    const { config, host, log, name, state } = this;
-    const { minTemperature, maxTemperature, humidityAdjustment } = config;
-
-    // onTemperature is getting called twice. No known cause currently.
-    // This helps prevent the same temperature from being processed twice
-    if (Object.keys(this.humidityCallbackQueue).length === 0) return;
-
-    humidity += humidityAdjustment
-
-    state.currentHumidity = humidity;
-
-    log(`${name} onHumidity (${humidity})`);
-    this.processQueuedHumidityCallbacks(humidity);
   }
 
   addTemperatureCallbackToQueue (callback) {
@@ -530,17 +528,13 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     this.checkTemperatureForAutoOnOff(temperature);
   }
-	
+
   updateTemperatureUI () {
-    const { serviceManager } = this;
+    const { config, serviceManager } = this;
+    const { humiditySupport } = config;
 
-    serviceManager.refreshCharacteristicUI(Characteristic.CurrentTemperature)
-  }
-	
-  updateHumidityUI () {
-    const { serviceManager } = this;
-
-    serviceManager.refreshCharacteristicUI(Characteristic.CurrentRelativeHumidity)
+    serviceManager.refreshCharacteristicUI(Characteristic.CurrentTemperature);
+    if(humiditySupport){serviceManager.refreshCharacteristicUI(Characteristic.CurrentRelativeHumidity);};
   }
 
   getCurrentTemperature (callback) {
@@ -555,6 +549,13 @@ class AirConAccessory extends BroadlinkRMAccessory {
     }
 
     this.addTemperatureCallbackToQueue(callback);
+  }
+
+  getCurrentHumidity (callback) {
+    const { config, host, debug, log, name, state } = this;
+    const { pseudoDeviceTemperature } = config;
+
+    return callback(null, state.currentHumidity);
   }
 
   async checkTemperatureForAutoOnOff (temperature) {
@@ -708,39 +709,41 @@ class AirConAccessory extends BroadlinkRMAccessory {
         ignorePreviousValue: true
       }
     });
-    
+
     if (config.heatOnly) {
       this.serviceManager
         .getCharacteristic(Characteristic.TargetHeatingCoolingState)
-	  .setProps({
-	    minValue: 0,
-	    maxValue: 1,
-	    validValues: [0,1]
-	  });
-	}
+          .setProps({
+            minValue: 0,
+            maxValue: 1,
+            validValues: [0,1]
+          });
+        }
     if (config.coolOnly) {
       this.serviceManager
         .getCharacteristic(Characteristic.TargetHeatingCoolingState)
-	  .setProps({
-	    minValue: 0,
-	    maxValue: 2,
-	    validValues: [0,2]
-	  });
-	}
+          .setProps({
+            minValue: 0,
+            maxValue: 2,
+            validValues: [0,2]
+          });
+        }
 
     this.serviceManager.addGetCharacteristic({
       name: 'currentTemperature',
       type: Characteristic.CurrentTemperature,
       method: this.getCurrentTemperature,
       bind: this
-    })
-	 
-    this.serviceManager.addGetCharacteristic({
-      name: 'currentHumidity',
-      type: Characteristic.CurrentRelativeHumidity,
-      method: this.getCurrentHumidity,
-      bind: this
-    })
+    });
+
+    if (!config.noHumidity){
+      this.serviceManager.addGetCharacteristic({
+        name: 'currentHumidity',
+        type: Characteristic.CurrentRelativeHumidity,
+        method: this.getCurrentHumidity,
+        bind: this
+      })
+    };
 
     this.serviceManager.addGetCharacteristic({
       name: 'temperatureDisplayUnits',
@@ -748,7 +751,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
       method: this.getTemperatureDisplayUnits,
       bind: this
     })
-    
+
     this.serviceManager
       .getCharacteristic(Characteristic.TargetTemperature)
       .setProps({
