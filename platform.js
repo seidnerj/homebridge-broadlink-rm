@@ -22,7 +22,8 @@ const classTypes = {
   'outlet': Accessory.Outlet,
   'light': Accessory.Light,
   'window-covering': Accessory.WindowCovering,
-  'tv': Accessory.TV
+  'tv': Accessory.TV,
+  'temperatureSensor': Accessory.TemperatureSensor
 }
 
 let homebridgeRef
@@ -72,7 +73,7 @@ const BroadlinkRMPlatform = class extends HomebridgePlatform {
         if(accessory.subType.toLowerCase() === 'stb'){homeKitAccessory.subType = homebridgeRef.hap.Accessory.Categories.TV_SET_TOP_BOX;}
         if(accessory.subType.toLowerCase() === 'receiver'){homeKitAccessory.subType = homebridgeRef.hap.Accessory.Categories.AUDIO_RECEIVER;}
         if(accessory.subType.toLowerCase() === 'stick'){homeKitAccessory.subType = homebridgeRef.hap.Accessory.Categories.TV_STREAMING_STICK;}
-        
+
         if (debug) log(`\x1b[34m[DEBUG]\x1b[0m Adding Accessory ${accessory.type} (${accessory.subType})`);
         tvs.push(homeKitAccessory);
         return;
@@ -95,7 +96,7 @@ const BroadlinkRMPlatform = class extends HomebridgePlatform {
         log(`**************************************************************************************************************`);
         log('');
       }
-    } 
+    }
   }
 
   discoverBroadlinkDevices () {
@@ -108,16 +109,16 @@ const BroadlinkRMPlatform = class extends HomebridgePlatform {
 
       return;
     }
-    
+
     discoverDevices(false, log, debug);
 
     log(`\x1b[35m[INFO]\x1b[0m Automatic Broadlink RM device discovery has been disabled as the "hosts" option has been set.`)
 
     assert.isArray(hosts, `\x1b[31m[CONFIG ERROR] \x1b[33mhosts\x1b[0m should be an array of objects.`)
-      
+
     hosts.forEach((host) => {
       assert.isObject(host, `\x1b[31m[CONFIG ERROR] \x1b[0m Each item in the \x1b[33mhosts\x1b[0m array should be an object.`)
-      
+
       const { address, isRFSupported, mac } = host;
       assert(address, `\x1b[31m[CONFIG ERROR] \x1b[0m Each object in the \x1b[33mhosts\x1b[0m option should contain a value for \x1b[33maddress\x1b[0m (e.g. "192.168.1.23").`)
       assert(mac, `\x1b[31m[CONFIG ERROR] \x1b[0m Each object in the \x1b[33mhosts\x1b[0m option should contain a unique value for \x1b[33mmac\x1b[0m (e.g. "34:ea:34:e7:d7:28").`)
