@@ -72,6 +72,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     config.defaultHeatTemperature = config.defaultHeatTemperature || 30;
     // ignore Humidity if set to not use it, or using Temperature source that doesn't support it
     if(config.noHumidity || config.w1Device || config.temperatureFilePath){
+      state.currentHumidity = null;
       config.noHumidity = true;
     } else {
       config.noHumidity = false;
@@ -380,12 +381,14 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     if(humidity) {
       if(noHumidity){
-        noHumidity = false;
+        //noHumidity = false;
         log (`${name} Humidity found, adding support`);
+        state.currentHumidity = null;
+      }else{
+        humidity += humidityAdjustment;
+        state.currentHumidity = humidity;
+        log(`${name} onHumidity (` + humidity + `)`);
       }
-      humidity += humidityAdjustment;
-      state.currentHumidity = humidity;
-      log(`${name} onHumidity (` + humidity + `)`);
     }
 
     if (temperature > config.maxTemperature) {
@@ -531,10 +534,10 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
   updateTemperatureUI () {
     const { config, serviceManager } = this;
-    const { humiditySupport } = config;
+    const { noHumidity } = config;
 
     serviceManager.refreshCharacteristicUI(Characteristic.CurrentTemperature);
-    if(humiditySupport){serviceManager.refreshCharacteristicUI(Characteristic.CurrentRelativeHumidity);};
+    if(!noHumidity){serviceManager.refreshCharacteristicUI(Characteristic.CurrentRelativeHumidity);};
   }
 
   getCurrentTemperature (callback) {
