@@ -15,6 +15,7 @@ const Window = require('./window');
 const WindowCovering = require('./windowCovering');
 const TV = require('./tv');
 const TemperatureSensor = require('./temperatureSensor.js');
+const HumiditySensor = require('./humiditySensor.js');
 
 module.exports = {
   AirCon,
@@ -33,5 +34,6 @@ module.exports = {
   Window,
   WindowCovering,
   TV,
-  TemperatureSensor
+  TemperatureSensor,
+  HumiditySensor
 }
