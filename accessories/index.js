@@ -11,6 +11,7 @@ const Lock = require('./lock');
 const Light = require('./light');
 const WindowCovering = require('./windowCovering');
 const TV = require('./tv');
+const TemperatureSensor = require('./temperatureSensor.js');
 
 module.exports = {
   AirCon,
@@ -25,5 +26,6 @@ module.exports = {
   Lock,
   Light,
   WindowCovering,
-  TV
+  TV,
+  TemperatureSensor
 }
