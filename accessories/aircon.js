@@ -382,7 +382,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     if(humidity) {
       if(noHumidity){
         //noHumidity = false;
-        if(state.firstTemperatureUpdate){log (`${name} Humidity found, you can add support`);};
+        //if(state.firstTemperatureUpdate){log (`${name} Humidity found, you can add support`);};
         state.currentHumidity = null;
       }else{
         humidity += humidityAdjustment;
