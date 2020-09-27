@@ -144,8 +144,6 @@ class TemperatureSensorAccessory extends BroadlinkRMAccessory {
     })
 
     this.temperatureCallbackQueue = {};
-
-    this.checkTemperatureForAutoOnOff(temperature);
   }
 
   updateTemperatureUI () {
