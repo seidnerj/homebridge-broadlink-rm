@@ -26,7 +26,8 @@ const classTypes = {
   'window': Accessory.Window,
   'window-covering': Accessory.WindowCovering,
   'tv': Accessory.TV,
-  'temperatureSensor': Accessory.TemperatureSensor
+  'temperatureSensor': Accessory.TemperatureSensor,
+  'humiditySensor': Accessory.HumiditySensor
 }
 
 let homebridgeRef
