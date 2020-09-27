@@ -129,7 +129,7 @@ class HumiditySensorAccessory extends BroadlinkRMAccessory {
     const { config, host, debug, log, name, state } = this;
     const { pseudoDeviceTemperature } = config;
 
-    this.addTemperatureCallbackToQueue(callback);
+    this.addHumidityCallbackToQueue(callback);
   }
   
   // Service Manager Setup
@@ -144,21 +144,7 @@ class HumiditySensorAccessory extends BroadlinkRMAccessory {
       type: Characteristic.CurrentRelativeHumidity,
       method: this.getCurrentHumidity,
       bind: this
-    })
-
-
-    this.serviceManager.addGetCharacteristic({
-      name: 'temperatureDisplayUnits',
-      type: Characteristic.TemperatureDisplayUnits,
-      method: this.getTemperatureDisplayUnits,
-      bind: this
-    })
-
-    this.serviceManager
-      .getCharacteristic(Characteristic.CurrentTemperature)
-      .setProps({
-        minStep: 0.1
-      });
+    });
   }
 }
 
