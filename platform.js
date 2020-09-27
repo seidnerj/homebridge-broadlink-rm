@@ -10,6 +10,8 @@ const { createAccessory } = require('./helpers/accessoryCreator');
 
 const classTypes = {
   'air-conditioner': Accessory.AirCon,
+  'air-purifier': Accessory.AirPurifier,
+  'humidifier-dehumidifier': Accessory.HumidifierDehumidifier,
   'learn-ir': Accessory.LearnCode,
   'learn-code': Accessory.LearnCode,
   'switch': Accessory.Switch,
@@ -21,6 +23,7 @@ const classTypes = {
   'fan': Accessory.Fan,
   'outlet': Accessory.Outlet,
   'light': Accessory.Light,
+  'window': Accessory.Window,
   'window-covering': Accessory.WindowCovering,
   'tv': Accessory.TV,
   'temperatureSensor': Accessory.TemperatureSensor
