@@ -55,6 +55,7 @@ key | description | example | default
 w1DeviceID (optional) | Updates device current temperature from a Raspberry Pi Wire-1 thermometers (i.e. ds18b20). Value is the Device ID | 28-0321544e531ff | 
 heatOnly (optional) | Forces the Aircon accessory to only operate in Heat mode | true | false
 coolOnly (optional) | Forces the Aircon accessory to only operate in Cool mode | true | false
+noHumidity (optional) | Removes Humidity information from the device. It will be removed when using w1Device or temperatureFilePath | true | false
 
 #### "data" key-value object
 The device can be setup to manage modes in one of two ways. If your AC unit accepts a hexcade to change mode only (without temperature details) you can set the mode keys (heat/cool) and then the temperatureX values to change the teperature. If your AC unit sends hexcodes that contain the mode AND temperature you can use the modeX codes alone.
@@ -73,6 +74,20 @@ key | description
 --- | -----------
 data | Hex data stored as string.
 pseudo-mode (optional) | The mode we set when this hex is sent. i.e. "heat" or "cool". For graphical purposes only (hence use of the term "pseudo"). Not recommended for ModeX key-values.
+
+### TemperatureSensor Accessory
+Adds a temperature and humidity sensor using the Broadlink device's sensors.
+key | description | example | default
+--- | ----------- | ------- | -------
+noHumidity (optional) | Removes Humidity information from the device. It will be removed when using w1Device or temperatureFilePath | true | false
+tempertureAdjustment (optional) | An adjustment value to tune the value from the value the broadlink returns | -5 | 0 
+humidityAdjustment (optional) | An adjustment value to tune the value from the value the broadlink returns | -5 | 0 
+
+### HumiditySensor Accessory
+Adds a temperature and humidity sensor using the Broadlink device's sensors.
+key | description | example | default
+--- | ----------- | ------- | -------
+humidityAdjustment (optional) | An adjustment value to tune the value from the value the broadlink returns | -5 | 0 
 
 ### TV Accessory
 
