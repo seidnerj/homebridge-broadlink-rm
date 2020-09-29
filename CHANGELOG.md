@@ -1,5 +1,4 @@
 # Changes
-
 ## 4.3.3
 - [Bug] Fixes error in heombridge-platform-helper "ReferenceError: log is not defined"
 - [Improvement] Adds Humidity information to the Aircon accessory
