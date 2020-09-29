@@ -78,18 +78,18 @@
 					"hue359": "2600500000012..."
 				}
 			},
-      {
-        "name": "LivingRoom Humidity",
-        "type": "humiditySensor"
-      },
-      {
-        "name": "LivingRoom temperature",
-        "type": "temperatureSensor"
-      },
+			{
+				"name": "LivingRoom Humidity",
+				"type": "humiditySensor"
+			},
+			{
+				"name": "LivingRoom temperature",
+				"type": "temperatureSensor"
+			},
 			{
 				"name": "Air Conditioner",
 				"type": "air-conditioner",
-        "noHumidity": true,
+				"noHumidity": true,
 				"data": {
 					"off": "2600500000012...",
 					"temperature30": {
