@@ -1,4 +1,7 @@
 # Changes
+## 4.3.4-beta
+- [Improvement] Improves HumidifierDehumidifier accessory by using Humidity data from the Broadlink device (See README.md for notes.) 
+
 ## 4.3.3
 - [Bug] Fixes error in heombridge-platform-helper "ReferenceError: log is not defined"
 - [Improvement] Adds Humidity information to the Aircon accessory
