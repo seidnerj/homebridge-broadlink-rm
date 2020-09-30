@@ -64,6 +64,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     // Set config default values
     config.humidityUpdateFrequency = config.humidityUpdateFrequency || 10;
     config.humidityAdjustment = config.humidityAdjustment || 0;
+    config.noHumidity = config.noHumidity || false;
 
     state.firstHumidityUpdate = true;
   }
@@ -94,7 +95,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     device.checkHumidity();
 
     this.updateHumidityUI();
-    if (!config.isUnitTest) setInterval(this.updateHumidityUI.bind(this), config.humidityUpdateFrequency * 1000)
+    if (!config.isUnitTest && !config.noHumidity) setInterval(this.updateHumidityUI.bind(this), config.humidityUpdateFrequency * 1000)
   }
 
   onHumidity (temperature,humidity) {
@@ -167,13 +168,24 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
 
   getCurrentHumidity (callback) {
     const { config, host, debug, log, name, state } = this;
-    const { pseudoDeviceTemperature } = config;
+    const { noHumidity } = config;
 
-    this.addHumidityCallbackToQueue(callback);
+    if(noHumidity){
+      state.currentRelativeHumidity = 35
+      state.targetRelativeHumidity = 5
+
+      if (state.targetState === Characteristic.TargetHumidifierDehumidifierState.HUMIDIFIER) {
+        state.currentRelativeHumidity = 5
+        state.targetRelativeHumidity = 15
+      } 
+
+      serviceManager.refreshCharacteristicUI(Characteristic.CurrentRelativeHumidity);
+      serviceManager.refreshCharacteristicUI(Characteristic.TargetRelativeHumidity);
+    } else {
+      this.addHumidityCallbackToQueue(callback);
+    }
   }
  
- 
-
   setupServiceManager () {
     const { config, data, name, serviceManagerType } = this;
     let {
