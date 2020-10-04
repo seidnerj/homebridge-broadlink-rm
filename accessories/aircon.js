@@ -381,26 +381,12 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     if(humidity) {
       if(noHumidity){
-        //noHumidity = false;
-        //if(state.firstTemperatureUpdate){log (`${name} Humidity found, you can add support`);};
         state.currentHumidity = null;
       }else{
         humidity += humidityAdjustment;
         state.currentHumidity = humidity;
         log(`${name} onHumidity (` + humidity + `)`);
       }
-    }
-
-    if (temperature > config.maxTemperature) {
-      log(`\x1b[36m[INFO]\x1b[0m Reported temperature (${temperature}) is too high, setting to \x1b[33mmaxTemperature\x1b[0m (${maxTemperature}).`)
-      temperature = config.maxTemperature
-    }
-
-    if (temperature < config.minTemperature) {
-
-      log(`\x1b[36m[INFO]\x1b[0m Reported temperature (${temperature}) is too low, setting to \x1b[33mminTemperature\x1b[0m (${minTemperature}).`)
-      temperature = config.minTemperature
-
     }
     
     this.processQueuedTemperatureCallbacks(temperature);
