@@ -402,10 +402,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
       temperature = config.minTemperature
 
     }
-
-    assert.isBelow(temperature, config.maxTemperature + 1, `\x1b[31m[CONFIG ERROR] \x1b[33mmaxTemperature\x1b[0m (${config.maxTemperature}) must be more than the reported temperature (${temperature})`)
-    assert.isAbove(temperature, config.minTemperature - 1, `\x1b[31m[CONFIG ERROR] \x1b[33mminTemperature\x1b[0m (${config.maxTemperature}) must be less than the reported temperature (${temperature})`)
-
+    
     this.processQueuedTemperatureCallbacks(temperature);
   }
 
@@ -766,8 +763,6 @@ class AirConAccessory extends BroadlinkRMAccessory {
     this.serviceManager
       .getCharacteristic(Characteristic.CurrentTemperature)
       .setProps({
-        minValue: minTemperature,
-        maxValue: maxTemperature,
         minStep: 0.1
       });
   }
