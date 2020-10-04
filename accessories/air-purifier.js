@@ -1,8 +1,8 @@
+const ServiceManagerTypes = require('../helpers/serviceManagerTypes');
+
 const FanAccessory = require('./fan');
 
 class AirPurifierAccessory extends FanAccessory {
-
-  serviceType () { return Service.AirPurifier }
 
   async setSwitchState (hexData, previousValue) {
     super.setSwitchState(hexData, previousValue);
@@ -12,7 +12,7 @@ class AirPurifierAccessory extends FanAccessory {
 
   // User requested a the target state be set
   async setTargetState (hexData, previousValue) {
-      const { log, name, state } = this;
+      const { log, name, state, serviceManager } = this;
 
       // Ignore if no change to the targetPosition
       if (state.targetState === previousValue) return;
@@ -38,8 +38,8 @@ class AirPurifierAccessory extends FanAccessory {
     serviceManager.refreshCharacteristicUI(Characteristic.CurrentAirPurifierState);
   }
 
-  configureServiceManager(serviceManager) {
-    const { config, data } = this;
+  setupServiceManager () {
+    const { config, data, name, serviceManagerType } = this;
     let {
       showLockPhysicalControls,
       showSwingMode,
@@ -63,7 +63,9 @@ class AirPurifierAccessory extends FanAccessory {
     if (showSwingMode !== false && hideSwingMode !== true) showSwingMode = true
     if (showRotationDirection !== false && hideRotationDirection !== true) showRotationDirection = true
 
-    serviceManager.addToggleCharacteristic({
+    this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, Service.AirPurifier, this.log);
+
+    this.serviceManager.addToggleCharacteristic({
       name: 'switchState',
       type: Characteristic.On,
       getMethod: this.getCharacteristicValue,
@@ -76,7 +78,7 @@ class AirPurifierAccessory extends FanAccessory {
       }
     });
 
-    serviceManager.addToggleCharacteristic({
+    this.serviceManager.addToggleCharacteristic({
       name: 'currentState',
       type: Characteristic.CurrentAirPurifierState,
       getMethod: this.getCharacteristicValue,
@@ -85,7 +87,7 @@ class AirPurifierAccessory extends FanAccessory {
       props: { }
     });
 
-    serviceManager.addToggleCharacteristic({
+    this.serviceManager.addToggleCharacteristic({
       name: 'targetState',
       type: Characteristic.TargetAirPurifierState,
       getMethod: this.getCharacteristicValue,
@@ -99,7 +101,7 @@ class AirPurifierAccessory extends FanAccessory {
     });
 
     if (showLockPhysicalControls) {
-      serviceManager.addToggleCharacteristic({
+      this.serviceManager.addToggleCharacteristic({
         name: 'lockPhysicalControls',
         type: Characteristic.LockPhysicalControls,
         getMethod: this.getCharacteristicValue,
@@ -113,7 +115,7 @@ class AirPurifierAccessory extends FanAccessory {
     }
 
     if (showSwingMode) {
-      serviceManager.addToggleCharacteristic({
+      this.serviceManager.addToggleCharacteristic({
         name: 'swingMode',
         type: Characteristic.SwingMode,
         getMethod: this.getCharacteristicValue,
@@ -126,7 +128,7 @@ class AirPurifierAccessory extends FanAccessory {
       });
     }
 
-    serviceManager.addToggleCharacteristic({
+    this.serviceManager.addToggleCharacteristic({
       name: 'fanSpeed',
       type: Characteristic.RotationSpeed,
       getMethod: this.getCharacteristicValue,
