@@ -3,6 +3,7 @@
 - [Improvement] Improves HumidifierDehumidifier accessory by using Humidity data from the Broadlink device (See README.md for notes.) 
 - [Bug] Fixes Air Purifier so it no longer appears as a fan
 - [Bug] Removes limits on air-conditioner Current Temperature so it isn't constrained to the same limits as the Target Temperature.
+- [Bug] Fixed the identification of manual devices. New Manual deviceTypes added which are selected based on isRFSupported and isRM4. isRM4 will be required on newer devices to make sure messages include the correct headers.
 
 ## 4.3.3
 - [Bug] Fixes error in heombridge-platform-helper "ReferenceError: log is not defined"
