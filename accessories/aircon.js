@@ -270,7 +270,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     // Update the heating/cooling mode based on the pseudo-mode - if pressent.
     if (hexData['pseudo-mode']){
-      let mode = hexData['pseudo-mode'];
+      mode = hexData['pseudo-mode'];
       if (mode) assert.oneOf(mode, [ 'heat', 'cool', 'auto' ], `\x1b[31m[CONFIG ERROR] \x1b[33mpseudo-mode\x1b[0m should be one of "heat", "cool" or "auto"`)
       this.updateServiceCurrentHeatingCoolingState(HeatingCoolingStates[mode]);
     }
@@ -293,7 +293,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     if (!hexData) {
         // Mode based code not found, try mode-less
         this.log(`${name} No ${mode} HEX code found for ${temperature}`);
-        let hexData = data[`temperature${temperature}`];
+        hexData = data[`temperature${temperature}`];
     } else {
         if (hexData['pseudo-mode']) {
             this.log(`\x1b[36m[INFO] \x1b[0m${name} Configuration found for ${mode}${temperature} with pseudo-mode. Pseudo-mode will replace the configured mode.`);
@@ -400,7 +400,6 @@ class AirConAccessory extends BroadlinkRMAccessory {
     if (Object.keys(this.temperatureCallbackQueue).length > 1) {
       if (state.currentTemperature) {
         if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} addTemperatureCallbackToQueue (clearing previous callback, using existing temperature)`);
-
         this.processQueuedTemperatureCallbacks(state.currentTemperature);
       }
     }
@@ -530,7 +529,6 @@ class AirConAccessory extends BroadlinkRMAccessory {
     // Some devices don't include a thermometer and so we can use `pseudoDeviceTemperature` instead
     if (pseudoDeviceTemperature !== undefined) {
       if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} getCurrentTemperature (using pseudoDeviceTemperature ${pseudoDeviceTemperature} from config)`);
-
       return callback(null, pseudoDeviceTemperature);
     }
 
@@ -558,7 +556,6 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     if (!this.isAutoSwitchOn()) {
       this.log(`${name} checkTemperatureForAutoOnOff (autoSwitch is off)`);
-
       return;
     }
 
@@ -579,7 +576,6 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
       if (this.state.isRunningAutomatically) {
         this.isAutomatedOff = true;
-
         this.log(`${name} checkTemperatureForAutoOnOff (auto off)`);
         serviceManager.setCharacteristic(Characteristic.TargetHeatingCoolingState, Characteristic.TargetHeatingCoolingState.OFF);
       } else {
@@ -596,7 +592,6 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
   getTemperatureDisplayUnits (callback) {
     const { config } = this;
-
     const temperatureDisplayUnits = (config.units.toLowerCase() === 'f') ? Characteristic.TemperatureDisplayUnits.FAHRENHEIT : Characteristic.TemperatureDisplayUnits.CELSIUS;
 
     callback(temperatureDisplayUnits);
@@ -650,8 +645,6 @@ class AirConAccessory extends BroadlinkRMAccessory {
     this.mqttValues[identifier] = temperature;
     this.updateTemperatureUI();
   }
-
-
 
   // Service Manager Setup
 
