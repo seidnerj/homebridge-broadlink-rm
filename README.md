@@ -49,6 +49,12 @@ key | description | example | default
 --- | ----------- | ------- | -------
 pingGrace (optional) | Pauses ping status changes for the specified period (seconds) to allow device to start-up/shutdown after the change | 15 | 10
 
+### Fan Accessory
+
+key | description | example | default
+--- | ----------- | ------- | -------
+hideSwingMode (optional) | Determines whether we should hide the swing mode UI or not. If true, also changes the accessory type to allow additional Fan icons. | true | false
+
 ### Aircon Accessory
 
 key | description | example | default
