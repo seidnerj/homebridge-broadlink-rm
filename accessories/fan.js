@@ -54,12 +54,13 @@ class FanAccessory extends SwitchAccessory {
 
   setupServiceManager () {
     const { config, data, name, serviceManagerType } = this;
-    let { showSwingMode, showRotationDirection, hideSwingMode, hideRotationDirection } = config;
+    let { showSwingMode, showRotationDirection, hideSwingMode, hideRotationDirection, stepSize } = config;
     const { on, off, clockwise, counterClockwise, swingToggle } = data || {};
 
     // Defaults
     if (showSwingMode !== false && hideSwingMode !== true) showSwingMode = true
     if (showRotationDirection !== false && hideRotationDirection !== true) showRotationDirection = true
+    stepSize = isNaN(stepSize) || stepSize > 100 || stepSize < 1 ? 1 : stepSize
 
     this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, showSwingMode ? Service.Fanv2 : Service.Fan, this.log);
 
@@ -97,8 +98,10 @@ class FanAccessory extends SwitchAccessory {
       setMethod: this.setCharacteristicValue,
       bind: this,
       props: {
-        setValuePromise: this.setFanSpeed.bind(this)
-      }
+        setValuePromise: this.setFanSpeed.bind(this),
+		    minStep: stepSize,
+		    minValue: 0,
+		    maxVlue: 100
     });
 
     if (showRotationDirection) {
