@@ -21,7 +21,7 @@ class FanAccessory extends SwitchAccessory {
   setDefaults () {
     super.setDefaults();
     let { config, state } = this;
-    let { showSwingMode, showRotationDirection, hideRotationDirection, alwaysResetToDefaults, stepSize, fanSpeed, defaultFanSpeed } = config;
+    let { showSwingMode, showRotationDirection, hideRotationDirection, alwaysResetToDefaults, stepSize, defaultFanSpeed } = config;
     
     // Defaults
     if (showSwingMode !== false && hideSwingMode !== true) showSwingMode = true
@@ -29,7 +29,7 @@ class FanAccessory extends SwitchAccessory {
     stepSize = isNaN(stepSize) || stepSize > 100 || stepSize < 1 ? 1 : stepSize
     
     if (alwaysResetToDefaults) {
-      fanSpeed = (defaultFanSpeed !== undefined) ? defaultFanSpeed : 100;
+      state.fanSpeed = (defaultFanSpeed !== undefined) ? defaultFanSpeed : 100;
     }
   }
 	
