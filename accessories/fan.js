@@ -120,6 +120,7 @@ class FanAccessory extends SwitchAccessory {
 		    minStep: stepSize,
 		    minValue: 0,
 		    maxVlue: 100
+      }
     });
 
     if (showRotationDirection) {
