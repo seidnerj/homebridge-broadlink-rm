@@ -54,6 +54,9 @@ pingGrace (optional) | Pauses ping status changes for the specified period (seco
 key | description | example | default
 --- | ----------- | ------- | -------
 hideSwingMode (optional) | Determines whether we should hide the swing mode UI or not. If true, also changes the accessory type to allow additional Fan icons. | true | false
+alwaysResetToDefaults (optional) | If set, the fanSpeed is reset to its default when the fan is turned off. | true | false
+defaultFanSpeed (optional) | Sets the default Speed for the fan when a value isn't already set. | 50 | 100
+stepSize (optional) | If set, sets the amount the fanSpeed will step up/down by | 10 | 1
 
 ### Aircon Accessory
 
