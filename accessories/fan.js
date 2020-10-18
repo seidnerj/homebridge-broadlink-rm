@@ -3,15 +3,36 @@ const ServiceManagerTypes = require('../helpers/serviceManagerTypes');
 const SwitchAccessory = require('./switch');
 
 class FanAccessory extends SwitchAccessory {
-
-  async setSwitchState (hexData, previousValue) {
+  async setSwitchState (hexData, previousValue) {	  
+    const { config, state, serviceManager } = this;
     if (!this.state.switchState) {
       this.lastFanSpeed = undefined;
+    }
+	  
+    // Reset the fan speed back to the default speed when turned off
+    if (this.state.switchState === false && config.alwaysResetToDefaults) {
+      this.setDefaults();
+      serviceManager.setCharacteristic(Characteristic.RotationSpeed, state.fanSpeed);
     }
 
     super.setSwitchState(hexData, previousValue);
   }
 
+  setDefaults () {
+    super.setDefaults();
+    let { config, state } = this;
+    let { showSwingMode, showRotationDirection, hideRotationDirection, alwaysResetToDefaults, stepSize, fanSpeed, defaultFanSpeed } = config;
+    
+    // Defaults
+    if (showSwingMode !== false && hideSwingMode !== true) showSwingMode = true
+    if (showRotationDirection !== false && hideRotationDirection !== true) showRotationDirection = true
+    stepSize = isNaN(stepSize) || stepSize > 100 || stepSize < 1 ? 1 : stepSize
+    
+    if (alwaysResetToDefaults) {
+      fanSpeed = (defaultFanSpeed !== undefined) ? defaultFanSpeed : 100;
+    }
+  }
+	
   async setFanSpeed (hexData) {
     const { data, host, log, state, name, debug} = this;
 
@@ -57,10 +78,7 @@ class FanAccessory extends SwitchAccessory {
     let { showSwingMode, showRotationDirection, hideSwingMode, hideRotationDirection, stepSize } = config;
     const { on, off, clockwise, counterClockwise, swingToggle } = data || {};
 
-    // Defaults
-    if (showSwingMode !== false && hideSwingMode !== true) showSwingMode = true
-    if (showRotationDirection !== false && hideRotationDirection !== true) showRotationDirection = true
-    stepSize = isNaN(stepSize) || stepSize > 100 || stepSize < 1 ? 1 : stepSize
+    setDefaults();
 
     this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, showSwingMode ? Service.Fanv2 : Service.Fan, this.log);
 
