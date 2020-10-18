@@ -78,7 +78,7 @@ class FanAccessory extends SwitchAccessory {
     let { showSwingMode, showRotationDirection, hideSwingMode, hideRotationDirection, stepSize } = config;
     const { on, off, clockwise, counterClockwise, swingToggle } = data || {};
 
-    setDefaults();
+    this.setDefaults();
 
     this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, showSwingMode ? Service.Fanv2 : Service.Fan, this.log);
 
