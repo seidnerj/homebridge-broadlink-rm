@@ -21,8 +21,6 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
 
   }
   
-
-
   // User requested a the target state be set
   async setTargetState (hexData, previousValue) {
       const { log, name, state, serviceManager } = this;
@@ -171,12 +169,12 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     const { noHumidity } = config;
 
     if(noHumidity){
-      state.currentRelativeHumidity = 35
-      state.targetRelativeHumidity = 5
+      state.currentHumidity = 35
+      state.targetHumidity = 5
 
       if (state.targetState === Characteristic.TargetHumidifierDehumidifierState.HUMIDIFIER) {
-        state.currentRelativeHumidity = 5
-        state.targetRelativeHumidity = 15
+        state.currentHumidity = 5
+        state.targetHumidity = 15
       } 
 
       serviceManager.refreshCharacteristicUI(Characteristic.CurrentRelativeHumidity);
@@ -226,6 +224,15 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       }
     });
 
+	  this.serviceManager.addToggleCharacteristic({
+      name: 'targetHumidity',
+      type: Characteristic.TargetRelativeHumidity,
+      getMethod: this.getCharacteristicValue,
+      setMethod: this.setCharacteristicValue,
+      bind: this,
+      props: { }
+    });
+    
     this.serviceManager.addGetCharacteristic({
       name: 'currentHumidity',
       type: Characteristic.CurrentRelativeHumidity,
