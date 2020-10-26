@@ -114,7 +114,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
   addHumidityCallbackToQueue (callback) {
     const { config, host, debug, log, name, state } = this;
     
-    if(noHumidity){
+    if(config.noHumidity){
       state.currentHumidity = 35
       state.targetHumidity = 5
 
