@@ -114,19 +114,6 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
   addHumidityCallbackToQueue (callback) {
     const { config, host, debug, log, name, state } = this;
     
-    if(config.noHumidity){
-      state.currentHumidity = 35
-      state.targetHumidity = 5
-
-      if (state.targetState === Characteristic.TargetHumidifierDehumidifierState.HUMIDIFIER) {
-        state.currentHumidity = 5
-        state.targetHumidity = 15
-      } 
-
-      this.processQueuedHumidityCallbacks(state.currentHumidity);
-      return;
-    }
-    
     // Clear the previous callback
     if (Object.keys(this.humidityCallbackQueue).length > 1) {
       if (state.currentHumidity) {
@@ -140,6 +127,20 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     const callbackIdentifier = uuid.v4();
     this.humidityCallbackQueue[callbackIdentifier] = callback;
 
+    // Use hardcoded values if not using Humidity values 
+    if(config.noHumidity){
+      state.currentHumidity = 35
+      state.targetHumidity = 5
+
+      if (state.targetState === Characteristic.TargetHumidifierDehumidifierState.HUMIDIFIER) {
+        state.currentHumidity = 5
+        state.targetHumidity = 15
+      } 
+
+      this.processQueuedHumidityCallbacks(state.currentHumidity);
+      return;
+    }
+    
     // Read temperature from Broadlink RM device
     // If the device is no longer available, use previous tempeature
     const device = getDevice({ host, log });
