@@ -114,6 +114,19 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
   addHumidityCallbackToQueue (callback) {
     const { config, host, debug, log, name, state } = this;
     
+    if(noHumidity){
+      state.currentHumidity = 35
+      state.targetHumidity = 5
+
+      if (state.targetState === Characteristic.TargetHumidifierDehumidifierState.HUMIDIFIER) {
+        state.currentHumidity = 5
+        state.targetHumidity = 15
+      } 
+
+      this.processQueuedHumidityCallbacks(state.currentHumidity);
+      return;
+    }
+    
     // Clear the previous callback
     if (Object.keys(this.humidityCallbackQueue).length > 1) {
       if (state.currentHumidity) {
@@ -168,20 +181,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     const { config, host, debug, log, name, state, serviceManager } = this;
     const { noHumidity } = config;
 
-    if(noHumidity){
-      state.currentHumidity = 35
-      state.targetHumidity = 5
-
-      if (state.targetState === Characteristic.TargetHumidifierDehumidifierState.HUMIDIFIER) {
-        state.currentHumidity = 5
-        state.targetHumidity = 15
-      } 
-
-      serviceManager.refreshCharacteristicUI(Characteristic.CurrentRelativeHumidity);
-      serviceManager.refreshCharacteristicUI(Characteristic.TargetRelativeHumidity);
-    } else {
-      this.addHumidityCallbackToQueue(callback);
-    }
+	  this.addHumidityCallbackToQueue(callback);
   }
  
   setupServiceManager () {
