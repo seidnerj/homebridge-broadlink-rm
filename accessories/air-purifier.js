@@ -1,5 +1,4 @@
 const ServiceManagerTypes = require('../helpers/serviceManagerTypes');
-
 const FanAccessory = require('./fan');
 
 class AirPurifierAccessory extends FanAccessory {
@@ -38,8 +37,10 @@ class AirPurifierAccessory extends FanAccessory {
     serviceManager.refreshCharacteristicUI(Characteristic.CurrentAirPurifierState);
   }
 
+
   setupServiceManager () {
     const { config, data, name, serviceManagerType } = this;
+
     let {
       showLockPhysicalControls,
       showSwingMode,

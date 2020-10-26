@@ -44,10 +44,8 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       state.currentState = currentState
       serviceManager.refreshCharacteristicUI(Characteristic.CurrentHumidifierDehumidifierState);
 
-
       await this.performSend(hexData);
   }
-
  
   constructor (log, config = {}, serviceManagerType) {
     super(log, config, serviceManagerType);
@@ -224,6 +222,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
         setValuePromise: this.setSwitchState.bind(this)
       }
     });
+
 
 	  this.serviceManager.addToggleCharacteristic({
       name: 'targetHumidity',
