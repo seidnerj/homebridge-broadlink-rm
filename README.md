@@ -4,6 +4,7 @@
 There are a couple of changes made in version 4.3.1 which might cause issues when you upgrade.
 1. There was a bug in how MAC addresses were stored in the plugin. If you specify a HOST in your config.json by MAC address, you'll likely need to correct this value after you update.
 2. In order to fix an issue in iOS 14, all TVs are now seperate accessories. Previously the first TV connected via Homebridge as a bridge. This means that after updating, that first TV will need to be removed and re-added to HomeKit.
+3. The Dehumidifer accessory has been updated to use the Humidity readings from your Broadlink device. If your Broadlink device doesn't support Humidity readings, or you don't want to functionality set `"noHumidity" : true` in your config.json
 
 For other changes, refer to the Change Log [here](https://github.com/kiwi-cam/homebridge-broadlink-rm/blob/master/CHANGELOG.md).
 
@@ -47,6 +48,15 @@ Base documentation can be found [here](https://lprhodes.github.io/slate/). With 
 key | description | example | default
 --- | ----------- | ------- | -------
 pingGrace (optional) | Pauses ping status changes for the specified period (seconds) to allow device to start-up/shutdown after the change | 15 | 10
+
+### Fan Accessory
+
+key | description | example | default
+--- | ----------- | ------- | -------
+hideSwingMode (optional) | Determines whether we should hide the swing mode UI or not. If true, also changes the accessory type to allow additional Fan icons. | true | false
+alwaysResetToDefaults (optional) | If set, the fanSpeed is reset to its default when the fan is turned off. | true | false
+defaultFanSpeed (optional) | Sets the default Speed for the fan when a value isn't already set. | 50 | 100
+stepSize (optional) | If set, sets the amount the fanSpeed will step up/down by | 10 | 1
 
 ### Aircon Accessory
 

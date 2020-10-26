@@ -2,9 +2,9 @@ const versionCheck = require('github-version-checker');
 const pkg = require('../package.json'); 
 
 const options = {
-  repo: 'AlexanderBabel/homebridge-broadlink-rm', 
-  currentVersion: pkg.version, 
-  includePreReleases: false 
+  repo: 'homebridge-broadlink-rm', 
+  owner: 'kiwicam',
+  currentVersion: pkg.version
 };
 
 
