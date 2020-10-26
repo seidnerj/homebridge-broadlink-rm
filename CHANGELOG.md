@@ -1,4 +1,7 @@
 # Changes
+
+## 4.3.5-beta
+
 ## 4.3.4
 - [Improvement] Improves HumidifierDehumidifier accessory by using Humidity data from the Broadlink device (See README.md for notes.) 
 - [Improvement] Uses Service.Fan instead of Service.Fanv2 to allow Fan icons if not using SwingMode (Thanks @apexad)
