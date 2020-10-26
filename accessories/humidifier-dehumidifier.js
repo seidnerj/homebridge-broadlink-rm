@@ -167,7 +167,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
   }
 
   getCurrentHumidity (callback) {
-    const { config, host, debug, log, name, state } = this;
+    const { config, host, debug, log, name, state, serviceManager } = this;
     const { noHumidity } = config;
 
     if(noHumidity){
