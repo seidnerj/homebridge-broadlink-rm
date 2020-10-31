@@ -74,7 +74,7 @@ class FanAccessory extends SwitchAccessory {
 
   setupServiceManager () {
     const { config, data, name, serviceManagerType } = this;
-    const { showRotationDirection, hideSwingMode, hideRotationDirection, stepSize } = config;
+    const { hideSwingMode, hideRotationDirection, stepSize } = config;
     const { on, off, clockwise, counterClockwise, swingToggle } = data || {};
 
     this.setDefaults();
@@ -122,7 +122,7 @@ class FanAccessory extends SwitchAccessory {
       }
     });
 
-    if (showRotationDirection) {
+    if (config.showRotationDirection) {
       this.serviceManager.addToggleCharacteristic({
         name: 'rotationDirection',
         type: Characteristic.RotationDirection,
