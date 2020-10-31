@@ -23,8 +23,8 @@ class FanAccessory extends SwitchAccessory {
     let { config, state } = this;
     
     // Defaults
-    if (config.showSwingMode !== false && config.hideSwingMode !== true) config.showSwingMode = true
-    if (config.showRotationDirection !== false && config.hideRotationDirection !== true) config.showRotationDirection = true
+    config.showSwingMode = config.hideSwingMode === true || config.showSwingMode === false ? false : true;
+    config.showRotationDirection = config.hideRotationDirection === true || config.showRotationDirection === false ? false : true;
     config.stepSize = isNaN(config.stepSize) || config.stepSize > 100 || config.stepSize < 1 ? 1 : config.stepSize
     
     if (config.alwaysResetToDefaults) {
