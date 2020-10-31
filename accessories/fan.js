@@ -74,7 +74,6 @@ class FanAccessory extends SwitchAccessory {
 
   setupServiceManager () {
     const { config, data, name, serviceManagerType } = this;
-    const { hideSwingMode, hideRotationDirection, stepSize } = config;
     const { on, off, clockwise, counterClockwise, swingToggle } = data || {};
 
     this.setDefaults();
@@ -83,7 +82,7 @@ class FanAccessory extends SwitchAccessory {
 
     this.serviceManager.addToggleCharacteristic({
       name: 'switchState',
-      type: Characteristic.On,
+      type: this.serviceManager.service.constructor.name === 'Fanv2' ? Characteristic.Active : Characteristic.On,
       getMethod: this.getCharacteristicValue,
       setMethod: this.setCharacteristicValue,
       bind: this,
@@ -116,7 +115,7 @@ class FanAccessory extends SwitchAccessory {
       bind: this,
       props: {
         setValuePromise: this.setFanSpeed.bind(this),
-		    minStep: stepSize,
+		    minStep: config.stepSize,
 		    minValue: 0,
 		    maxVlue: 100
       }
