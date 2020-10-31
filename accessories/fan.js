@@ -21,15 +21,14 @@ class FanAccessory extends SwitchAccessory {
   setDefaults () {
     super.setDefaults();
     let { config, state } = this;
-    let { showSwingMode, hideSwingMode, showRotationDirection, hideRotationDirection, alwaysResetToDefaults, stepSize, defaultFanSpeed } = config;
     
     // Defaults
-    if (showSwingMode !== false && hideSwingMode !== true) showSwingMode = true
-    if (showRotationDirection !== false && hideRotationDirection !== true) showRotationDirection = true
-    stepSize = isNaN(stepSize) || stepSize > 100 || stepSize < 1 ? 1 : stepSize
+    if (config.showSwingMode !== false && config.hideSwingMode !== true) config.showSwingMode = true
+    if (config.showRotationDirection !== false && config.hideRotationDirection !== true) config.showRotationDirection = true
+    config.stepSize = isNaN(config.stepSize) || config.stepSize > 100 || config.stepSize < 1 ? 1 : config.stepSize
     
-    if (alwaysResetToDefaults) {
-      state.fanSpeed = (defaultFanSpeed !== undefined) ? defaultFanSpeed : 100;
+    if (config.alwaysResetToDefaults) {
+      state.fanSpeed = (config.defaultFanSpeed !== undefined) ? config.defaultFanSpeed : 100;
     }
   }
 	
@@ -75,7 +74,7 @@ class FanAccessory extends SwitchAccessory {
 
   setupServiceManager () {
     const { config, data, name, serviceManagerType } = this;
-    let { showSwingMode, showRotationDirection, hideSwingMode, hideRotationDirection, stepSize } = config;
+    const { showSwingMode, showRotationDirection, hideSwingMode, hideRotationDirection, stepSize } = config;
     const { on, off, clockwise, counterClockwise, swingToggle } = data || {};
 
     this.setDefaults();
