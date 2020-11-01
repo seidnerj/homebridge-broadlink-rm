@@ -28,7 +28,6 @@ class AirPurifierAccessory extends FanAccessory {
     if (state.switchState === true) {
       log(`${name} updateCurrentState: changing to purifying`);
       state.currentState = Characteristic.CurrentAirPurifierState.PURIFYING_AIR
-
     } else {
       log(`${name} updateCurrentState: changing to idle`);
       state.currentState = Characteristic.CurrentAirPurifierState.INACTIVE
@@ -37,18 +36,8 @@ class AirPurifierAccessory extends FanAccessory {
     serviceManager.refreshCharacteristicUI(Characteristic.CurrentAirPurifierState);
   }
 
-
   setupServiceManager () {
     const { config, data, name, serviceManagerType } = this;
-
-    let {
-      showLockPhysicalControls,
-      showSwingMode,
-      showRotationDirection,
-      hideSwingMode,
-      hideRotationDirection
-    } = config;
-
     const {
       on,
       off,
@@ -60,9 +49,9 @@ class AirPurifierAccessory extends FanAccessory {
     } = data || {};
 
     // Defaults
-    if (showLockPhysicalControls !== false) showLockPhysicalControls = true
-    if (showSwingMode !== false && hideSwingMode !== true) showSwingMode = true
-    if (showRotationDirection !== false && hideRotationDirection !== true) showRotationDirection = true
+    if (config.showLockPhysicalControls !== false) config.showLockPhysicalControls = true
+    if (config.showSwingMode !== false && config.hideSwingMode !== true) config.showSwingMode = true
+    if (config.showRotationDirection !== false && config.hideRotationDirection !== true) config.showRotationDirection = true
 
     this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, Service.AirPurifier, this.log);
 
@@ -101,7 +90,7 @@ class AirPurifierAccessory extends FanAccessory {
       }
     });
 
-    if (showLockPhysicalControls) {
+    if (config.showLockPhysicalControls) {
       this.serviceManager.addToggleCharacteristic({
         name: 'lockPhysicalControls',
         type: Characteristic.LockPhysicalControls,
@@ -115,7 +104,7 @@ class AirPurifierAccessory extends FanAccessory {
       });
     }
 
-    if (showSwingMode) {
+    if (config.showSwingMode) {
       this.serviceManager.addToggleCharacteristic({
         name: 'swingMode',
         type: Characteristic.SwingMode,
