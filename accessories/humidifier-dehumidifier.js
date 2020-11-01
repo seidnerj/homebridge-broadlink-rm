@@ -28,11 +28,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       this.lastFanSpeed = undefined;
     }
 
-    if (state.switchState == 0){
-      state.currentState = Characteristic.CurrentHumidifierDehumidifierState.INACTIVE;
-    }
-    serviceManager.refreshCharacteristicUI(Characteristic.CurrentHumidifierDehumidifierState);
-
+    this.setTargetState(hexData, previousValue);
     super.setSwitchState(hexData, previousValue);
   }
   
