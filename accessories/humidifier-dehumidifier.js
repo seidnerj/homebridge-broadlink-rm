@@ -21,6 +21,21 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
 
   }
   
+  async setSwitchState (hexData, previousValue) {
+    const { state, serviceManager } = this;
+
+    if (!this.state.switchState) {
+      this.lastFanSpeed = undefined;
+    }
+
+    if (state.switchState == 0){
+      state.currentState = Characteristic.CurrentHumidifierDehumidifierState.INACTIVE;
+    }
+    serviceManager.refreshCharacteristicUI(Characteristic.CurrentHumidifierDehumidifierState);
+
+    super.setSwitchState(hexData, previousValue);
+  }
+  
   // User requested a the target state be set
   async setTargetState (hexData, previousValue) {
       const { log, name, state, serviceManager } = this;
@@ -185,14 +200,6 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
  
   setupServiceManager () {
     const { config, data, name, serviceManagerType } = this;
-    let {
-      showLockPhysicalControls,
-      showSwingMode,
-      showRotationDirection,
-      hideSwingMode,
-      hideRotationDirection
-    } = config;
-
     const {
       on,
       off,
@@ -204,15 +211,15 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     } = data || {};
 
     // Defaults
-    if (showLockPhysicalControls !== false) showLockPhysicalControls = true
-    if (showSwingMode !== false && hideSwingMode !== true) showSwingMode = true
-    if (showRotationDirection !== false && hideRotationDirection !== true) showRotationDirection = true
+    if (config.showLockPhysicalControls !== false) config.showLockPhysicalControls = true
+    if (config.showSwingMode !== false && config.hideSwingMode !== true) config.showSwingMode = true
+    if (config.showRotationDirection !== false && config.hideRotationDirection !== true) config.showRotationDirection = true
 
     this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, Service.HumidifierDehumidifier, this.log);
     
     this.serviceManager.addToggleCharacteristic({
       name: 'switchState',
-      type: Characteristic.On,
+      type: Characteristic.Active,
       getMethod: this.getCharacteristicValue,
       setMethod: this.setCharacteristicValue,
       bind: this,
@@ -222,7 +229,6 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
         setValuePromise: this.setSwitchState.bind(this)
       }
     });
-
 
 	  this.serviceManager.addToggleCharacteristic({
       name: 'targetHumidity',
@@ -240,61 +246,56 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       bind: this
     });
 	
-   if (config.humidifierOnly) {
-	this.serviceManager
-		.getCharacteristic(Characteristic.TargetHumidifierDehumidifierState)
-			.setProps({
-					validValues: [1]
+    if (config.humidifierOnly) {
+	    this.serviceManager
+		    .getCharacteristic(Characteristic.TargetHumidifierDehumidifierState)
+			    .setProps({
+					  validValues: [1]
 				});
 				
-	this.serviceManager
-		.getCharacteristic(Characteristic.CurrentHumidifierDehumidifierState)
-			.setProps({
-	
-					validValues: [0, 2]
+      this.serviceManager
+		    .getCharacteristic(Characteristic.CurrentHumidifierDehumidifierState)
+			    .setProps({
+					  validValues: [0, 2]
 				});
-	 }	
+	   }	
 	 
-	if (config.deHumidifierOnly) {
-	this.serviceManager
-		.getCharacteristic(Characteristic.TargetHumidifierDehumidifierState)
-			.setProps({
-					validValues: [2]
+	  if (config.deHumidifierOnly) {
+	    this.serviceManager
+		    .getCharacteristic(Characteristic.TargetHumidifierDehumidifierState)
+			    .setProps({
+					  validValues: [2]
 				});
 				
-	this.serviceManager
-		.getCharacteristic(Characteristic.CurrentHumidifierDehumidifierState)
-			.setProps({
-	
-					validValues: [0, 3]
+	    this.serviceManager
+		    .getCharacteristic(Characteristic.CurrentHumidifierDehumidifierState)
+			    .setProps({
+					  validValues: [0, 3]
 				});
-	 }	
+	   }	
 	
-	this.serviceManager.addToggleCharacteristic({
+	  this.serviceManager.addToggleCharacteristic({
       name: 'fanSpeed',
       type: Characteristic.RelativeHumidityHumidifierThreshold,
       getMethod: this.getCharacteristicValue,
       setMethod: this.setCharacteristicValue,
       bind: this,
       props: {
-    setValuePromise: this.setFanSpeed.bind(this)
+        setValuePromise: this.setFanSpeed.bind(this)
       }
-	  
-	});
+	  });
 	
-	this.serviceManager.addToggleCharacteristic({
+	  this.serviceManager.addToggleCharacteristic({
       name: 'fanSpeed',
       type: Characteristic.RelativeHumidityDehumidifierThreshold,
       getMethod: this.getCharacteristicValue,
       setMethod: this.setCharacteristicValue,
       bind: this,
       props: {
-    setValuePromise: this.setFanSpeed.bind(this)
+        setValuePromise: this.setFanSpeed.bind(this)
       }
-	  
-	});
+	  });
 		
-    
     this.serviceManager.addToggleCharacteristic({
       name: 'currentState',
       type: Characteristic.CurrentHumidifierDehumidifierState,
@@ -317,7 +318,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       }
     });
 
-    if (showLockPhysicalControls) {
+    if (config.showLockPhysicalControls) {
       this.serviceManager.addToggleCharacteristic({
         name: 'lockPhysicalControls',
         type: Characteristic.LockPhysicalControls,
@@ -331,7 +332,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       });
     }
 
-    if (showSwingMode) {
+    if (config.showSwingMode) {
       this.serviceManager.addToggleCharacteristic({
         name: 'swingMode',
         type: Characteristic.SwingMode,
