@@ -1,6 +1,7 @@
 # Changes
 
 ## 4.3.5-beta
+- [Bug] Fixes bug in Fan accessory that removed Rotation Direction and/or Swing options
 
 ## 4.3.4
 - [Improvement] Improves HumidifierDehumidifier accessory by using Humidity data from the Broadlink device (See README.md for notes.) 
