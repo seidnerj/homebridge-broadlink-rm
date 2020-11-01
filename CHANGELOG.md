@@ -1,5 +1,7 @@
 # Changes
 
+## 4.3.6-beta
+
 ## 4.3.5
 - [Bug] Fixes bug in Fan accessory that removed Rotation Direction and/or Swing options
 
