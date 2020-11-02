@@ -37,11 +37,11 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       let currentState = Characteristic.CurrentHumidifierDehumidifierState.INACTIVE;
 
       if (state.targetState === Characteristic.TargetHumidifierDehumidifierState.HUMIDIFIER_OR_DEHUMIDIFIER) {
-        currentState = config.humidifierOnly ? Characteristic.CurrentHumidifierDehumidifierState.INACTIVE : Characteristic.CurrentHumidifierDehumidifierState.DEHUMIDIFYING;
+        currentState = Characteristic.CurrentHumidifierDehumidifierState.DEHUMIDIFYING;
       } else if (state.targetState === Characteristic.TargetHumidifierDehumidifierState.HUMIDIFIER) {
-        currentState = config.deHumidifierOnly ? Characteristic.CurrentHumidifierDehumidifierState.INACTIVE : Characteristic.CurrentHumidifierDehumidifierState.HUMIDIFYING;
+        currentState = Characteristic.CurrentHumidifierDehumidifierState.HUMIDIFYING;
       } else if (state.targetState === Characteristic.TargetHumidifierDehumidifierState.DEHUMIDIFIER) {
-        currentState = config.humidifierOnly ? Characteristic.CurrentHumidifierDehumidifierState.INACTIVE : Characteristic.CurrentHumidifierDehumidifierState.DEHUMIDIFYING;
+        currentState =  Characteristic.CurrentHumidifierDehumidifierState.DEHUMIDIFYING;
       }
 
       log(`${name} setTargetState: currently ${previousValue}, changing to ${state.targetState}`);
@@ -314,6 +314,34 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
         setValuePromise: this.setTargetState.bind(this)
       }
     });
+    
+    if (config.humidifierOnly) {
+	    this.serviceManager
+    		.getCharacteristic(Characteristic.TargetHumidifierDehumidifierState)
+		     	.setProps({
+					  validValues: [1]
+				});
+				
+	    this.serviceManager
+    		.getCharacteristic(Characteristic.CurrentHumidifierDehumidifierState)
+		    	.setProps({
+					validValues: [0, 2]
+				});
+    }	
+	 
+ 	  if (config.deHumidifierOnly) {
+	    this.serviceManager
+		    .getCharacteristic(Characteristic.TargetHumidifierDehumidifierState)
+			    .setProps({
+				    validValues: [2]
+				});
+				
+	    this.serviceManager
+		    .getCharacteristic(Characteristic.CurrentHumidifierDehumidifierState)
+			    .setProps({
+				    validValues: [0, 3]
+				});
+	  }	
 
     if (config.showLockPhysicalControls) {
       this.serviceManager.addToggleCharacteristic({
