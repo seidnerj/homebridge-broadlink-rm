@@ -96,9 +96,9 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
 	  targetState =  Characteristic.TargetHumidifierDehumidifierState.HUMIDIFIER_OR_DEHUMIDIFIER;
     if (((state.currentHumidity - state.targetHumidity) * -1) < config.threshold) {
       // Leave in "Idle" state
-    }elseif (state.currentHumidity >= state.targetHumidity) {
+    }else if (state.currentHumidity >= state.targetHumidity) {
       if (!config.humidifierOnly) targetState = Characteristic.TargetHumidifierDehumidifierState.DEHUMIDIFIER;
-    else{
+    }else{
       if (!config.deHumidifierOnly) targetState = Characteristic.TargetHumidifierDehumidifierState.HUMIDIFIER;
     }
       
