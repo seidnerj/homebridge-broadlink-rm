@@ -272,24 +272,24 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     });
 	
 	  this.serviceManager.addToggleCharacteristic({
-      name: 'fanSpeed',
+      name: 'HumidifierThreshold',
       type: Characteristic.RelativeHumidityHumidifierThreshold,
       getMethod: this.getCharacteristicValue,
       setMethod: this.setCharacteristicValue,
       bind: this,
       props: {
-        setValuePromise: this.setFanSpeed.bind(this)
+        setValuePromise: this.setTargetState.bind(this)
       }
 	  });
 	
 	  this.serviceManager.addToggleCharacteristic({
-      name: 'fanSpeed',
+      name: 'DehumidifierThreshold',
       type: Characteristic.RelativeHumidityDehumidifierThreshold,
       getMethod: this.getCharacteristicValue,
       setMethod: this.setCharacteristicValue,
       bind: this,
       props: {
-        setValuePromise: this.setFanSpeed.bind(this)
+        setValuePromise: this.setTargetState.bind(this)
       }
 	  });
 		
