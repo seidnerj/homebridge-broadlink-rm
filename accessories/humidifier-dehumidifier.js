@@ -77,6 +77,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     config.humidityUpdateFrequency = config.humidityUpdateFrequency || 10;
     config.humidityAdjustment = config.humidityAdjustment || 0;
     config.noHumidity = config.noHumidity || false;
+    config.threshold = config.threshold || 5;
 
     state.firstHumidityUpdate = true;
   }
@@ -87,15 +88,18 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
   
   async updateDeviceStatus () {
     const { config, log, state } = this;
-    let targetState
+    let targetState;
     
     //Do nothing if turned off
     if (state.switchState === false) return;
     
-    if (state.currentHumidity >= state.targetHumidity) {
-      targetState = config.humidifierOnly ? Characteristic.TargetHumidifierDehumidifierState.HUMIDIFIER_OR_DEHUMIDIFIER : Characteristic.TargetHumidifierDehumidifierState.DEHUMIDIFIER
+	  targetState =  Characteristic.TargetHumidifierDehumidifierState.HUMIDIFIER_OR_DEHUMIDIFIER;
+    if (((state.currentHumidity - state.targetHumidity) * -1) < config.threshold) {
+      // Leave in "Idle" state
+    }elseif (state.currentHumidity >= state.targetHumidity) {
+      if (!config.humidifierOnly) targetState = Characteristic.TargetHumidifierDehumidifierState.DEHUMIDIFIER;
     else{
-      targetState = config.humidifierOnly ? Characteristic.TargetHumidifierDehumidifierState.HUMIDIFIER_OR_DEHUMIDIFIER : Characteristic.TargetHumidifierDehumidifierState.HUMIDIFIER
+      if (!config.deHumidifierOnly) targetState = Characteristic.TargetHumidifierDehumidifierState.HUMIDIFIER;
     }
       
     if (state.targetState != state.currentState){
