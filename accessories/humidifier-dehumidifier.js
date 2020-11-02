@@ -18,23 +18,17 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
 	
     config.humidifierOnly = config.humidifierOnly || false;
     config.deHumidifierOnly = config.deHumidifierOnly || false;
-
   }
   
   async setSwitchState (hexData, previousValue) {
-    const { state, serviceManager } = this;
-
-    if (!this.state.switchState) {
-      this.lastFanSpeed = undefined;
-    }
-
-    this.setTargetState(hexData, previousValue);
     super.setSwitchState(hexData, previousValue);
+        
+    this.updateCurrentState()
   }
   
   // User requested a the target state be set
   async setTargetState (hexData, previousValue) {
-      const { log, name, state, serviceManager } = this;
+      const { config, log, name, state, serviceManager } = this;
 
       // Ignore if no change to the targetPosition
       if (state.targetState === previousValue) return;
@@ -43,11 +37,11 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       let currentState = Characteristic.CurrentHumidifierDehumidifierState.INACTIVE;
 
       if (state.targetState === Characteristic.TargetHumidifierDehumidifierState.HUMIDIFIER_OR_DEHUMIDIFIER) {
-        currentState = Characteristic.CurrentHumidifierDehumidifierState.DEHUMIDIFYING
+        currentState = config.humidifierOnly ? Characteristic.CurrentHumidifierDehumidifierState.INACTIVE : Characteristic.CurrentHumidifierDehumidifierState.DEHUMIDIFYING;
       } else if (state.targetState === Characteristic.TargetHumidifierDehumidifierState.HUMIDIFIER) {
-        currentState = Characteristic.CurrentHumidifierDehumidifierState.HUMIDIFYING
+        currentState = config.deHumidifierOnly ? Characteristic.CurrentHumidifierDehumidifierState.INACTIVE : Characteristic.CurrentHumidifierDehumidifierState.HUMIDIFYING;
       } else if (state.targetState === Characteristic.TargetHumidifierDehumidifierState.DEHUMIDIFIER) {
-        currentState = Characteristic.CurrentHumidifierDehumidifierState.DEHUMIDIFYING
+        currentState = config.humidifierOnly ? Characteristic.CurrentHumidifierDehumidifierState.INACTIVE : Characteristic.CurrentHumidifierDehumidifierState.DEHUMIDIFYING;
       }
 
       log(`${name} setTargetState: currently ${previousValue}, changing to ${state.targetState}`);
@@ -57,7 +51,18 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
 
       await this.performSend(hexData);
   }
- 
+  
+  updateCurrentState() {
+    const { log, name, state, serviceManager } = this;
+
+    if (state.switchState === false) {
+      log(`${name} updateCurrentState: changing to inactive`);
+      state.currentState = Characteristic.CurrentHumidifierDehumidifierState.INACTIVE;
+    } 
+    
+    serviceManager.refreshCharacteristicUI(Characteristic.CurrentHumidifierDehumidifierState);
+  }
+  
   constructor (log, config = {}, serviceManagerType) {
     super(log, config, serviceManagerType);
 
@@ -78,6 +83,24 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
 
   reset () {
     super.reset();
+  }
+  
+  async updateDeviceStatus () {
+    const { config, log, state } = this;
+    let targetState
+    
+    //Do nothing if turned off
+    if (state.switchState === false) return;
+    
+    if (state.currentHumidity >= state.targetHumidity) {
+      targetState = config.humidifierOnly ? Characteristic.TargetHumidifierDehumidifierState.HUMIDIFIER_OR_DEHUMIDIFIER : Characteristic.TargetHumidifierDehumidifierState.DEHUMIDIFIER
+    else{
+      targetState = config.humidifierOnly ? Characteristic.TargetHumidifierDehumidifierState.HUMIDIFIER_OR_DEHUMIDIFIER : Characteristic.TargetHumidifierDehumidifierState.HUMIDIFIER
+    }
+      
+    if (state.targetState != state.currentState){
+     state.targetState = targetState
+    }
   }
 
   // Device Temperature Methods
@@ -116,6 +139,8 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     humidity += humidityAdjustment;
     state.currentHumidity = humidity;
     log(`${name} onHumidity (` + humidity + `)`);
+    
+    this.updateDeviceStatus()
 
     this.processQueuedHumidityCallbacks(humidity);
   }
@@ -241,34 +266,6 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       method: this.getCurrentHumidity,
       bind: this
     });
-	
-    if (config.humidifierOnly) {
-	    this.serviceManager
-		    .getCharacteristic(Characteristic.TargetHumidifierDehumidifierState)
-			    .setProps({
-					  validValues: [1]
-				});
-				
-      this.serviceManager
-		    .getCharacteristic(Characteristic.CurrentHumidifierDehumidifierState)
-			    .setProps({
-					  validValues: [0, 2]
-				});
-	   }	
-	 
-	  if (config.deHumidifierOnly) {
-	    this.serviceManager
-		    .getCharacteristic(Characteristic.TargetHumidifierDehumidifierState)
-			    .setProps({
-					  validValues: [2]
-				});
-				
-	    this.serviceManager
-		    .getCharacteristic(Characteristic.CurrentHumidifierDehumidifierState)
-			    .setProps({
-					  validValues: [0, 3]
-				});
-	   }	
 	
 	  this.serviceManager.addToggleCharacteristic({
       name: 'fanSpeed',
