@@ -85,6 +85,16 @@ key | description
 data | Hex data stored as string.
 pseudo-mode (optional) | The mode we set when this hex is sent. i.e. "heat" or "cool". For graphical purposes only (hence use of the term "pseudo"). Not recommended for ModeX key-values.
 
+### humidifier-dehumidifier Accessory
+Adds a humidifier/dehumidifer accessory.
+key | description | example | default
+--- | ----------- | ------- | -------
+deHumifierOnly (optional) | Sets the device to only run in Dehumidifer mode | true | false
+humifierOnly (optional) | Sets the device to only run in Humidifer mode | true | false 
+threshold (optional) | Sets how close to the target humidity the device should try to get | 2 | 5 
+noHumidity (optional) | Removes Humidity information from the device. It will be removed when using w1Device or temperatureFilePath | true | false
+humidityAdjustment (optional) | An adjustment value to tune the value from the value the broadlink returns | -5 | 0 
+
 ### TemperatureSensor Accessory
 Adds a temperature and humidity sensor using the Broadlink device's sensors.
 key | description | example | default
