@@ -33,22 +33,6 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       // Ignore if no change to the targetPosition
       if (state.currentState === previousValue) return;
 
-      // Set the CurrentHumidifierDehumidifierState to match the switch state
-      let currentState = Characteristic.CurrentHumidifierDehumidifierState.INACTIVE;
-
-      if (state.targetState === Characteristic.TargetHumidifierDehumidifierState.HUMIDIFIER_OR_DEHUMIDIFIER) {
-        currentState = Characteristic.CurrentHumidifierDehumidifierState.DEHUMIDIFYING;
-      } else if (state.targetState === Characteristic.TargetHumidifierDehumidifierState.HUMIDIFIER) {
-        currentState = Characteristic.CurrentHumidifierDehumidifierState.HUMIDIFYING;
-      } else if (state.targetState === Characteristic.TargetHumidifierDehumidifierState.DEHUMIDIFIER) {
-        currentState =  Characteristic.CurrentHumidifierDehumidifierState.DEHUMIDIFYING;
-      }
-
-      log(`${name} setCurrentState: currently ${previousValue}, changing to ${state.targetState}`);
-
-      state.currentState = currentState
-      serviceManager.refreshCharacteristicUI(Characteristic.CurrentHumidifierDehumidifierState);
-
       switch(state.currentState){
         case Characteristic.CurrentHumidifierDehumidifierState.DEHUMIDIFYING:
           hexData = config.data.targetStateDehumidifier
@@ -58,7 +42,10 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
           hexData = config.data.off
       }
     
+      log(`${name} setCurrentState: currently ${previousValue}, changing to ${state.currentState}`);
+	  
       await this.performSend(hexData);
+      serviceManager.refreshCharacteristicUI(Characteristic.CurrentHumidifierDehumidifierState);
   }
   
   async setHumidifierThreshold (hexData, previousValue) {
