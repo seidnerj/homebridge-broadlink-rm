@@ -40,16 +40,6 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
   reset () {
     super.reset();
   }
-	
-//  async setSwitchState (hexData, previousValue) {
-//    super.setSwitchState(hexData, previousValue);
-        
-//    if (!state.switchState) {
-//      log(`${name} updateCurrentState: changing to inactive`);
-//      state.currentState = Characteristic.CurrentHumidifierDehumidifierState.INACTIVE;
-//    } 
-//    serviceManager.refreshCharacteristicUI(Characteristic.CurrentHumidifierDehumidifierState);
-//  }
   
   async setCurrentState (hexData, previousValue) {
       const { debug, data, config, log, name, state, serviceManager } = this;
@@ -155,10 +145,12 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     let desiredState = this.getDesiredState ();
     
     if (state.currentState === desiredState) return;
+    
+    let previousState = state.currentState;
     if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateDeviceState: currently ${state.currentState}, changing to ${desiredState}`);
 
-    this.setCurrentState (null, null);
     state.currentState = desiredState;
+    this.setCurrentState (null, previousState);
   }
 
   // Device Temperature Methods
@@ -198,8 +190,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     state.currentHumidity = humidity;
     log(`${name} onHumidity (` + humidity + `)`);
     
-    this.updateDeviceState()
-
+    this.updateDeviceState();
     this.processQueuedHumidityCallbacks(humidity);
   }
 
@@ -279,15 +270,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
  
   setupServiceManager () {
     const { config, data, name, serviceManagerType } = this;
-    const {
-      on,
-      off,
-      targetStateHumidifier,
-      targetStateDehumidifier,
-      lockControls,
-      unlockControls,
-      swingToggle
-    } = data || {};
+    const { on, off, targetStateHumidifier, targetStateDehumidifier, lockControls, unlockControls, swingToggle } = data || {};
 
     // Defaults
     if (config.showLockPhysicalControls !== false) config.showLockPhysicalControls = true
