@@ -17,7 +17,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     super(log, config, serviceManagerType);
 
     this.humidityCallbackQueue = {};
-    this.monitorHumidity();
+    if(!config.noHumidity) this.monitorHumidity();
   }
 
   setDefaults () {
@@ -44,6 +44,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
   async setSwitchState (hexData, previousValue){
     this.updateDeviceState ();     
     super.setSwitchState (hexData, previousValue);
+    super.checkAutoOnOff();
   }
   
   async setCurrentState (hexData, previousValue) {
@@ -115,8 +116,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       if(state.currentHumidity < state.HumidifierThreshold){
         desiredState = Characteristic.CurrentHumidifierDehumidifierState.HUMIDIFYING;
       } 
-    } else {
-        //Must be set to Dehumidifier      
+    } else if (state.targetState === Characteristic.TargetHumidifierDehumidifierState.DEHUMIDIFIER) {
       if(state.currentHumidity > state.DehumidifierThreshold){
         desiredState = Characteristic.CurrentHumidifierDehumidifierState.DEHUMIDIFYING;
       }
@@ -145,6 +145,15 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
 	  if (state.targetState === Characteristic.TargetHumidifierDehumidifierState.OFF){
       state.currentState = Characteristic.CurrentHumidifierDehumidifierState.INACTIVE;
       state.switchState = false;
+    }
+    
+    // Use hardcoded values if not using Humidity values 
+    if(config.noHumidity && state.targetState === Characteristic.TargetHumidifierDehumidifierState.HUMIDIFIER){
+      state.currentHumidity = 0
+      state.targetHumidity = 100
+    } else if (config.noHumidity && state.targetState === Characteristic.TargetHumidifierDehumidifierState.DEHUMIDIFIER) {
+        state.currentHumidity = 100
+        state.targetHumidity = 0
     }
     
     let desiredState = this.getDesiredState ();
@@ -214,20 +223,6 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     // Add a new callback
     const callbackIdentifier = uuid.v4();
     this.humidityCallbackQueue[callbackIdentifier] = callback;
-
-    // Use hardcoded values if not using Humidity values 
-    if(config.noHumidity){
-      state.currentHumidity = 35
-      state.targetHumidity = 5
-
-      if (state.targetState === Characteristic.TargetHumidifierDehumidifierState.HUMIDIFIER) {
-        state.currentHumidity = 5
-        state.targetHumidity = 15
-      } 
-
-      this.processQueuedHumidityCallbacks(state.currentHumidity);
-      return;
-    }
     
     // Read temperature from Broadlink RM device
     // If the device is no longer available, use previous tempeature
@@ -346,6 +341,15 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       }
     });
     
+    //Remove Auto mode if not getting Humidity readings
+    if(config.noHumidity) {
+	    this.serviceManager
+		    .getCharacteristic(Characteristic.TargetHumidifierDehumidifierState)
+			    .setProps({
+				    validValues: [0, 1, 2]
+				});
+    }
+    
     if (config.humidifierOnly) {
 	    this.serviceManager
     		.getCharacteristic(Characteristic.TargetHumidifierDehumidifierState)
@@ -372,7 +376,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
 			    .setProps({
 				    validValues: [0, 3]
 				});
-	  }	
+	  }
 
     if (config.showLockPhysicalControls) {
       this.serviceManager.addToggleCharacteristic({
