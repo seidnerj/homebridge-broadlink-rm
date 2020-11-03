@@ -62,7 +62,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
   }
   
   async setHumidifierThreshold (hexData, previousValue) {
-    const { config, log, state } = this;
+    const { config, name, log, state } = this;
     if (state.HumidifierThreshold === previousValue && config.preventResendHex && !this.previouslyOff) return;
     this.previouslyOff = false;
     let desiredState = this.getDesiredState ();
@@ -72,12 +72,12 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     if (state.currentState === desiredState) return;
     log(`${name} setHumidifierThreshold: currently ${previousValue} to ${state.DehumidifierThreshold}, changing to ${state.HumidifierThreshold} to ${state.DehumidifierThreshold}`);
 
-    setCurrentState (hexData, state.currentState);
+    this.setCurrentState (hexData, state.currentState);
     state.currentState = desiredState;
   }
   
   async setDehumidifierThreshold (hexData, previousValue) {
-    const { config, log, state } = this;
+    const { config, name, log, state } = this;
     if (state.DehumidifierThreshold === previousValue && config.preventResendHex && !this.previouslyOff) return;
     
     this.previouslyOff = false;
@@ -86,7 +86,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     if (state.currentState === desiredState) return;
     log(`${name} setDeumidifierThreshold: currently ${state.HumidifierThreshold} to ${previousValue}, changing to ${state.HumidifierThreshold} to ${state.DehumidifierThreshold}`);
 
-    setCurrentState (hexData, state.currentState);
+    this.setCurrentState (hexData, state.currentState);
     state.currentState = desiredState;
   }
   
@@ -160,7 +160,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
   }
   
   async updateDeviceStatus () {
-    const { config, log, state } = this;
+    const { config, name, log, state } = this;
     
     //Do nothing if turned off
     if (state.switchState === false) return;
