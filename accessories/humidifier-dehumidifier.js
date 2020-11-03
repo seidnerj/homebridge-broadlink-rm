@@ -172,7 +172,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     let desiredState = this.getDesiredState ();
     
     if (state.currentState === desiredState) return;
-    log(`${name} updateDeviceStatus: currently ${state.HumidifierThreshold} to ${previousValue}, changing to ${state.HumidifierThreshold} to ${state.DehumidifierThreshold}`);
+    log(`${name} updateDeviceStatus: currently ${state.currentState}, changing to ${desiredState}`);
 
     setCurrentState (null, state.currentState);
     state.currentState = desiredState;
