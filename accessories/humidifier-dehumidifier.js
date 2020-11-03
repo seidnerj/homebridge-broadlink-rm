@@ -133,7 +133,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
 	}
 	
   async updateDeviceState () {
-    const { debug, config, name, log, state } = this;
+    const { serviceManager, debug, config, name, log, state } = this;
     
     //Do nothing if turned off
     if (state.switchState === false) {
