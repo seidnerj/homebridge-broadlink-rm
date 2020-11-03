@@ -56,7 +56,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     const { config, log, name, state, serviceManager } = this;
     let desiredState = Characteristic.CurrentHumidifierDehumidifierState.IDLE;
     // Ignore if no change to the targetHumidity
-    if (state.targetHumidity === previousValue && preventResendHex && !this.previouslyOff) return;
+    if (state.targetHumidity === previousValue && config.preventResendHex && !this.previouslyOff) return;
 
     this.previouslyOff = false;
 
