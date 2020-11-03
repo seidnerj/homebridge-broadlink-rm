@@ -42,6 +42,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
   }
   
   async setSwitchState (hexData, previousValue){
+    this.previouslyOff = previousValue ? false : true;
     this.updateDeviceState ();     
     super.setSwitchState (hexData, previousValue);
     super.checkAutoOnOff();
