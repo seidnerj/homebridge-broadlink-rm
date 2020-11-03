@@ -28,7 +28,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
   
   // User requested a the target state be set
   async setCurrentState (hexData, previousValue) {
-      const { config, log, name, state, serviceManager } = this;
+      const { data, config, log, name, state, serviceManager } = this;
     
       log(`\x1b[34m[DEBUG]\x1b[0m ${name} setCurrentState: requested update from ${previousValue} to ${state.currentState}`);
 
@@ -37,16 +37,16 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
 
       switch(state.currentState){
         case Characteristic.CurrentHumidifierDehumidifierState.DEHUMIDIFYING:
-          hexData = config.data.targetStateDehumidifier
+          hexData = data.targetStateDehumidifier
         case Characteristic.CurrentHumidifierDehumidifierState.HUMIDIFYING:
-          hexData = config.data.targetStateHumidifier
+          hexData = data.targetStateHumidifier
         case Characteristic.CurrentHumidifierDehumidifierState.INACTIVE:
-          hexData = config.data.off
+          hexData = data.off
       }
     
       log(`${name} setCurrentState: currently ${previousValue}, changing to ${state.currentState}`);
 	  
-      await this.performSend(hexData);
+      if(hexData) await this.performSend(hexData);
       serviceManager.refreshCharacteristicUI(Characteristic.CurrentHumidifierDehumidifierState);
   }
   
