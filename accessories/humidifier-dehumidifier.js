@@ -404,7 +404,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       setMethod: this.setCharacteristicValue,
       bind: this,
       props: {
-        setValuePromise: this.setFanSpeed.bind(this)
+        setValuePromise: super.setFanSpeed.bind(this)
       }
     });
   }
