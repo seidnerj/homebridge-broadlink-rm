@@ -96,6 +96,7 @@
           "off":"2600500000012...",
           "targetStateHumidifier": "2600500000012...",
           "targetStateDehumidifier": "2600500000012...",
+          "fanOnly": "2600500000012...",
           "lockControls": "2600500000012...",
           "unlockControls": "2600500000012...",
           "swingToggle": "2600500000012...",
