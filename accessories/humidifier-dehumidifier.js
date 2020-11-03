@@ -175,7 +175,6 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
   // Device Temperature Methods
   async monitorHumidity () {
     const { debug, config, host, log, name, state } = this;
-
     const device = getDevice({ host, log });
 
     // Try again in a second if we don't have a device yet
@@ -220,7 +219,6 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     if (Object.keys(this.humidityCallbackQueue).length > 1) {
       if (state.currentHumidity) {
         if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} addHumidityCallbackToQueue (clearing previous callback, using existing humidity)`);
-
         this.processQueuedHumidityCallbacks(state.currentHumidity);
       }
     }
