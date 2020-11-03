@@ -293,7 +293,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       props: {
         onData: on,
         offData: off,
-        setValuePromise: super.setSwitchState.bind(this)
+        setValuePromise: this.setSwitchState.bind(this)
       }
     });
 
