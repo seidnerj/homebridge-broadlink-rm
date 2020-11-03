@@ -365,6 +365,12 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
 		    	.setProps({
 					validValues: [0, 2]
 				});
+      
+      this.serviceManager
+		    .getCharacteristic(Characteristic.RelativeHumidityDehumidifierThreshold)
+			    .setProps({
+				    validValues: [100]
+				});
     }	
 	 
  	  if (config.deHumidifierOnly) {
@@ -378,6 +384,12 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
 		    .getCharacteristic(Characteristic.CurrentHumidifierDehumidifierState)
 			    .setProps({
 				    validValues: [0, 3]
+				});
+      
+      this.serviceManager
+		    .getCharacteristic(Characteristic.RelativeHumidityHumidifierThreshold)
+			    .setProps({
+				    validValues: [0]
 				});
 	  }
 
