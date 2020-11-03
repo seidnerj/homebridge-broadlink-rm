@@ -56,7 +56,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     const { config, log, name, state, serviceManager } = this;
     let desiredState = Characteristic.CurrentHumidifierDehumidifierState.IDLE;
     // Ignore if no change to the targetHumidity
-    if (state.targetHumidity === previousValue && config.preventResendHex && !this.previouslyOff) return;
+    //if (state.targetHumidity === previousValue && config.preventResendHex && !this.previouslyOff) return;
 
     this.previouslyOff = false;
 
@@ -320,11 +320,10 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       name: 'HumidifierThreshold',
       type: Characteristic.RelativeHumidityHumidifierThreshold,
       getMethod: this.getCharacteristicValue,
-      setMethod: this.setCharacteristicValue,
+      //setMethod: this.setCharacteristicValue,
       bind: this,
       props: {
-        setValuePromise: this.setTargetHumidity.bind(this),
-        ignorePreviousValue: true
+        setValuePromise: this.setTargetHumidity.bind(this)
       }
 	  });
 	
@@ -332,11 +331,10 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       name: 'DehumidifierThreshold',
       type: Characteristic.RelativeHumidityDehumidifierThreshold,
       getMethod: this.getCharacteristicValue,
-      setMethod: this.setCharacteristicValue,
+      //setMethod: this.setCharacteristicValue,
       bind: this,
       props: {
-        setValuePromise: this.setTargetHumidity.bind(this),
-        ignorePreviousValue: true
+        setValuePromise: this.setTargetHumidity.bind(this)
       }
 	  });
 		
