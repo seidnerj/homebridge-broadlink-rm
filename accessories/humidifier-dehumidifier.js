@@ -142,6 +142,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       return;
     }
     
+    //Update "switchState to match device state
 	  if (state.targetState === Characteristic.TargetHumidifierDehumidifierState.OFF){
       state.currentState = Characteristic.CurrentHumidifierDehumidifierState.INACTIVE;
       state.switchState = false;
@@ -158,7 +159,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     
     let desiredState = this.getDesiredState ();
     
-    if (state.currentState === desiredState) return;
+    if (state.currentState === desiredState && !this.previouslyOff) return;
     
     let previousState = state.currentState;
     if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateDeviceState: currently ${state.currentState}, changing to ${desiredState}`);
