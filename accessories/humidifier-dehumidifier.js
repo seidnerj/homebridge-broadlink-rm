@@ -154,10 +154,10 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     // Use hardcoded values if not using Humidity values 
     if(config.noHumidity && state.targetState === Characteristic.TargetHumidifierDehumidifierState.HUMIDIFIER){
       state.currentHumidity = 0
-      state.targetHumidity = 100
+      .state.HumidifierThreshold = 100
     } else if (config.noHumidity && state.targetState === Characteristic.TargetHumidifierDehumidifierState.DEHUMIDIFIER) {
         state.currentHumidity = 100
-        state.targetHumidity = 0
+        state.DehumidifierThreshold = 0
     }
     
     let desiredState = this.getDesiredState ();
