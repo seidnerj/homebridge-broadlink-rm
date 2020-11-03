@@ -52,6 +52,45 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       await this.performSend(hexData);
   }
   
+  async setTargetHumidity (hexData, previousValue) {
+    const { config, log, name, state, serviceManager } = this;
+    let desiredState = Characteristic.CurrentHumidifierDehumidifierState.IDLE;
+    // Ignore if no change to the targetHumidity
+    if (state.targetHumidity === previousValue && preventResendHex && !this.previouslyOff) return;
+
+    this.previouslyOff = false;
+
+    //Work out the ideal state
+    if (state.targetState === Characteristic.TargetHumidifierDehumidifierState.HUMIDIFIER_OR_DEHUMIDIFIER) {
+      if ((state.currentHumidity > state.HumidifierThreshold) && (state.currentHumidity < state.DehumidifierThreshold)){
+        desiredState = Characteristic.CurrentHumidifierDehumidifierState.IDLE;
+      } else if (state.currentHumidity < state.HumidifierThreshold) {
+        desiredState = Characteristic.CurrentHumidifierDehumidifierState.HUMIDIFYING;
+      } else if (state.currentHumidity > state.DehumidifierThreshold) {
+        desiredState = Characteristic.CurrentHumidifierDehumidifierState.DEHUMIDIFYING;
+      }
+    } else if (state.targetState === Characteristic.TargetHumidifierDehumidifierState.HUMIDIFIER) {
+      if(state.currentHumidity < state.HumidifierThreshold){
+        desiredState = Characteristic.CurrentHumidifierDehumidifierState.HUMIDIFYING;
+      } 
+    } else {
+        //Must be set to Dehumidifier      
+      if(state.currentHumidity > state.DehumidifierThreshold){
+        desiredState = Characteristic.CurrentHumidifierDehumidifierState.DEHUMIDIFYING;
+      }
+    } 
+
+    if (config.humidifierOnly && desiredState === Characteristic.CurrentHumidifierDehumidifierState.DEHUMIDIFYING) {
+      desiredState = Characteristic.CurrentHumidifierDehumidifierState.IDLE;
+    }
+    if (config.deHumidifierOnly && desiredState === Characteristic.CurrentHumidifierDehumidifierState.HUMIDIFYING) {
+      desiredState = Characteristic.CurrentHumidifierDehumidifierState.IDLE;
+    }
+
+    //Do something, if we need to
+    if(state.currentState !== desiredState) state.currentState = desiredState;
+  }
+  
   updateCurrentState() {
     const { log, name, state, serviceManager } = this;
 
@@ -261,7 +300,10 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       getMethod: this.getCharacteristicValue,
       setMethod: this.setCharacteristicValue,
       bind: this,
-      props: { }
+      props: { 
+        setValuePromise: this.setTargetHumidity.bind(this),
+        ignorePreviousValue: true
+      }
     });
     
     this.serviceManager.addGetCharacteristic({
@@ -278,7 +320,8 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       setMethod: this.setCharacteristicValue,
       bind: this,
       props: {
-        setValuePromise: this.setTargetState.bind(this)
+        setValuePromise: this.setTargetHumidity.bind(this),
+        ignorePreviousValue: true
       }
 	  });
 	
@@ -289,7 +332,8 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       setMethod: this.setCharacteristicValue,
       bind: this,
       props: {
-        setValuePromise: this.setTargetState.bind(this)
+        setValuePromise: this.setTargetHumidity.bind(this),
+        ignorePreviousValue: true
       }
 	  });
 		
