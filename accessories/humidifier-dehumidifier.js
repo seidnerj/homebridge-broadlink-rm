@@ -53,7 +53,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} setCurrentState: requested update from ${previousValue} to ${state.currentState}`);
 
       // Ignore if no change to the targetPosition
-      if (state.currentState === previousValue) return;
+      if (state.currentState === previousValue || !state.switchState) return;
 
       switch(state.currentState){
         case Characteristic.CurrentHumidifierDehumidifierState.DEHUMIDIFYING:
@@ -68,6 +68,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
 	  
       if(hexData) await this.performSend(hexData);
       serviceManager.refreshCharacteristicUI(Characteristic.CurrentHumidifierDehumidifierState);
+      this.previouslyOff = false;
   }
   
   async setHumidifierThreshold (hexData, previousValue) {
@@ -148,6 +149,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       state.currentState = Characteristic.CurrentHumidifierDehumidifierState.INACTIVE;
       state.switchState = false;
       this.previouslyOff = true;
+      return;
     }
     
     // Use hardcoded values if not using Humidity values 
@@ -168,6 +170,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
 
     state.currentState = desiredState;
     this.setCurrentState (null, previousState);
+    this.previouslyOff = false;
   }
 
   // Device Temperature Methods
