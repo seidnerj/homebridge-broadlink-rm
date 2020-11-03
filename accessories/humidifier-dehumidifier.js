@@ -40,7 +40,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
           hexData = data.targetStateDehumidifier;
         case Characteristic.CurrentHumidifierDehumidifierState.HUMIDIFYING:
           hexData = data.targetStateHumidifier;
-        case Characteristic.CurrentHumidifierDehumidifierState.INACTIVE:
+        case Characteristic.CurrentHumidifierDehumidifierState.IDLE:
           hexData = data.fanOnly;
       }
     
