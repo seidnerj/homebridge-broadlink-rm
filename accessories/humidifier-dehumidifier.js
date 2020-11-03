@@ -29,6 +29,8 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
   // User requested a the target state be set
   async setCurrentState (hexData, previousValue) {
       const { config, log, name, state, serviceManager } = this;
+    
+      log(`\x1b[34m[DEBUG]\x1b[0m ${name} setCurrentState: requested update from ${previousValue} to ${state.currentState}`);
 
       // Ignore if no change to the targetPosition
       if (state.currentState === previousValue) return;
