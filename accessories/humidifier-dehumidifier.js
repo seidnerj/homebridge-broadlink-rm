@@ -28,9 +28,9 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
   
   // User requested a the target state be set
   async setCurrentState (hexData, previousValue) {
-      const { data, config, log, name, state, serviceManager } = this;
+      const { debug, data, config, log, name, state, serviceManager } = this;
     
-      log(`\x1b[34m[DEBUG]\x1b[0m ${name} setCurrentState: requested update from ${previousValue} to ${state.currentState}`);
+      if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} setCurrentState: requested update from ${previousValue} to ${state.currentState}`);
 
       // Ignore if no change to the targetPosition
       if (state.currentState === previousValue) return;
@@ -147,7 +147,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
   }
   
   async updateDeviceStatus () {
-    const { config, name, log, state } = this;
+    const { debug, config, name, log, state } = this;
     
     //Do nothing if turned off
     if (state.switchState === false) return;
@@ -159,7 +159,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     let desiredState = this.getDesiredState ();
     
     if (state.currentState === desiredState) return;
-    log(`${name} updateDeviceStatus: currently ${state.currentState}, changing to ${desiredState}`);
+    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateDeviceStatus: currently ${state.currentState}, changing to ${desiredState}`);
 
     this.setCurrentState (null, null);
     state.currentState = desiredState;
@@ -167,7 +167,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
 
   // Device Temperature Methods
   async monitorHumidity () {
-    const { config, host, log, name, state } = this;
+    const { debug, config, host, log, name, state } = this;
 
     const device = getDevice({ host, log });
 
@@ -180,7 +180,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       return;
     }
 
-    log(`${name} monitorHumidity`);
+    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} monitorHumidity`);
 
     //Broadlink module emits 'temperature for both sensors.
     device.on('temperature', this.onHumidity.bind(this));
