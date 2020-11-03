@@ -139,6 +139,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     if (state.switchState === false) {
       state.currentState = Characteristic.CurrentHumidifierDehumidifierState.INACTIVE;
       serviceManager.refreshCharacteristicUI(Characteristic.CurrentHumidifierDehumidifierState);
+      this.previouslyOff = true;
       return;
     }
     
@@ -146,6 +147,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
 	  if (state.targetState === Characteristic.TargetHumidifierDehumidifierState.OFF){
       state.currentState = Characteristic.CurrentHumidifierDehumidifierState.INACTIVE;
       state.switchState = false;
+      this.previouslyOff = true;
     }
     
     // Use hardcoded values if not using Humidity values 
