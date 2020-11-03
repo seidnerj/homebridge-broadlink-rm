@@ -60,7 +60,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     log(`${name} setHumidifierThreshold: currently ${previousValue} to ${state.DehumidifierThreshold}, changing to ${state.HumidifierThreshold} to ${state.DehumidifierThreshold}`);
 
     state.currentState = desiredState;
-    //this.setCurrentState (hexData, state.currentState);
+    this.setCurrentState (hexData, state.currentState);
   }
   
   async setDehumidifierThreshold (hexData, previousValue) {
@@ -74,7 +74,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     log(`${name} setDeumidifierThreshold: currently ${state.HumidifierThreshold} to ${previousValue}, changing to ${state.HumidifierThreshold} to ${state.DehumidifierThreshold}`);
 
     state.currentState = desiredState;
-    //this.setCurrentState (hexData, state.currentState);
+    this.setCurrentState (hexData, state.currentState);
   }
   
   getDesiredState () {
