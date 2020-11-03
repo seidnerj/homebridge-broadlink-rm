@@ -49,6 +49,15 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       state.currentState = currentState
       serviceManager.refreshCharacteristicUI(Characteristic.CurrentHumidifierDehumidifierState);
 
+      switch(state.currentState){
+        case Characteristic.CurrentHumidifierDehumidifierState.DEHUMIDIFYING:
+          hexData = config.data.targetStateDehumidifier
+        case Characteristic.CurrentHumidifierDehumidifierState.HUMIDIFYING:
+          hexData = config.data.targetStateHumidifier
+        case Characteristic.CurrentHumidifierDehumidifierState.INACTIVE:
+          hexData = config.data.off
+      }
+    
       await this.performSend(hexData);
   }
   
@@ -297,18 +306,6 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       }
     });
 
-	  this.serviceManager.addToggleCharacteristic({
-      name: 'targetHumidity',
-      type: Characteristic.TargetRelativeHumidity,
-      getMethod: this.getCharacteristicValue,
-      setMethod: this.setCharacteristicValue,
-      bind: this,
-      props: { 
-        setValuePromise: this.setTargetHumidity.bind(this),
-        ignorePreviousValue: true
-      }
-    });
-    
     this.serviceManager.addGetCharacteristic({
       name: 'currentHumidity',
       type: Characteristic.CurrentRelativeHumidity,
@@ -320,7 +317,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       name: 'HumidifierThreshold',
       type: Characteristic.RelativeHumidityHumidifierThreshold,
       getMethod: this.getCharacteristicValue,
-      //setMethod: this.setCharacteristicValue,
+      setMethod: this.setCharacteristicValue,
       bind: this,
       props: {
         setValuePromise: this.setTargetHumidity.bind(this)
@@ -331,7 +328,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       name: 'DehumidifierThreshold',
       type: Characteristic.RelativeHumidityDehumidifierThreshold,
       getMethod: this.getCharacteristicValue,
-      //setMethod: this.setCharacteristicValue,
+      setMethod: this.setCharacteristicValue,
       bind: this,
       props: {
         setValuePromise: this.setTargetHumidity.bind(this)
@@ -354,8 +351,8 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       setMethod: this.setCharacteristicValue,
       bind: this,
       props: {
-        onData: targetStateHumidifier,
-        offData: targetStateDehumidifier,
+        //onData: targetStateHumidifier,
+        //offData: targetStateDehumidifier,
         setValuePromise: this.setTargetState.bind(this)
       }
     });
