@@ -57,10 +57,8 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     let desiredState = this.getDesiredState ();
     
     if (state.currentState === desiredState) return;
-        
-    if (state.currentState === desiredState) return;
+    
     log(`${name} setHumidifierThreshold: currently ${previousValue} to ${state.DehumidifierThreshold}, changing to ${state.HumidifierThreshold} to ${state.DehumidifierThreshold}`);
-
     state.currentState = desiredState;
     this.setCurrentState (hexData, null);
   }
@@ -68,13 +66,12 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
   async setDehumidifierThreshold (hexData, previousValue) {
     const { config, name, log, state } = this;
     if (state.DehumidifierThreshold === previousValue && config.preventResendHex && !this.previouslyOff) return;
-    
     this.previouslyOff = false;
     let desiredState = this.getDesiredState ();
     
     if (state.currentState === desiredState) return;
+    
     log(`${name} setDeumidifierThreshold: currently ${state.HumidifierThreshold} to ${previousValue}, changing to ${state.HumidifierThreshold} to ${state.DehumidifierThreshold}`);
-
     state.currentState = desiredState;
     this.setCurrentState (hexData, null);
   }
@@ -364,6 +361,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
         //onData: targetStateHumidifier,
         //offData: targetStateDehumidifier,
         //setValuePromise: this.setTargetState.bind(this)
+        setValuePromise: this.updateDeviceStatus.bind(this)
       }
     });
     
