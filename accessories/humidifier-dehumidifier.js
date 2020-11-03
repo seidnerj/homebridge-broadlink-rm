@@ -62,6 +62,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
   }
   
   async setHumidifierThreshold (hexData, previousValue) {
+    const { config, log, state } = this;
     if (state.HumidifierThreshold === previousValue && config.preventResendHex && !this.previouslyOff) return;
     this.previouslyOff = false;
     let desiredState = this.getDesiredState ();
@@ -76,6 +77,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
   }
   
   async setDehumidifierThreshold (hexData, previousValue) {
+    const { config, log, state } = this;
     if (state.DehumidifierThreshold === previousValue && config.preventResendHex && !this.previouslyOff) return;
     
     this.previouslyOff = false;
