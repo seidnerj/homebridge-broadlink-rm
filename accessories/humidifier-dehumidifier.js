@@ -88,7 +88,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     state.currentState = desiredState;
   }
   
-  async getDesiredState () {
+  getDesiredState () {
     const { config, log, name, state, serviceManager } = this;
     
     let desiredState = Characteristic.CurrentHumidifierDehumidifierState.IDLE;
