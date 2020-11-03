@@ -12,21 +12,45 @@ const BroadlinkRMAccessory = require('./accessory');
 const FanAccessory = require('./fan');
 
 class HumidifierDehumidifierAccessory extends FanAccessory {
+  
+  constructor (log, config = {}, serviceManagerType) {
+    super(log, config, serviceManagerType);
+
+    this.humidityCallbackQueue = {};
+    this.monitorHumidity();
+  }
 
   setDefaults () {
-    super.setDefaults();
+    const { data, config, state } = this;
+	  
+	  super.setDefaults();
 	
+    // Set config default values
     config.humidifierOnly = config.humidifierOnly || false;
     config.deHumidifierOnly = config.deHumidifierOnly || false;
+    config.humidityUpdateFrequency = config.humidityUpdateFrequency || 10;
+    config.humidityAdjustment = config.humidityAdjustment || 0;
+    config.noHumidity = config.noHumidity || false;
+    config.threshold = config.threshold || 5;
+    data.fanOnly = data.fanOnly ? data.fanOnly : data.off;
+
+    state.firstHumidityUpdate = true;
   }
-  
-  async setSwitchState (hexData, previousValue) {
-    super.setSwitchState(hexData, previousValue);
+
+  reset () {
+    super.reset();
+  }
+	
+//  async setSwitchState (hexData, previousValue) {
+//    super.setSwitchState(hexData, previousValue);
         
-    this.updateCurrentState()
-  }
+//    if (!state.switchState) {
+//      log(`${name} updateCurrentState: changing to inactive`);
+//      state.currentState = Characteristic.CurrentHumidifierDehumidifierState.INACTIVE;
+//    } 
+//    serviceManager.refreshCharacteristicUI(Characteristic.CurrentHumidifierDehumidifierState);
+//  }
   
-  // User requested a the target state be set
   async setCurrentState (hexData, previousValue) {
       const { debug, data, config, log, name, state, serviceManager } = this;
     
@@ -55,12 +79,13 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     if (state.HumidifierThreshold === previousValue && config.preventResendHex && !this.previouslyOff) return;
     this.previouslyOff = false;
     let desiredState = this.getDesiredState ();
+    let previousState = state.currentState;
     
     if (state.currentState === desiredState) return;
     
     log(`${name} setHumidifierThreshold: currently ${previousValue} to ${state.DehumidifierThreshold}, changing to ${state.HumidifierThreshold} to ${state.DehumidifierThreshold}`);
     state.currentState = desiredState;
-    this.setCurrentState (hexData, null);
+    this.setCurrentState (hexData, previousState);
   }
   
   async setDehumidifierThreshold (hexData, previousValue) {
@@ -68,12 +93,13 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     if (state.DehumidifierThreshold === previousValue && config.preventResendHex && !this.previouslyOff) return;
     this.previouslyOff = false;
     let desiredState = this.getDesiredState ();
+    let previousState = state.currentState;
     
     if (state.currentState === desiredState) return;
     
     log(`${name} setDeumidifierThreshold: currently ${state.HumidifierThreshold} to ${previousValue}, changing to ${state.HumidifierThreshold} to ${state.DehumidifierThreshold}`);
     state.currentState = desiredState;
-    this.setCurrentState (hexData, null);
+    this.setCurrentState (hexData, previousState);
   }
   
   getDesiredState () {
@@ -110,56 +136,26 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
 
     return desiredState;  
 	}
-  
-  updateCurrentState() {
-    const { log, name, state, serviceManager } = this;
-
-    if (!state.switchState) {
-      log(`${name} updateCurrentState: changing to inactive`);
-      state.currentState = Characteristic.CurrentHumidifierDehumidifierState.INACTIVE;
-    } 
-    
-    serviceManager.refreshCharacteristicUI(Characteristic.CurrentHumidifierDehumidifierState);
-  }
-  
-  constructor (log, config = {}, serviceManagerType) {
-    super(log, config, serviceManagerType);
-
-    this.humidityCallbackQueue = {};
-    this.monitorHumidity();
-  }
-
-  setDefaults () {
-    const { data, config, state } = this;
-
-    // Set config default values
-    config.humidityUpdateFrequency = config.humidityUpdateFrequency || 10;
-    config.humidityAdjustment = config.humidityAdjustment || 0;
-    config.noHumidity = config.noHumidity || false;
-    config.threshold = config.threshold || 5;
-    data.fanOnly = data.fanOnly ? data.fanOnly : data.off;
-
-    state.firstHumidityUpdate = true;
-  }
-
-  reset () {
-    super.reset();
-  }
-  
-  async updateDeviceStatus () {
+	
+  async updateDeviceState () {
     const { debug, config, name, log, state } = this;
     
     //Do nothing if turned off
-    if (state.switchState === false) return;
+    if (state.switchState === false) {
+      state.currentState = Characteristic.CurrentHumidifierDehumidifierState.INACTIVE;
+      serviceManager.refreshCharacteristicUI(Characteristic.CurrentHumidifierDehumidifierState);
+      return;
+    }
     
 	  if (state.targetState === Characteristic.TargetHumidifierDehumidifierState.OFF){
-      state.switchState = false
+      state.currentState = Characteristic.CurrentHumidifierDehumidifierState.INACTIVE;
+      state.switchState = false;
     }
     
     let desiredState = this.getDesiredState ();
     
     if (state.currentState === desiredState) return;
-    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateDeviceStatus: currently ${state.currentState}, changing to ${desiredState}`);
+    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateDeviceState: currently ${state.currentState}, changing to ${desiredState}`);
 
     this.setCurrentState (null, null);
     state.currentState = desiredState;
@@ -202,7 +198,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     state.currentHumidity = humidity;
     log(`${name} onHumidity (` + humidity + `)`);
     
-    this.updateDeviceStatus()
+    this.updateDeviceState()
 
     this.processQueuedHumidityCallbacks(humidity);
   }
@@ -358,10 +354,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       setMethod: this.setCharacteristicValue,
       bind: this,
       props: {
-        //onData: targetStateHumidifier,
-        //offData: targetStateDehumidifier,
-        //setValuePromise: this.setTargetState.bind(this)
-        setValuePromise: this.updateDeviceStatus.bind(this)
+        setValuePromise: this.updateDeviceState.bind(this)
       }
     });
     
