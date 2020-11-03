@@ -27,11 +27,11 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
   }
   
   // User requested a the target state be set
-  async setTargetState (hexData, previousValue) {
+  async setCurrentState (hexData, previousValue) {
       const { config, log, name, state, serviceManager } = this;
 
       // Ignore if no change to the targetPosition
-      if (state.targetState === previousValue) return;
+      if (state.currentState === previousValue) return;
 
       // Set the CurrentHumidifierDehumidifierState to match the switch state
       let currentState = Characteristic.CurrentHumidifierDehumidifierState.INACTIVE;
@@ -44,7 +44,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
         currentState =  Characteristic.CurrentHumidifierDehumidifierState.DEHUMIDIFYING;
       }
 
-      log(`${name} setTargetState: currently ${previousValue}, changing to ${state.targetState}`);
+      log(`${name} setCurrentState: currently ${previousValue}, changing to ${state.targetState}`);
 
       state.currentState = currentState
       serviceManager.refreshCharacteristicUI(Characteristic.CurrentHumidifierDehumidifierState);
@@ -61,13 +61,37 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       await this.performSend(hexData);
   }
   
-  async setTargetHumidity (hexData, previousValue) {
-    const { config, log, name, state, serviceManager } = this;
-    let desiredState = Characteristic.CurrentHumidifierDehumidifierState.IDLE;
-    // Ignore if no change to the targetHumidity
-    //if (state.targetHumidity === previousValue && config.preventResendHex && !this.previouslyOff) return;
-
+  async setHumidifierThreshold (hexData, previousValue) {
+    if (state.HumidifierThreshold === previousValue && config.preventResendHex && !this.previouslyOff) return;
     this.previouslyOff = false;
+    let desiredState = getDesiredState ();
+    
+    if (state.currentState === desiredState) return;
+        
+    if (state.currentState === desiredState) return;
+    log(`${name} setHumidifierThreshold: currently ${previousValue} to ${state.DehumidifierThreshold}, changing to ${state.HumidifierThreshold} to ${state.DehumidifierThreshold}`);
+
+    setCurrentState (hexData, state.currentState);
+    state.currentState = desiredState;
+  }
+  
+  async setDehumidifierThreshold (hexData, previousValue) {
+    if (state.DehumidifierThreshold === previousValue && config.preventResendHex && !this.previouslyOff) return;
+    
+    this.previouslyOff = false;
+    let desiredState = getDesiredState ();
+    
+    if (state.currentState === desiredState) return;
+    log(`${name} setDeumidifierThreshold: currently ${state.HumidifierThreshold} to ${previousValue}, changing to ${state.HumidifierThreshold} to ${state.DehumidifierThreshold}`);
+
+    setCurrentState (hexData, state.currentState);
+    state.currentState = desiredState;
+  }
+  
+  async getDesiredState () {
+    const { config, log, name, state, serviceManager } = this;
+    
+    let desiredState = Characteristic.CurrentHumidifierDehumidifierState.IDLE;
 
     //Work out the ideal state
     if (state.targetState === Characteristic.TargetHumidifierDehumidifierState.HUMIDIFIER_OR_DEHUMIDIFIER) {
@@ -96,12 +120,8 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       desiredState = Characteristic.CurrentHumidifierDehumidifierState.IDLE;
     }
 
-    //Do something, if we need to
-    if(state.currentState === desiredState) return
-	  
-	  state.currentState = desiredState;  
-    log(`${name} setTargetHumidity: currently ${previousValue}, changing to ${state.targetHumidity} or ${state.HumidifierThreshold} to ${state.DehumidifierThreshold}`);
-  }
+    return desiredState;  
+	}
   
   updateCurrentState() {
     const { log, name, state, serviceManager } = this;
@@ -139,23 +159,21 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
   
   async updateDeviceStatus () {
     const { config, log, state } = this;
-    let targetState;
     
     //Do nothing if turned off
     if (state.switchState === false) return;
     
-	  targetState =  Characteristic.TargetHumidifierDehumidifierState.HUMIDIFIER_OR_DEHUMIDIFIER;
-    if (((state.currentHumidity - state.targetHumidity) * -1) < config.threshold) {
-      // Leave in "Idle" state
-    }else if (state.currentHumidity >= state.targetHumidity) {
-      if (!config.humidifierOnly) targetState = Characteristic.TargetHumidifierDehumidifierState.DEHUMIDIFIER;
-    }else{
-      if (!config.deHumidifierOnly) targetState = Characteristic.TargetHumidifierDehumidifierState.HUMIDIFIER;
+	  if (state.targetState === Characteristic.TargetHumidifierDehumidifierState.OFF){
+      state.switchState = false
     }
-      
-    if (state.targetState != state.currentState){
-     state.targetState = targetState
-    }
+    
+    let desiredState = getDesiredState ();
+    
+    if (state.currentState === desiredState) return;
+    log(`${name} updateDeviceStatus: currently ${state.HumidifierThreshold} to ${previousValue}, changing to ${state.HumidifierThreshold} to ${state.DehumidifierThreshold}`);
+
+    setCurrentState (null, state.currentState);
+    state.currentState = desiredState;
   }
 
   // Device Temperature Methods
@@ -320,7 +338,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       setMethod: this.setCharacteristicValue,
       bind: this,
       props: {
-        setValuePromise: this.setTargetHumidity.bind(this)
+        setValuePromise: this.setHumidifierThreshold.bind(this)
       }
 	  });
 	
@@ -331,7 +349,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       setMethod: this.setCharacteristicValue,
       bind: this,
       props: {
-        setValuePromise: this.setTargetHumidity.bind(this)
+        setValuePromise: this.setDehumidifierThreshold.bind(this)
       }
 	  });
 		
@@ -353,7 +371,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       props: {
         //onData: targetStateHumidifier,
         //offData: targetStateDehumidifier,
-        setValuePromise: this.setTargetState.bind(this)
+        //setValuePromise: this.setTargetState.bind(this)
       }
     });
     
