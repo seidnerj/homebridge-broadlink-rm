@@ -37,11 +37,11 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
 
       switch(state.currentState){
         case Characteristic.CurrentHumidifierDehumidifierState.DEHUMIDIFYING:
-          hexData = data.targetStateDehumidifier
+          hexData = data.targetStateDehumidifier;
         case Characteristic.CurrentHumidifierDehumidifierState.HUMIDIFYING:
-          hexData = data.targetStateHumidifier
+          hexData = data.targetStateHumidifier;
         case Characteristic.CurrentHumidifierDehumidifierState.INACTIVE:
-          hexData = data.off
+          hexData = data.fanOnly;
       }
     
       log(`${name} setCurrentState: currently ${previousValue}, changing to ${state.currentState}`);
@@ -133,13 +133,14 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
   }
 
   setDefaults () {
-    const { config, state } = this;
+    const { data, config, state } = this;
 
     // Set config default values
     config.humidityUpdateFrequency = config.humidityUpdateFrequency || 10;
     config.humidityAdjustment = config.humidityAdjustment || 0;
     config.noHumidity = config.noHumidity || false;
     config.threshold = config.threshold || 5;
+    data.fanOnly = data.fanOnly ? data.fanOnly : data.off;
 
     state.firstHumidityUpdate = true;
   }
