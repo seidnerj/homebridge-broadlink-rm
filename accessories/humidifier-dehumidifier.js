@@ -114,7 +114,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
   updateCurrentState() {
     const { log, name, state, serviceManager } = this;
 
-    if (state.switchState === false) {
+    if (!state.switchState) {
       log(`${name} updateCurrentState: changing to inactive`);
       state.currentState = Characteristic.CurrentHumidifierDehumidifierState.INACTIVE;
     } 
