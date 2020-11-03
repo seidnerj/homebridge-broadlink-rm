@@ -72,8 +72,8 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     if (state.currentState === desiredState) return;
     log(`${name} setHumidifierThreshold: currently ${previousValue} to ${state.DehumidifierThreshold}, changing to ${state.HumidifierThreshold} to ${state.DehumidifierThreshold}`);
 
-    this.setCurrentState (hexData, state.currentState);
     state.currentState = desiredState;
+    //this.setCurrentState (hexData, state.currentState);
   }
   
   async setDehumidifierThreshold (hexData, previousValue) {
@@ -86,8 +86,8 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     if (state.currentState === desiredState) return;
     log(`${name} setDeumidifierThreshold: currently ${state.HumidifierThreshold} to ${previousValue}, changing to ${state.HumidifierThreshold} to ${state.DehumidifierThreshold}`);
 
-    this.setCurrentState (hexData, state.currentState);
     state.currentState = desiredState;
+    //this.setCurrentState (hexData, state.currentState);
   }
   
   getDesiredState () {
@@ -174,7 +174,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     if (state.currentState === desiredState) return;
     log(`${name} updateDeviceStatus: currently ${state.currentState}, changing to ${desiredState}`);
 
-    this.setCurrentState (null, state.currentState);
+    //this.setCurrentState (null, state.currentState);
     state.currentState = desiredState;
   }
 
