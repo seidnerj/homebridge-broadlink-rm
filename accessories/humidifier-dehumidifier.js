@@ -17,7 +17,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     super(log, config, serviceManagerType);
 
     this.humidityCallbackQueue = {};
-    if(!config.noHumidity) this.monitorHumidity();
+    this.monitorHumidity();
   }
 
   setDefaults () {
@@ -154,7 +154,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     // Use hardcoded values if not using Humidity values 
     if(config.noHumidity && state.targetState === Characteristic.TargetHumidifierDehumidifierState.HUMIDIFIER){
       state.currentHumidity = 0
-      .state.HumidifierThreshold = 100
+      state.HumidifierThreshold = 100
     } else if (config.noHumidity && state.targetState === Characteristic.TargetHumidifierDehumidifierState.DEHUMIDIFIER) {
         state.currentHumidity = 100
         state.DehumidifierThreshold = 0
@@ -176,13 +176,22 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
   async monitorHumidity () {
     const { debug, config, host, log, name, state } = this;
     const device = getDevice({ host, log });
+	  
+	  //Check if we're actually reading from the device
+    if(config.noHumidity)  {
+      if(state.targetState === Characteristic.TargetHumidifierDehumidifierState.DEHUMIDIFIER){
+        state.currentHumidity = 100
+      } else  {
+        state.currentHumidity = 0
+      }
+      this.updateHumidityUI();
+      return;
+    }
 
     // Try again in a second if we don't have a device yet
     if (!device) {
       await delayForDuration(1);
-
       this.monitorHumidity();
-
       return;
     }
 
