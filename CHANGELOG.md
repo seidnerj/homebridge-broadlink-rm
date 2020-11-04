@@ -2,6 +2,7 @@
 
 ## 4.3.6-beta
 - [Improvement] Improves HumidifierDehumidifier accessory to update state by using Humidity data from the Broadlink device 
+- [Bug] Updated the switch accessory to use On/Active status depending on device type. Many accessories inherit from this and it broke their AutoOff functions.
 
 ## 4.3.5
 - [Bug] Fixes bug in Fan accessory that removed Rotation Direction and/or Swing options
