@@ -136,7 +136,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     const { serviceManager, debug, config, name, log, state } = this;
     
     //Do nothing if turned off
-    if (state.switchState === false) {
+    if (!state.switchState) {
       state.currentState = Characteristic.CurrentHumidifierDehumidifierState.INACTIVE;
       serviceManager.refreshCharacteristicUI(Characteristic.CurrentHumidifierDehumidifierState);
       this.previouslyOff = true;
