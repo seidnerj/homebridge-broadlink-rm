@@ -650,7 +650,6 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
   setupServiceManager () {
     const { config, name, serviceManagerType } = this;
-    const { minTemperature, maxTemperature } = config;
 
     this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, Service.Thermostat, this.log);
 
@@ -734,8 +733,8 @@ class AirConAccessory extends BroadlinkRMAccessory {
     this.serviceManager
       .getCharacteristic(Characteristic.TargetTemperature)
       .setProps({
-        minValue: minTemperature,
-        maxValue: maxTemperature,
+        minValue: config.minTemperature,
+        maxValue: config.maxTemperature,
         minStep: 1
       });
 
