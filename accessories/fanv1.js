@@ -1,7 +1,6 @@
 const ServiceManagerTypes = require('../helpers/serviceManagerTypes');
 const SwitchAccessory = require('./switch');
 const catchDelayCancelError = require('../helpers/catchDelayCancelError');
-const ping = require('../helpers/ping');
 const delayForDuration = require('../helpers/delayForDuration');
 
 class FanAccessory extends SwitchAccessory {
@@ -10,7 +9,6 @@ class FanAccessory extends SwitchAccessory {
     let { config, state } = this;
     
     // Defaults
-    config.showSwingMode = config.hideSwingMode === true || config.showSwingMode === false ? false : true;
     config.showRotationDirection = config.hideRotationDirection === true || config.showRotationDirection === false ? false : true;
     config.stepSize = isNaN(config.stepSize) || config.stepSize > 100 || config.stepSize < 1 ? 1 : config.stepSize
     
@@ -158,20 +156,6 @@ class FanAccessory extends SwitchAccessory {
         setValuePromise: this.setSwitchState.bind(this)
       }
     });
-
-    if (config.showSwingMode) {
-      this.serviceManager.addToggleCharacteristic({
-        name: 'swingMode',
-        type: Characteristic.SwingMode,
-        getMethod: this.getCharacteristicValue,
-        setMethod: this.setCharacteristicValue,
-        bind: this,
-        props: {
-          onData: swingToggle,
-          offData: swingToggle,
-        }
-      });
-    }
 
     this.serviceManager.addToggleCharacteristic({
       name: 'fanSpeed',
