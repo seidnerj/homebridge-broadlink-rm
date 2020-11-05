@@ -1,5 +1,6 @@
 const ServiceManagerTypes = require('../helpers/serviceManagerTypes');
 const SwitchAccessory = require('./switch');
+const catchDelayCancelError = require('../helpers/catchDelayCancelError');
 
 class FanAccessory extends SwitchAccessory {
   setDefaults () {
