@@ -3,7 +3,7 @@ const FanAccessory = require('./fan');
 const catchDelayCancelError = require('../helpers/catchDelayCancelError');
 const delayForDuration = require('../helpers/delayForDuration');
 
-class FanAccessory extends FanAccessory {
+class Fanv1Accessory extends FanAccessory {
   setDefaults () {
     super.setDefaults();
     let { config, state } = this;
@@ -76,4 +76,4 @@ class FanAccessory extends FanAccessory {
   }
 }
 
-module.exports = FanAccessory;
+module.exports = Fanv1Accessory;
