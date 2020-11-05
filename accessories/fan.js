@@ -130,15 +130,6 @@ class FanAccessory extends SwitchAccessory {
     });
   }
 
-  getServices() {
-    const services = this.getInformationServices();
-
-    services.push(this.serviceManager.service);
-    services.push(...this.serviceManagers);
-
-    return services;
-  }
-  
   async setSwitchState (hexData, previousValue) {	  
     const { config, state, serviceManager } = this;
     if (!this.state.switchState) {
