@@ -1,9 +1,9 @@
 const ServiceManagerTypes = require('../helpers/serviceManagerTypes');
-const SwitchAccessory = require('./switch');
+const FanAccessory = require('./fan');
 const catchDelayCancelError = require('../helpers/catchDelayCancelError');
 const delayForDuration = require('../helpers/delayForDuration');
 
-class FanAccessory extends SwitchAccessory {
+class FanAccessory extends FanAccessory {
   setDefaults () {
     super.setDefaults();
     let { config, state } = this;
@@ -15,34 +15,6 @@ class FanAccessory extends SwitchAccessory {
     if (config.alwaysResetToDefaults) {
       state.fanSpeed = (config.defaultFanSpeed !== undefined) ? config.defaultFanSpeed : 100;
     }
-  }
-
-  reset() {
-    super.reset();
-
-    this.stateChangeInProgress = true;
-    
-    // Clear Timeouts
-    if (this.delayTimeoutPromise) {
-      this.delayTimeoutPromise.cancel();
-      this.delayTimeoutPromise = null;
-    }
-
-    if (this.autoOffTimeoutPromise) {
-      this.autoOffTimeoutPromise.cancel();
-      this.autoOffTimeoutPromise = null;
-    }
-
-    if (this.autoOnTimeoutPromise) {
-      this.autoOnTimeoutPromise.cancel();
-      this.autoOnTimeoutPromise = null;
-    }
-  }
-  
-  checkAutoOnOff() {
-    this.reset();
-    this.checkAutoOn();
-    this.checkAutoOff();
   }
 
   async checkAutoOff() {
@@ -81,64 +53,9 @@ class FanAccessory extends SwitchAccessory {
     });
   }
 
-  async setSwitchState (hexData, previousValue) {	  
-    const { config, state, serviceManager } = this;
-    if (!this.state.switchState) {
-      this.lastFanSpeed = undefined;
-    }
-	  
-    // Reset the fan speed back to the default speed when turned off
-    if (this.state.switchState === false && config.alwaysResetToDefaults) {
-      this.setDefaults();
-      serviceManager.setCharacteristic(Characteristic.RotationSpeed, state.fanSpeed);
-    }
-
-    super.setSwitchState(hexData, previousValue);
-  }
-  
-  async setFanSpeed (hexData) {
-    const { data, host, log, state, name, debug} = this;
-
-    this.reset();
-
-    // Create an array of speeds specified in the data config
-    const foundSpeeds = [];
-    const allHexKeys = Object.keys(data || {});
-
-    allHexKeys.forEach((key) => {
-      const parts = key.split('fanSpeed');
-
-      if (parts.length !== 2) return;
-
-      foundSpeeds.push(parts[1])
-    })
-
-    if (foundSpeeds.length === 0) {
-
-      return log(`${name} setFanSpeed: No fan speed hex codes provided.`)
-    }
-
-    // Find speed closest to the one requested
-    const closest = foundSpeeds.reduce((prev, curr) => Math.abs(curr - state.fanSpeed) < Math.abs(prev - state.fanSpeed) ? curr : prev);
-    log(`${name} setFanSpeed: (closest: ${closest})`);
-
-    if (this.lastFanSpeed === closest) {
-      return;
-    }
-
-    this.lastFanSpeed = closest;
-
-    // Get the closest speed's hex data
-    hexData = data[`fanSpeed${closest}`];
-
-    await this.performSend(hexData);
-
-    this.checkAutoOnOff();
-  }
-
   setupServiceManager () {
     const { config, data, name, serviceManagerType } = this;
-    const { on, off, clockwise, counterClockwise, swingToggle } = data || {};
+    const { on, off } = data || {};
 
     this.setDefaults();
 
@@ -156,34 +73,6 @@ class FanAccessory extends SwitchAccessory {
         setValuePromise: this.setSwitchState.bind(this)
       }
     });
-
-    this.serviceManager.addToggleCharacteristic({
-      name: 'fanSpeed',
-      type: Characteristic.RotationSpeed,
-      getMethod: this.getCharacteristicValue,
-      setMethod: this.setCharacteristicValue,
-      bind: this,
-      props: {
-        setValuePromise: this.setFanSpeed.bind(this),
-		    minStep: config.stepSize,
-		    minValue: 0,
-		    maxVlue: 100
-      }
-    });
-
-    if (config.showRotationDirection) {
-      this.serviceManager.addToggleCharacteristic({
-        name: 'rotationDirection',
-        type: Characteristic.RotationDirection,
-        getMethod: this.getCharacteristicValue,
-        setMethod: this.setCharacteristicValue,
-        bind: this,
-        props: {
-          onData: counterClockwise,
-          offData: clockwise
-        }
-      });
-    }
   }
 }
 
