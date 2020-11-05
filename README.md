@@ -43,6 +43,13 @@ This plugin should now be able to discover your device.
 
 Base documentation can be found [here](https://lprhodes.github.io/slate/). With the following additional configuration options available in this fork:
 
+### Hosts Configuration
+By default the plugin will search the network and discover your Broadlink devices. If you'd prefer to manaually add devices you can add a hosts section to your config.json (refer to the [sample config](https://github.com/kiwi-cam/homebridge-broadlink-rm/blob/master/config-sample.json#L18-L27))
+key | description | example | default
+--- | ----------- | ------- | -------
+isRFSupported (optional) | Forces the device to support RF signals | true | false
+isRM4 (optional) | Marks the device as a newer RM4 device and sends data with required new headers | true | false
+
 ### Switch Accessory
 
 key | description | example | default
