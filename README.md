@@ -94,6 +94,7 @@ humifierOnly (optional) | Sets the device to only run in Humidifer mode | true |
 threshold (optional) | Sets how close to the target humidity the device should try to get | 2 | 5 
 noHumidity (optional) | Removes Humidity information from the device. It will be removed when using w1Device or temperatureFilePath | true | false
 humidityAdjustment (optional) | An adjustment value to tune the value from the value the broadlink returns | -5 | 0 
+humidityFilePath (optional) | path to a local file that Humidity readings can come from | /var/tmp/humidity.txt | null
 data>fanOnly (optional) | Hex code used to disable both Humidifer and Dehumifier functions | 0020000... | off code used if not supplied 
 
 ### TemperatureSensor Accessory
