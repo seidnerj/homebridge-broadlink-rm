@@ -243,6 +243,14 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       return;
     }
     
+    // Read humidity from mqtt
+    if (config.mqttURL) {
+      const humidity = this.mqttValueForIdentifier('humidity');
+      this.onHumidity(null,humidity || 0);
+
+      return;
+    }
+    
     // Read temperature from Broadlink RM device
     // If the device is no longer available, use previous tempeature
     const device = getDevice({ host, log });
@@ -282,6 +290,54 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
 
       this.onHumidity(null, humidity);
     });
+  }
+  
+  // MQTT
+  onMQTTMessage (identifier, message) {
+    const { debug, log, name } = this;
+
+    if (identifier !== 'unknown' && identifier !== 'humidity') {
+      log(`\x1b[31m[ERROR] \x1b[0m${name} onMQTTMessage (mqtt message received with unexpected identifier: ${identifier}, ${message.toString()})`);
+
+      return;
+    }
+
+    super.onMQTTMessage(identifier, message);
+
+    let humidity = this.mqttValuesTemp[identifier];
+
+    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onMQTTMessage (raw value: ${humidity})`);
+
+    try {
+      const humidityJSON = JSON.parse(humidity);
+
+      if (typeof humidityJSON === 'object') {
+        let values = findKey(humidityJSON, 'temp');
+        if (values.length === 0) values = findKey(humidityJSON, 'RelativeHumidity');
+        if (values.length === 0) values = findKey(humidityJSON, 'Humidity');
+
+        if (values.length > 0) {
+          humidity = values[0];
+        } else {
+          humidity = undefined;
+        }
+      }
+    } catch (err) {}
+
+    if (humidity === undefined || (typeof humidity === 'string' && humidity.trim().length === 0)) {
+      log(`\x1b[31m[ERROR] \x1b[0m${name} onMQTTMessage (mqtt humidity not found)`);
+
+      return;
+    }
+
+    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onMQTTMessage (raw value 2: ${humidity.trim()})`);
+
+    humidity = parseFloat(humidity);
+
+    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onMQTTMessage (parsed temperature: ${humidity})`);
+
+    this.mqttValues[identifier] = humidity;
+    this.updateTemperatureUI();
   }
 
   processQueuedHumidityCallbacks (humidity) {
