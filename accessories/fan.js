@@ -1,8 +1,144 @@
 const ServiceManagerTypes = require('../helpers/serviceManagerTypes');
-
 const SwitchAccessory = require('./switch');
 
 class FanAccessory extends SwitchAccessory {
+  setDefaults () {
+    super.setDefaults();
+    let { config, state } = this;
+    
+    // Defaults
+    config.showSwingMode = config.hideSwingMode === true || config.showSwingMode === false ? false : true;
+    config.showRotationDirection = config.hideRotationDirection === true || config.showRotationDirection === false ? false : true;
+    config.stepSize = isNaN(config.stepSize) || config.stepSize > 100 || config.stepSize < 1 ? 1 : config.stepSize
+    
+    if (config.alwaysResetToDefaults) {
+      state.fanSpeed = (config.defaultFanSpeed !== undefined) ? config.defaultFanSpeed : 100;
+    }
+  }
+
+  reset() {
+    super.reset();
+
+    this.stateChangeInProgress = true;
+    
+    // Clear Timeouts
+    if (this.delayTimeoutPromise) {
+      this.delayTimeoutPromise.cancel();
+      this.delayTimeoutPromise = null;
+    }
+
+    if (this.autoOffTimeoutPromise) {
+      this.autoOffTimeoutPromise.cancel();
+      this.autoOffTimeoutPromise = null;
+    }
+
+    if (this.autoOnTimeoutPromise) {
+      this.autoOnTimeoutPromise.cancel();
+      this.autoOnTimeoutPromise = null;
+    }
+  
+    if (this.pingGraceTimeout) {
+      this.pingGraceTimeout.cancel();
+      this.pingGraceTimeout = null;
+    }
+  }
+  
+  checkAutoOnOff() {
+    this.reset();
+    this.checkPingGrace();
+    this.checkAutoOn();
+    this.checkAutoOff();
+  }
+
+  checkPing(ping) {
+    const { config } = this;
+    let { pingIPAddress, pingFrequency } = config;
+
+    if (!pingIPAddress) return;
+
+    // Setup Ping-based State
+    ping(pingIPAddress, pingFrequency, this.pingCallback.bind(this));
+  }
+
+  pingCallback(active) {
+    const { config, state, serviceManager } = this;
+    
+    if (this.stateChangeInProgress){ 
+      return; 
+    }
+
+    if (config.pingIPAddressStateOnly) {
+      state.switchState = active ? true : false;
+      if(this.serviceManager.service.constructor.name === 'Fan'){
+          serviceManager.refreshCharacteristicUI(Characteristic.Active);
+        } else {
+          serviceManager.refreshCharacteristicUI(Characteristic.On);
+        }
+
+      return;
+    }
+
+    const value = active ? true : false;
+    if(this.serviceManager.service.constructor.name === 'Fan'){
+      serviceManager.setCharacteristic(Characteristic.Active, value);
+    } else {
+      serviceManager.setCharacteristic(Characteristic.On, value);
+    }
+  }
+  
+  async checkAutoOff() {
+    await catchDelayCancelError(async () => {
+      const { config, log, name, state, serviceManager } = this;
+      let { disableAutomaticOff, enableAutoOff, onDuration } = config;
+
+      if (state.switchState && enableAutoOff) {
+        log(
+          `${name} setSwitchState: (automatically turn off in ${onDuration} seconds)`
+        );
+
+        this.autoOffTimeoutPromise = delayForDuration(onDuration);
+        await this.autoOffTimeoutPromise;
+
+        if(this.serviceManager.service.constructor.name === 'Fan'){
+          serviceManager.setCharacteristic(Characteristic.Active, false);
+        } else {
+          serviceManager.setCharacteristic(Characteristic.On, false);
+        }
+      }
+    });
+  }
+
+  async checkAutoOn() {
+    await catchDelayCancelError(async () => {
+      const { config, log, name, state, serviceManager } = this;
+      let { disableAutomaticOn, enableAutoOn, offDuration } = config;
+
+      if (!state.switchState && enableAutoOn) {
+        log(
+          `${name} setSwitchState: (automatically turn on in ${offDuration} seconds)`
+        );
+
+        this.autoOnTimeoutPromise = delayForDuration(offDuration);
+        await this.autoOnTimeoutPromise;
+
+        if(this.serviceManager.service.constructor.name === 'Fan'){
+          serviceManager.setCharacteristic(Characteristic.Active, true);
+        } else {
+          serviceManager.setCharacteristic(Characteristic.On, true);
+       }
+      }
+    });
+  }
+
+  getServices() {
+    const services = this.getInformationServices();
+
+    services.push(this.serviceManager.service);
+    services.push(...this.serviceManagers);
+
+    return services;
+  }
+  
   async setSwitchState (hexData, previousValue) {	  
     const { config, state, serviceManager } = this;
     if (!this.state.switchState) {
@@ -17,21 +153,7 @@ class FanAccessory extends SwitchAccessory {
 
     super.setSwitchState(hexData, previousValue);
   }
-
-  setDefaults () {
-    super.setDefaults();
-    let { config, state } = this;
-    
-    // Defaults
-    config.showSwingMode = config.hideSwingMode === true || config.showSwingMode === false ? false : true;
-    config.showRotationDirection = config.hideRotationDirection === true || config.showRotationDirection === false ? false : true;
-    config.stepSize = isNaN(config.stepSize) || config.stepSize > 100 || config.stepSize < 1 ? 1 : config.stepSize
-    
-    if (config.alwaysResetToDefaults) {
-      state.fanSpeed = (config.defaultFanSpeed !== undefined) ? config.defaultFanSpeed : 100;
-    }
-  }
-	
+  
   async setFanSpeed (hexData) {
     const { data, host, log, state, name, debug} = this;
 
@@ -82,7 +204,7 @@ class FanAccessory extends SwitchAccessory {
 
     this.serviceManager.addToggleCharacteristic({
       name: 'switchState',
-      type: this.serviceManager.service.constructor.name === 'Fanv2' ? Characteristic.Active : Characteristic.On,
+      type: this.serviceManager.service.constructor.name === 'Fan' ? Characteristic.On : Characteristic.Active,
       getMethod: this.getCharacteristicValue,
       setMethod: this.setCharacteristicValue,
       bind: this,
