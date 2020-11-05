@@ -6,11 +6,11 @@ const BroadlinkRMAccessory = require('./accessory');
 
 class SwitchAccessory extends BroadlinkRMAccessory {
 
-  constructor (log, config = {}, serviceManagerType) {
+  constructor (log, config = {}, serviceManagerType) {    
     super(log, config, serviceManagerType);
 
     if (!config.isUnitTest) this.checkPing(ping)
-
+    
   }
 
   setDefaults () {
@@ -38,7 +38,7 @@ class SwitchAccessory extends BroadlinkRMAccessory {
     super.reset();
 
     this.stateChangeInProgress = true;
-
+    
     // Clear Timeouts
     if (this.delayTimeoutPromise) {
       this.delayTimeoutPromise.cancel();
@@ -54,7 +54,7 @@ class SwitchAccessory extends BroadlinkRMAccessory {
       this.autoOnTimeoutPromise.cancel();
       this.autoOnTimeoutPromise = null
     }
-
+    
     if (this.pingGraceTimeout) {
       this.pingGraceTimeout.cancel();
       this.pingGraceTimeout = null;
@@ -66,36 +66,35 @@ class SwitchAccessory extends BroadlinkRMAccessory {
     this.checkPingGrace();
     this.checkAutoOn();
     this.checkAutoOff();
-
+    
   }
-
+  
   checkPing (ping) {
     const { config } = this
     let { pingIPAddress, pingFrequency } = config;
 
     if (!pingIPAddress) return
-
+    
     // Setup Ping-based State
     ping(pingIPAddress, pingFrequency, this.pingCallback.bind(this))
   }
 
   pingCallback (active) {
     const { config, state, serviceManager } = this;
-    let chacteristicName = this.serviceManager.characteristics.switchState.On ? Characteristic.On : Characteristic.Active;
 
-    if (this.stateChangeInProgress){
-      return;
+    if (this.stateChangeInProgress){ 
+      return; 
     }
-
+    
     if (config.pingIPAddressStateOnly) {
       state.switchState = active ? true : false;
-      serviceManager.refreshCharacteristicUI(chacteristicName);
+      serviceManager.refreshCharacteristicUI(Characteristic.On);
 
       return;
     }
-
+    
     const value = active ? true : false;
-    serviceManager.setCharacteristic(chacteristicName, value);
+    serviceManager.setCharacteristic(Characteristic.On, value);
   }
 
   async setSwitchState (hexData) {
@@ -104,14 +103,14 @@ class SwitchAccessory extends BroadlinkRMAccessory {
     this.reset();
 
     if (hexData) await this.performSend(hexData);
-
+    
     this.checkAutoOnOff();
   }
 
   async checkPingGrace () {
     await catchDelayCancelError(async () => {
       const { config, log, name, state, serviceManager } = this;
-
+      
       let { pingGrace } = config;
 
       if (pingGrace) {
@@ -123,7 +122,7 @@ class SwitchAccessory extends BroadlinkRMAccessory {
       }
     });
   }
-
+    
   async checkAutoOff () {
     await catchDelayCancelError(async () => {
       const { config, log, name, state, serviceManager } = this;
@@ -135,8 +134,7 @@ class SwitchAccessory extends BroadlinkRMAccessory {
         this.autoOffTimeoutPromise = delayForDuration(onDuration);
         await this.autoOffTimeoutPromise;
 
-        let chacteristicName = this.serviceManager.characteristics.switchState.On ? Characteristic.On : Characteristic.Active;
-        serviceManager.setCharacteristic(chacteristicName, false);
+        serviceManager.setCharacteristic(Characteristic.On, false);
       }
     });
   }
@@ -152,8 +150,7 @@ class SwitchAccessory extends BroadlinkRMAccessory {
         this.autoOnTimeoutPromise = delayForDuration(offDuration);
         await this.autoOnTimeoutPromise;
 
-        let chacteristicName = this.serviceManager.characteristics.switchState.On ? Characteristic.On : Characteristic.Active;
-        serviceManager.setCharacteristic(chacteristicName, true);
+        serviceManager.setCharacteristic(Characteristic.On, true);
       }
     });
   }
@@ -161,7 +158,7 @@ class SwitchAccessory extends BroadlinkRMAccessory {
   setupServiceManager () {
     const { data, name, config, serviceManagerType } = this;
     const { on, off } = data || { };
-
+    
     this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, Service.Switch, this.log);
 
     this.serviceManager.addToggleCharacteristic({
