@@ -39,56 +39,14 @@ class FanAccessory extends SwitchAccessory {
       this.autoOnTimeoutPromise.cancel();
       this.autoOnTimeoutPromise = null;
     }
-  
-    if (this.pingGraceTimeout) {
-      this.pingGraceTimeout.cancel();
-      this.pingGraceTimeout = null;
-    }
   }
   
   checkAutoOnOff() {
     this.reset();
-    this.checkPingGrace();
     this.checkAutoOn();
     this.checkAutoOff();
   }
 
-  checkPing(ping) {
-    const { config } = this;
-    let { pingIPAddress, pingFrequency } = config;
-
-    if (!pingIPAddress) return;
-
-    // Setup Ping-based State
-    ping(pingIPAddress, pingFrequency, this.pingCallback.bind(this));
-  }
-
-  pingCallback(active) {
-    const { config, state, serviceManager } = this;
-    
-    if (this.stateChangeInProgress){ 
-      return; 
-    }
-
-    if (config.pingIPAddressStateOnly) {
-      state.switchState = active ? true : false;
-      if(this.serviceManager.service.constructor.name === 'Fan'){
-          serviceManager.refreshCharacteristicUI(Characteristic.Active);
-        } else {
-          serviceManager.refreshCharacteristicUI(Characteristic.On);
-        }
-
-      return;
-    }
-
-    const value = active ? true : false;
-    if(this.serviceManager.service.constructor.name === 'Fan'){
-      serviceManager.setCharacteristic(Characteristic.Active, value);
-    } else {
-      serviceManager.setCharacteristic(Characteristic.On, value);
-    }
-  }
-  
   async checkAutoOff() {
     await catchDelayCancelError(async () => {
       const { config, log, name, state, serviceManager } = this;
@@ -102,11 +60,7 @@ class FanAccessory extends SwitchAccessory {
         this.autoOffTimeoutPromise = delayForDuration(onDuration);
         await this.autoOffTimeoutPromise;
 
-        if(this.serviceManager.service.constructor.name === 'Fan'){
-          serviceManager.setCharacteristic(Characteristic.Active, false);
-        } else {
-          serviceManager.setCharacteristic(Characteristic.On, false);
-        }
+        serviceManager.setCharacteristic(Characteristic.Active, false);
       }
     });
   }
@@ -124,11 +78,7 @@ class FanAccessory extends SwitchAccessory {
         this.autoOnTimeoutPromise = delayForDuration(offDuration);
         await this.autoOnTimeoutPromise;
 
-        if(this.serviceManager.service.constructor.name === 'Fan'){
-          serviceManager.setCharacteristic(Characteristic.Active, true);
-        } else {
-          serviceManager.setCharacteristic(Characteristic.On, true);
-       }
+        serviceManager.setCharacteristic(Characteristic.Active, true);
       }
     });
   }
@@ -194,7 +144,7 @@ class FanAccessory extends SwitchAccessory {
 
     this.setDefaults();
 
-    this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, config.showSwingMode ? Service.Fanv2 : Service.Fan, this.log);
+    this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, Service.Fanv2, this.log);
 
     this.serviceManager.addToggleCharacteristic({
       name: 'switchState',
