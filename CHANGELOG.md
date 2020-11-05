@@ -2,6 +2,7 @@
 
 ## 4.3.6-beta
 - [Improvement] Improves HumidifierDehumidifier accessory to update state by using Humidity data from the Broadlink device 
+- [Improvement] Adds humidityFilePath support to the HumidifierDehumidifier accessory to update the current humidity from a local file
 - [Bug] Updated the switch accessory to use On/Active status depending on device type. Many accessories inherit from this and it broke their AutoOff functions.
 
 ## 4.3.5
