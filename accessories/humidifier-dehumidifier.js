@@ -236,6 +236,13 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     const callbackIdentifier = uuid.v4();
     this.humidityCallbackQueue[callbackIdentifier] = callback;
     
+    // Read temperature from file
+    if (config.humidityFilePath) {
+      this.updateHumidityFromFile();
+
+      return;
+    }
+    
     // Read temperature from Broadlink RM device
     // If the device is no longer available, use previous tempeature
     const device = getDevice({ host, log });
@@ -252,6 +259,29 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
 
     device.checkHumidity();
     if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} addHumidityCallbackToQueue (requested humidity from device, waiting)`);
+  }
+  
+  updateHumidityFromFile () {
+    const { config, debug, host, log, name, state } = this;
+    const { humidityFilePath } = config;
+
+    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateHumidityFromFile reading file: ${humidity}`);
+
+    fs.readFile(humidityFilePath, 'utf8', (err, humidity) => {
+      if (err) {
+         log(`\x1b[31m[ERROR] \x1b[0m${name} updateHumidityFromFile\n\n${err.message}`);
+      }
+
+      if (humidity === undefined || humidity.trim().length === 0) {
+        log(`\x1b[33m[WARNING]\x1b[0m ${name} updateHumidityFromFile error reading file: ${humidityFilePath}, using previous Temperature`);
+        humidity = (state.currentHumidity || 0);
+      }
+
+      humidity = parseFloat(humidity);
+      if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateHumidityFromFile (parsed humidity: ${humidity})`);
+
+      this.onHumidity(null, humidity);
+    });
   }
 
   processQueuedHumidityCallbacks (humidity) {
