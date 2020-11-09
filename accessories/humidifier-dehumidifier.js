@@ -337,7 +337,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onMQTTMessage (parsed temperature: ${humidity})`);
 
     this.mqttValues[identifier] = humidity;
-    this.updateTemperatureUI();
+    this.updateHumidityUI();
   }
 
   processQueuedHumidityCallbacks (humidity) {
