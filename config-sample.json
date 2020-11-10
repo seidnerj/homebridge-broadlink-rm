@@ -97,27 +97,29 @@
 				"name": "Classic Dehumidifer",
 				"type": "humidifier-dehumidifier",
 				"noHumidity": true
-				"showLockPhysicalControls": true,
-				"data":{
-				"on":"2600500000012...",
-				"off":"2600500000012...",
-				"targetStateHumidifier": "2600500000012...",
-				"targetStateDehumidifier": "2600500000012...",
-				"lockControls": "2600500000012...",
-				"unlockControls": "2600500000012...",
-				"swingToggle": "2600500000012...",
-				"fanSpeed10": "2600500000012...",
-				"fanSpeed20": "2600500000012...",
-				"fanSpeed30": "2600500000012...",
-				"fanSpeed40": "2600500000012...",
-				"fanSpeed50": "2600500000012...",
-				"fanSpeed60": "2600500000012...",
-				"fanSpeed70": "2600500000012...",
-				"fanSpeed80": "2600500000012...",
-				"fanSpeed90": "2600500000012...",
-				"fanSpeed100": "2600500000012..."
-				}
-			},{
+	      "showLockPhysicalControls": true,
+        "data":{
+          "on":"2600500000012...",
+          "off":"2600500000012...",
+          "targetStateHumidifier": "2600500000012...",
+          "targetStateDehumidifier": "2600500000012...",
+          "fanOnly": "2600500000012...",
+          "lockControls": "2600500000012...",
+          "unlockControls": "2600500000012...",
+          "swingToggle": "2600500000012...",
+          "fanSpeed10": "2600500000012...",
+          "fanSpeed20": "2600500000012...",
+          "fanSpeed30": "2600500000012...",
+          "fanSpeed40": "2600500000012...",
+          "fanSpeed50": "2600500000012...",
+          "fanSpeed60": "2600500000012...",
+          "fanSpeed70": "2600500000012...",
+          "fanSpeed80": "2600500000012...",
+          "fanSpeed90": "2600500000012...",
+          "fanSpeed100": "2600500000012..."
+        }
+      },
+      {
 				"name": "Dehumidifer using Broadlink",
 				"type": "humidifier-dehumidifier",
 				"showLockPhysicalControls": true,
@@ -182,6 +184,26 @@
 			{
 				"name": "Fan",
 				"type": "fan",
+        "showSwingMode": true,
+				"data": {
+					"on": "2600500000012...",
+					"off": "2600500000012...",
+					"swingToggle": "2600500000012...",
+					"fanSpeed10": "2600500000012...",
+					"fanSpeed20": "2600500000012...",
+					"fanSpeed30": "2600500000012...",
+					"fanSpeed40": "2600500000012...",
+					"fanSpeed50": "2600500000012...",
+					"fanSpeed60": "2600500000012...",
+					"fanSpeed70": "2600500000012...",
+					"fanSpeed80": "2600500000012...",
+					"fanSpeed90": "2600500000012...",
+					"fanSpeed100": "2600500000012..."
+				}
+			},
+      {
+				"name": "Classic Fan",
+				"type": "fanv1",
 				"data": {
 					"on": "2600500000012...",
 					"off": "2600500000012...",

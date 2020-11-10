@@ -1,8 +1,87 @@
 const ServiceManagerTypes = require('../helpers/serviceManagerTypes');
-
 const SwitchAccessory = require('./switch');
+const catchDelayCancelError = require('../helpers/catchDelayCancelError');
+const delayForDuration = require('../helpers/delayForDuration');
 
 class FanAccessory extends SwitchAccessory {
+  setDefaults () {
+    super.setDefaults();
+    let { config, state } = this;
+    
+    // Defaults
+    config.showSwingMode = config.hideSwingMode === true || config.showSwingMode === false ? false : true;
+    config.showRotationDirection = config.hideRotationDirection === true || config.showRotationDirection === false ? false : true;
+    config.stepSize = isNaN(config.stepSize) || config.stepSize > 100 || config.stepSize < 1 ? 1 : config.stepSize
+    
+    if (config.alwaysResetToDefaults) {
+      state.fanSpeed = (config.defaultFanSpeed !== undefined) ? config.defaultFanSpeed : 100;
+    }
+  }
+
+  reset() {
+    super.reset();
+
+    this.stateChangeInProgress = true;
+    
+    // Clear Timeouts
+    if (this.delayTimeoutPromise) {
+      this.delayTimeoutPromise.cancel();
+      this.delayTimeoutPromise = null;
+    }
+
+    if (this.autoOffTimeoutPromise) {
+      this.autoOffTimeoutPromise.cancel();
+      this.autoOffTimeoutPromise = null;
+    }
+
+    if (this.autoOnTimeoutPromise) {
+      this.autoOnTimeoutPromise.cancel();
+      this.autoOnTimeoutPromise = null;
+    }
+  }
+  
+  checkAutoOnOff() {
+    this.reset();
+    this.checkAutoOn();
+    this.checkAutoOff();
+  }
+
+  async checkAutoOff() {
+    await catchDelayCancelError(async () => {
+      const { config, log, name, state, serviceManager } = this;
+      let { disableAutomaticOff, enableAutoOff, onDuration } = config;
+
+      if (state.switchState && enableAutoOff) {
+        log(
+          `${name} setSwitchState: (automatically turn off in ${onDuration} seconds)`
+        );
+
+        this.autoOffTimeoutPromise = delayForDuration(onDuration);
+        await this.autoOffTimeoutPromise;
+
+        serviceManager.setCharacteristic(Characteristic.Active, false);
+      }
+    });
+  }
+
+  async checkAutoOn() {
+    await catchDelayCancelError(async () => {
+      const { config, log, name, state, serviceManager } = this;
+      let { disableAutomaticOn, enableAutoOn, offDuration } = config;
+
+      if (!state.switchState && enableAutoOn) {
+        log(
+          `${name} setSwitchState: (automatically turn on in ${offDuration} seconds)`
+        );
+
+        this.autoOnTimeoutPromise = delayForDuration(offDuration);
+        await this.autoOnTimeoutPromise;
+
+        serviceManager.setCharacteristic(Characteristic.Active, true);
+      }
+    });
+  }
+
   async setSwitchState (hexData, previousValue) {	  
     const { config, state, serviceManager } = this;
     if (!this.state.switchState) {
@@ -18,20 +97,6 @@ class FanAccessory extends SwitchAccessory {
     super.setSwitchState(hexData, previousValue);
   }
 
-  setDefaults () {
-    super.setDefaults();
-    let { config, state } = this;
-    
-    // Defaults
-    config.showSwingMode = config.hideSwingMode === true || config.showSwingMode === false ? false : true;
-    config.showRotationDirection = config.hideRotationDirection === true || config.showRotationDirection === false ? false : true;
-    config.stepSize = isNaN(config.stepSize) || config.stepSize > 100 || config.stepSize < 1 ? 1 : config.stepSize
-    
-    if (config.alwaysResetToDefaults) {
-      state.fanSpeed = (config.defaultFanSpeed !== undefined) ? config.defaultFanSpeed : 100;
-    }
-  }
-	
   async setFanSpeed (hexData) {
     const { data, host, log, state, name, debug} = this;
 
@@ -78,11 +143,11 @@ class FanAccessory extends SwitchAccessory {
 
     this.setDefaults();
 
-    this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, config.showSwingMode ? Service.Fanv2 : Service.Fan, this.log);
+    this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, Service.Fanv2, this.log);
 
     this.serviceManager.addToggleCharacteristic({
       name: 'switchState',
-      type: this.serviceManager.service.constructor.name === 'Fanv2' ? Characteristic.Active : Characteristic.On,
+      type: this.serviceManager.service.constructor.name === 'Fan' ? Characteristic.On : Characteristic.Active,
       getMethod: this.getCharacteristicValue,
       setMethod: this.setCharacteristicValue,
       bind: this,

@@ -1,5 +1,13 @@
 # Changes
 
+## 4.3.6
+- [Improvement] Improves HumidifierDehumidifier accessory to update state by using Humidity data from the Broadlink device 
+- [Improvement] Adds humidityFilePath support to the HumidifierDehumidifier accessory to update the current humidity from a local file
+- [Improvement] Adds autoOn/autoOff support to the Fan and HumidifierDehumidifier accessory (Note the Bug detail below)
+- [Improvement] Updated humiditySensor and temperatureSensor accessories to extend HumidifierDehumidifier and AirCon accessories (respectively) so both gain MQTT and file values too.
+- [Bug] Updated the switch accessory to use On/Active status depending on device type. Many accessories inherit from this and it broke their AutoOff functions.
+- [Bug] Fixed AutoOn/AutoOff functions for Fan and HumidifierDehumidifier. This was an issue with the different characteristics between the HomeKit Fan and Fanv2 Services. In order to tidy this up users wanting to have the classic style Fan (with more icon options) will need to update type to "fanv1" i.e. `"type": "fanv1"`
+
 ## 4.3.5
 - [Bug] Fixes bug in Fan accessory that removed Rotation Direction and/or Swing options
 

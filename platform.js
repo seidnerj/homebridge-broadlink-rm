@@ -21,6 +21,7 @@ const classTypes = {
   'switch-multi-repeat': Accessory.SwitchMultiRepeat,
   'switch-repeat': Accessory.SwitchRepeat,
   'fan': Accessory.Fan,
+  'fanv1': Accessory.Fanv1,
   'outlet': Accessory.Outlet,
   'light': Accessory.Light,
   'window': Accessory.Window,

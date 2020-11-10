@@ -43,6 +43,13 @@ This plugin should now be able to discover your device.
 
 Base documentation can be found [here](https://lprhodes.github.io/slate/). With the following additional configuration options available in this fork:
 
+### Hosts Configuration
+By default the plugin will search the network and discover your Broadlink devices. If you'd prefer to manaually add devices you can add a hosts section to your config.json (refer to the [sample config](https://github.com/kiwi-cam/homebridge-broadlink-rm/blob/master/config-sample.json#L18-L27))
+key | description | example | default
+--- | ----------- | ------- | -------
+isRFSupported (optional) | Forces the device to support RF signals | true | false
+isRM4 (optional) | Marks the device as a newer RM4 device and sends data with required new headers | true | false
+
 ### Switch Accessory
 
 key | description | example | default
@@ -84,6 +91,18 @@ key | description
 --- | -----------
 data | Hex data stored as string.
 pseudo-mode (optional) | The mode we set when this hex is sent. i.e. "heat" or "cool". For graphical purposes only (hence use of the term "pseudo"). Not recommended for ModeX key-values.
+
+### humidifier-dehumidifier Accessory
+Adds a humidifier/dehumidifer accessory.
+key | description | example | default
+--- | ----------- | ------- | -------
+deHumifierOnly (optional) | Sets the device to only run in Dehumidifer mode | true | false
+humifierOnly (optional) | Sets the device to only run in Humidifer mode | true | false 
+threshold (optional) | Sets how close to the target humidity the device should try to get | 2 | 5 
+noHumidity (optional) | Removes Humidity information from the device. It will be removed when using w1Device or temperatureFilePath | true | false
+humidityAdjustment (optional) | An adjustment value to tune the value from the value the broadlink returns | -5 | 0 
+humidityFilePath (optional) | path to a local file that Humidity readings can come from | /var/tmp/humidity.txt | null
+data>fanOnly (optional) | Hex code used to disable both Humidifer and Dehumifier functions | 0020000... | off code used if not supplied 
 
 ### TemperatureSensor Accessory
 Adds a temperature and humidity sensor using the Broadlink device's sensors.
