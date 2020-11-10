@@ -96,7 +96,7 @@ class FanAccessory extends SwitchAccessory {
 
     super.setSwitchState(hexData, previousValue);
   }
-  
+
   async setFanSpeed (hexData) {
     const { data, host, log, state, name, debug} = this;
 

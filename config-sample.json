@@ -15,6 +15,16 @@
 		"hideScanFrequencyButton": false,
 		"hideLearnButton": false,
 		"hideWelcomeMessage": false,
+		"hosts": [{
+			"address": "192.168.1.76",
+			"mac": "34:ea:34:e7:d7:28",
+			"isRFSupported": false
+		},{
+			"address": "192.168.1.77",
+			"mac": "34:ea:34:e8:d8:30",
+			"isRFSupported": true,
+			"isRM4": true
+		}],
 		"accessories": [{
 				"name": "Auto-off Switch",
 				"type": "switch",
@@ -77,16 +87,13 @@
 					"hue299": "2600500000012...",
 					"hue359": "2600500000012..."
 				}
-			},
-			{
+			},{
 				"name": "LivingRoom Humidity",
 				"type": "humiditySensor"
-			},
-			{
+			},{
 				"name": "LivingRoom temperature",
 				"type": "temperatureSensor"
-			},
-      {
+			},{
 				"name": "Classic Dehumidifer",
 				"type": "humidifier-dehumidifier",
 				"noHumidity": true
@@ -114,29 +121,28 @@
       },
       {
 				"name": "Dehumidifer using Broadlink",
-				"type": "humidifier-dehumidifier"
-        "showLockPhysicalControls": true,
-        "data":{
-          "on":"2600500000012...",
-          "off":"2600500000012...",
-          "targetStateHumidifier": "2600500000012...",
-          "targetStateDehumidifier": "2600500000012...",
-          "lockControls": "2600500000012...",
-          "unlockControls": "2600500000012...",
-          "swingToggle": "2600500000012...",
-          "fanSpeed10": "2600500000012...",
-          "fanSpeed20": "2600500000012...",
-          "fanSpeed30": "2600500000012...",
-          "fanSpeed40": "2600500000012...",
-          "fanSpeed50": "2600500000012...",
-          "fanSpeed60": "2600500000012...",
-          "fanSpeed70": "2600500000012...",
-          "fanSpeed80": "2600500000012...",
-          "fanSpeed90": "2600500000012...",
-          "fanSpeed100": "2600500000012..."
-        }
-      },
-			{
+				"type": "humidifier-dehumidifier",
+				"showLockPhysicalControls": true,
+				"data":{
+				"on":"2600500000012...",
+				"off":"2600500000012...",
+				"targetStateHumidifier": "2600500000012...",
+				"targetStateDehumidifier": "2600500000012...",
+				"lockControls": "2600500000012...",
+				"unlockControls": "2600500000012...",
+				"swingToggle": "2600500000012...",
+				"fanSpeed10": "2600500000012...",
+				"fanSpeed20": "2600500000012...",
+				"fanSpeed30": "2600500000012...",
+				"fanSpeed40": "2600500000012...",
+				"fanSpeed50": "2600500000012...",
+				"fanSpeed60": "2600500000012...",
+				"fanSpeed70": "2600500000012...",
+				"fanSpeed80": "2600500000012...",
+				"fanSpeed90": "2600500000012...",
+				"fanSpeed100": "2600500000012..."
+				}
+			},{
 				"name": "Air Conditioner",
 				"type": "air-conditioner",
 				"noHumidity": true,
