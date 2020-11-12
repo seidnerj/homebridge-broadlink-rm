@@ -73,6 +73,34 @@ class Fanv1Accessory extends FanAccessory {
         setValuePromise: this.setSwitchState.bind(this)
       }
     });
+    
+    this.serviceManager.addToggleCharacteristic({
+      name: 'fanSpeed',
+      type: Characteristic.RotationSpeed,
+      getMethod: this.getCharacteristicValue,
+      setMethod: this.setCharacteristicValue,
+      bind: this,
+      props: {
+        setValuePromise: this.setFanSpeed.bind(this),
+		    minStep: config.stepSize,
+		    minValue: 0,
+		    maxVlue: 100
+      }
+    });
+
+    if (config.showRotationDirection) {
+      this.serviceManager.addToggleCharacteristic({
+        name: 'rotationDirection',
+        type: Characteristic.RotationDirection,
+        getMethod: this.getCharacteristicValue,
+        setMethod: this.setCharacteristicValue,
+        bind: this,
+        props: {
+          onData: counterClockwise,
+          offData: clockwise
+        }
+      });
+    }
   }
 }
 
