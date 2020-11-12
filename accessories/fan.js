@@ -147,7 +147,7 @@ class FanAccessory extends SwitchAccessory {
 
     this.serviceManager.addToggleCharacteristic({
       name: 'switchState',
-      type: this.serviceManager.service.constructor.name === 'Fan' ? Characteristic.On : Characteristic.Active,
+      type: Characteristic.Active,
       getMethod: this.getCharacteristicValue,
       setMethod: this.setCharacteristicValue,
       bind: this,
