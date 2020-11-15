@@ -1,6 +1,6 @@
 {
   "name": "homebridge-broadlink-rm-pro",
-  "version": "4.3.6",
+  "version": "4.3.7",
   "description": "Broadlink RM plugin (including the mini and pro) for homebridge with AC Pro and TV features",
   "license": "ISC",
   "scripts": {
@@ -25,7 +25,7 @@
     "url": "git@github.com:kiwi-cam/homebridge-broadlink-rm.git"
   },
   "dependencies": {
-    "kiwicam-broadlinkjs-rm": "latest",
+    "kiwicam-broadlinkjs-rm": "beta",
     "chai": "^4.1.2",
     "find-key": "^2.0.1",
     "github-version-checker": "^2.2.0",

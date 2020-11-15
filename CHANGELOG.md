@@ -1,5 +1,8 @@
 # Changes
 
+## 4.3.7
+- [Bug] Fixes missing FanSpeed/Direction features in Fanv1
+
 ## 4.3.6
 - [Improvement] Improves HumidifierDehumidifier accessory to update state by using Humidity data from the Broadlink device 
 - [Improvement] Adds humidityFilePath support to the HumidifierDehumidifier accessory to update the current humidity from a local file
