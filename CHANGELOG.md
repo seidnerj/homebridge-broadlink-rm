@@ -1,5 +1,7 @@
 # Changes
 
+## 4.3.8-beta
+
 ## 4.3.7
 - [Bug] Fixes missing FanSpeed/Direction features in Fanv1
 
