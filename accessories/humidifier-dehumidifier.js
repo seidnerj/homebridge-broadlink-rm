@@ -405,7 +405,9 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       setMethod: this.setCharacteristicValue,
       bind: this,
       props: {
-        minStep: config.humStepSize,
+		    minStep: config.humStepSize,
+		    minValue: 0,
+		    maxVlue: 100,
         setValuePromise: this.setHumidifierThreshold.bind(this)
       }
 	  });
@@ -417,7 +419,9 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       setMethod: this.setCharacteristicValue,
       bind: this,
       props: {
-        minStep: config.humStepSize,
+		    minStep: config.humStepSize,
+		    minValue: 0,
+		    maxVlue: 100,
         setValuePromise: this.setDehumidifierThreshold.bind(this)
       }
 	  });
