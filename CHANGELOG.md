@@ -1,6 +1,7 @@
 # Changes
 
 ## 4.3.8-beta
+- [Improvement] Added humStepSize option to allow Humidity to be adjusted in steps
 
 ## 4.3.7
 - [Bug] Fixes missing FanSpeed/Direction features in Fanv1
