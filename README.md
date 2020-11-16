@@ -99,6 +99,7 @@ key | description | example | default
 deHumifierOnly (optional) | Sets the device to only run in Dehumidifer mode | true | false
 humifierOnly (optional) | Sets the device to only run in Humidifer mode | true | false 
 threshold (optional) | Sets how close to the target humidity the device should try to get | 2 | 5 
+humStepSize (optional) | If set, sets the amount the Humidity settings will step up/down by | 10 | 1
 noHumidity (optional) | Removes Humidity information from the device. It will be removed when using w1Device or temperatureFilePath | true | false
 humidityAdjustment (optional) | An adjustment value to tune the value from the value the broadlink returns | -5 | 0 
 humidityFilePath (optional) | path to a local file that Humidity readings can come from | /var/tmp/humidity.txt | null
