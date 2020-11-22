@@ -12,7 +12,6 @@ const startKeepAlive = (device, log) => {
   setInterval(() => {
     //log('\x1b[33m[DEBUG]\x1b[0m Sending keepalive to', device.host.address,':',device.host.port)
     const socket = dgram.createSocket({ type:'udp4', reuseAddr:true }); 
-    socket.setBroadcast(true);
     let packet = Buffer.alloc(0x30, 0);
     packet[0x26] = 0x1;
     socket.send(packet, 0, packet.length, device.host.port, device.host.address, (err, bytes) => {
