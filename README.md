@@ -34,7 +34,7 @@ Thank you!
 
 ## Documentation
 
-If the plugin is unable to discover your device, it's likely you've lcoked the device with the cloud so it no longer accepts local connections. In this case, follow these steps:
+If the plugin is unable to discover your device, it's likely you've locked the device with the cloud so it no longer accepts local connections. In this case, follow these steps:
 1. Open the [Broadlink app](https://apps.apple.com/us/app/broadlink/id1450257910)
 2. From the Home screen, tap on your Broadlink device
 3. Tap the ... in the top right
