@@ -1,6 +1,7 @@
 # Changes
 
 ## 4.3.8-beta
+- [Improvement] Added Keep Alive packet to RM Devices to avoid reboots when the cloud is unreachable.
 - [Improvement] Added RF Learning steps from #45 - very BETA - needs testing
 
 ## 4.3.7
