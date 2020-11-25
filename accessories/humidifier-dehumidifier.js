@@ -32,7 +32,6 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     config.humidityAdjustment = config.humidityAdjustment || 0;
     config.noHumidity = config.noHumidity || false;
     config.threshold = config.threshold || 5;
-	  config.humStepSize = isNaN(config.humStepSize) || config.humStepSize > 100 || config.humStepSize < 1 ? 1 : config.humStepSize
     data.fanOnly = data.fanOnly ? data.fanOnly : data.off;
 
     state.firstHumidityUpdate = true;
@@ -405,9 +404,6 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       setMethod: this.setCharacteristicValue,
       bind: this,
       props: {
-		    minStep: config.humStepSize,
-		    minValue: 0,
-		    maxVlue: 100,
         setValuePromise: this.setHumidifierThreshold.bind(this)
       }
 	  });
@@ -419,9 +415,6 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       setMethod: this.setCharacteristicValue,
       bind: this,
       props: {
-		    minStep: config.humStepSize,
-		    minValue: 0,
-		    maxVlue: 100,
         setValuePromise: this.setDehumidifierThreshold.bind(this)
       }
 	  });
