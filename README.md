@@ -41,6 +41,8 @@ If the plugin is unable to discover your device, it's likely you've locked the d
 4. Scroll down and toggle "Lock device" to Off
 5. Tap OK when prompted "Confirm to unlock the device"
 
+<img src="https://i.imgur.com/DMTUbDo.png" width="40%" height="40%">
+
 This plugin should now be able to discover your device.
 
 Base documentation can be found [here](https://lprhodes.github.io/slate/). With the following additional configuration options available in this fork:
