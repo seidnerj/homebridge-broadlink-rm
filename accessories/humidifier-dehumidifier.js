@@ -156,8 +156,8 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       state.currentHumidity = 0
       state.HumidifierThreshold = 100
     } else if (config.noHumidity && state.targetState === Characteristic.TargetHumidifierDehumidifierState.DEHUMIDIFIER) {
-        state.currentHumidity = 100
-        state.DehumidifierThreshold = 0
+      state.currentHumidity = 100
+      state.DehumidifierThreshold = 0
     }
     
     let desiredState = this.getDesiredState ();
@@ -180,9 +180,11 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
 	  //Check if we're actually reading from the device
     if(config.noHumidity)  {
       if(state.targetState === Characteristic.TargetHumidifierDehumidifierState.DEHUMIDIFIER){
-        state.currentHumidity = 100
-      } else  {
-        state.currentHumidity = 0
+        state.currentHumidity = 100;
+      } else if(state.targetState === Characteristic.TargetHumidifierDehumidifierState.HUMIDIFIER) {
+        state.currentHumidity = 0;
+      }else {
+        state.currentHumidity = 50;
       }
       this.updateHumidityUI();
       return;
