@@ -177,19 +177,6 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     const { debug, config, host, log, name, state } = this;
     const device = getDevice({ host, log });
 	  
-	  //Check if we're actually reading from the device
-    if(config.noHumidity)  {
-      if(state.targetState === Characteristic.TargetHumidifierDehumidifierState.DEHUMIDIFIER){
-        state.currentHumidity = 100;
-      } else if(state.targetState === Characteristic.TargetHumidifierDehumidifierState.HUMIDIFIER) {
-        state.currentHumidity = 0;
-      }else {
-        state.currentHumidity = 50;
-      }
-      this.updateHumidityUI();
-      return;
-    }
-
     // Try again in a second if we don't have a device yet
     if (!device) {
       await delayForDuration(1);
@@ -250,6 +237,19 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       const humidity = this.mqttValueForIdentifier('humidity');
       this.onHumidity(null,humidity || 0);
 
+      return;
+    }
+    
+	  //Check if we're actually reading from the device
+    if(config.noHumidity)  {
+      let humidity = 50;
+      if(state.targetState === Characteristic.TargetHumidifierDehumidifierState.DEHUMIDIFIER){
+        humidity = 100;
+      } else if(state.targetState === Characteristic.TargetHumidifierDehumidifierState.HUMIDIFIER) {
+        humidity = 0;
+      }
+      this.onHumidity(null,humidity);
+      
       return;
     }
     
