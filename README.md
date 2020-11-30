@@ -34,10 +34,14 @@ Thank you!
 
 ## Documentation
 
-If the plugin is unable to discover your device, it's likely you've registered the device with the cloud so it no longer accepts local connections. In this case, follow these steps:
-1. Hold the reset button on your broadlink device until the light flashes
-2. In the IHC app ([iOS](https://apps.apple.com/nz/app/intelligent-home-center/id1084990073) / [Android](https://play.google.com/store/apps/details?id=cn.com.broadlink.econtrol.plus&hl=en)) Go through the "Add Device" steps
-3. When you reach the step to add the device to a room - quit the IHC app
+If the plugin is unable to discover your device, it's likely you've locked the device with the cloud so it no longer accepts local connections. In this case, follow these steps:
+1. Open the [Broadlink app](https://apps.apple.com/us/app/broadlink/id1450257910)
+2. From the Home screen, tap on your Broadlink device
+3. Tap the ... in the top right
+4. Scroll down and toggle "Lock device" to Off
+5. Tap OK when prompted "Confirm to unlock the device"
+
+<img src="https://i.imgur.com/DMTUbDo.png" width="40%" height="40%">
 
 This plugin should now be able to discover your device.
 
@@ -99,6 +103,7 @@ key | description | example | default
 deHumifierOnly (optional) | Sets the device to only run in Dehumidifer mode | true | false
 humifierOnly (optional) | Sets the device to only run in Humidifer mode | true | false 
 threshold (optional) | Sets how close to the target humidity the device should try to get | 2 | 5 
+humStepSize (optional) | If set, sets the amount the Humidity settings will step up/down by | 10 | 1
 noHumidity (optional) | Removes Humidity information from the device. It will be removed when using w1Device or temperatureFilePath | true | false
 humidityAdjustment (optional) | An adjustment value to tune the value from the value the broadlink returns | -5 | 0 
 humidityFilePath (optional) | path to a local file that Humidity readings can come from | /var/tmp/humidity.txt | null

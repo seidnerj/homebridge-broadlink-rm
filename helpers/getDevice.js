@@ -1,9 +1,25 @@
 const ping = require('ping');
-const broadlink = require('./broadlink')
-const delayForDuration = require('./delayForDuration')
+const broadlink = require('./broadlink');
+const delayForDuration = require('./delayForDuration');
+const dgram = require('dgram');
 
 const pingFrequency = 5000;
+const keepAliveFrequency = 90000;
 const pingTimeout = 5;
+
+const startKeepAlive = (device, log) => {
+  if(!device.host.port) return;
+  setInterval(() => {
+    //log('\x1b[33m[DEBUG]\x1b[0m Sending keepalive to', device.host.address,':',device.host.port)
+    const socket = dgram.createSocket({ type:'udp4', reuseAddr:true }); 
+    let packet = Buffer.alloc(0x30, 0);
+    packet[0x26] = 0x1;
+    socket.send(packet, 0, packet.length, device.host.port, device.host.address, (err, bytes) => {
+      if (err) log('\x1b[33m[DEBUG]\x1b[0m send keepalive packet error', err)
+    });
+    socket.close();
+  }, keepAliveFrequency);
+}
 
 const startPing = (device, log) => {
   device.state = 'unknown';
@@ -70,7 +86,8 @@ const discoverDevices = (automatic = true, log, debug, deviceDiscoveryTimeout = 
     log(`\x1b[35m[INFO]\x1b[0m Discovered ${device.model} (${device.type.toString(16)}) at ${device.host.address} (${device.host.macAddress})`)
     addDevice(device)
 
-    startPing(device, log)
+    startPing(device, log);
+    startKeepAlive(device, log);
   })
 }
 
@@ -92,7 +109,8 @@ const getDevice = ({ host, log, learnOnly }) => {
       const device = { host: { address: host } };
       manualDevices[host] = device;
 
-      startPing(device, log)
+      startPing(device, log);
+      startKeepAlive(device, log);
     }
   } else { // use the first one of no host is provided
     const hosts = Object.keys(discoveredDevices);

@@ -156,8 +156,8 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       state.currentHumidity = 0
       state.HumidifierThreshold = 100
     } else if (config.noHumidity && state.targetState === Characteristic.TargetHumidifierDehumidifierState.DEHUMIDIFIER) {
-        state.currentHumidity = 100
-        state.DehumidifierThreshold = 0
+      state.currentHumidity = 100
+      state.DehumidifierThreshold = 0
     }
     
     let desiredState = this.getDesiredState ();
@@ -177,17 +177,6 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     const { debug, config, host, log, name, state } = this;
     const device = getDevice({ host, log });
 	  
-	  //Check if we're actually reading from the device
-    if(config.noHumidity)  {
-      if(state.targetState === Characteristic.TargetHumidifierDehumidifierState.DEHUMIDIFIER){
-        state.currentHumidity = 100
-      } else  {
-        state.currentHumidity = 0
-      }
-      this.updateHumidityUI();
-      return;
-    }
-
     // Try again in a second if we don't have a device yet
     if (!device) {
       await delayForDuration(1);
@@ -248,6 +237,19 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       const humidity = this.mqttValueForIdentifier('humidity');
       this.onHumidity(null,humidity || 0);
 
+      return;
+    }
+    
+	  //Check if we're actually reading from the device
+    if(config.noHumidity)  {
+      let humidity = 50;
+      if(state.targetState === Characteristic.TargetHumidifierDehumidifierState.DEHUMIDIFIER){
+        humidity = 100;
+      } else if(state.targetState === Characteristic.TargetHumidifierDehumidifierState.HUMIDIFIER) {
+        humidity = 0;
+      }
+      this.onHumidity(null,humidity);
+      
       return;
     }
     
@@ -523,7 +525,10 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       setMethod: this.setCharacteristicValue,
       bind: this,
       props: {
-        setValuePromise: super.setFanSpeed.bind(this)
+        setValuePromise: this.setFanSpeed.bind(this),
+		    minStep: config.stepSize,
+		    minValue: 0,
+		    maxVlue: 100
       }
     });
   }

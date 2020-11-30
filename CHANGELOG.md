@@ -1,5 +1,11 @@
 # Changes
 
+## 4.3.8-beta
+- [Improvement] Added Keep Alive packet to RM Devices to avoid reboots when the cloud is unreachable.
+- [Improvement] **Added RF Learning** steps from #45
+- [Bug] Fixes "No Response" from Dehumidifers when noHumidity and accessory Off
+- [Bug] Fixes "log is not a function" error when using Pronto codes
+
 ## 4.3.7
 - [Bug] Fixes missing FanSpeed/Direction features in Fanv1
 
