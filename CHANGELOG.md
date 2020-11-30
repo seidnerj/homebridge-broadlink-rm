@@ -1,6 +1,6 @@
 # Changes
 
-## 4.3.8-beta
+## 4.3.8
 - [Improvement] Added Keep Alive packet to RM Devices to avoid reboots when the cloud is unreachable.
 - [Improvement] **Added RF Learning** steps from #45
 - [Bug] Fixes "No Response" from Dehumidifers when noHumidity and accessory Off
