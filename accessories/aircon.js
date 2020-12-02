@@ -450,24 +450,39 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
   updateTemperatureFromFile () {
     const { config, debug, host, log, name, state } = this;
-    const { temperatureFilePath } = config;
+    const { temperatureFilePath, noHumidity } = config;
+    let humidity = null;
+    let temperature = null;
 
     if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateTemperatureFromFile reading file: ${temperatureFilePath}`);
 
-    fs.readFile(temperatureFilePath, 'utf8', (err, temperature) => {
+    fs.readFile(temperatureFilePath, 'utf8', (err, data) => {
       if (err) {
          log(`\x1b[31m[ERROR] \x1b[0m${name} updateTemperatureFromFile\n\n${err.message}`);
       }
 
-      if (temperature === undefined || temperature.trim().length === 0) {
+      if (data === undefined || data.trim().length === 0) {
         log(`\x1b[33m[WARNING]\x1b[0m ${name} updateTemperatureFromFile error reading file: ${temperatureFilePath}, using previous Temperature`);
+        if (!noHumidity) humidity = (state.currentHumidity || 0);
         temperature = (state.currentTemperature || 0);
       }
 
-      temperature = parseFloat(temperature);
-      if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateTemperatureFromFile (parsed temperature: ${temperature})`);
+      const lines = data.split(/\r?\n/);
+      if (/^[0-9]+\.*[0-9]*$/.test(lines[0])){
+        temperature = parseFloat(data);
+      } else {
+        lines.forEach((line) => {
+          if(-1 < line.indexOf(':')){
+            let value = line.split(':');
+            if(value[0] == 'temperature') temperature = parseFloat(value[1]);
+            if(value[0] == 'humidity' && !noHumidity) humidity = parseFloat(value[1]);
+          }
+        });
+      }
 
-      this.onTemperature(temperature);
+      if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateTemperatureFromFile (parsed temperature: ${temperature} humidity: ${humidity})`);
+
+      this.onTemperature(temperature, humidity);
     });
   }
 
