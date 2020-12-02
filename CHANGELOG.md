@@ -2,6 +2,7 @@
 
 ## 4.3.9-BETA
  - [Improvement] Added Temperature and Humidity readings from files but finding lines with temperature:XX and/or humidity:XX
+ - [Improvement] Removed file and w1 Temperature readings being forced to 10 minutes. Now 1 minute minimum and adjustable
  - [Bug] Fixed dupliate monitorTemperature calls from Temperature Sensor accessories
 
 ## 4.3.8
