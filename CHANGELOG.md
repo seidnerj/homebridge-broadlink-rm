@@ -1,6 +1,10 @@
 # Changes
 
-## 4.3.8-beta
+## 4.3.9-BETA
+ - [Improvement] Added Temperature and Humidity readings from files but finding lines with temperature:XX and/or humidity:XX
+ - [Bug] Fixed dupliate monitorTemperature calls from Temperature Sensor accessories
+
+## 4.3.8
 - [Improvement] Added Keep Alive packet to RM Devices to avoid reboots when the cloud is unreachable.
 - [Improvement] **Added RF Learning** steps from #45
 - [Bug] Fixes "No Response" from Dehumidifers when noHumidity and accessory Off
