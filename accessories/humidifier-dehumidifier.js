@@ -291,13 +291,10 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
 
       const lines = data.split(/\r?\n/);
       if (/^[0-9]+\.*[0-9]*$/.test(lines[0])){
-        log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateTemperatureFromFile Found a number: ${data}`);
         humidity = parseFloat(data);
       } else {
-        log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateTemperatureFromFile Need to parse: ${data}`);
         lines.forEach((line) => {
           if(-1 < line.indexOf(':')){
-            log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateTemperatureFromFile Parsing Line: ${line}`);
             let value = line.split(':');
             if(value[0] == 'temperature') temperature = parseFloat(value[1]);
             if(value[0] == 'humidity') humidity = parseFloat(value[1]);
