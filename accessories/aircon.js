@@ -344,8 +344,8 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     if (pseudoDeviceTemperature !== undefined) return;
 
-    //Force w1 and file devices to a 10 minute refresh
-    if (w1DeviceID || temperatureFilePath) config.temperatureUpdateFrequency = 600;
+    //Force w1 and file devices to a minimum 1 minute refresh
+    if (w1DeviceID || temperatureFilePath) config.temperatureUpdateFrequency = Math.max(config.temperatureUpdateFrequency,60);
 
     const device = getDevice({ host, log });
 
