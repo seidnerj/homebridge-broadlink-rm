@@ -15,7 +15,6 @@ class TemperatureSensorAccessory extends AirconAccessory {
     super(log, config, serviceManagerType);
 
     this.temperatureCallbackQueue = {};
-    this.monitorTemperature();
   }
 
   setDefaults () {
