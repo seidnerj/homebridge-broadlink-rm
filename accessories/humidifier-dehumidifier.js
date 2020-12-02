@@ -274,23 +274,40 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
   updateHumidityFromFile () {
     const { config, debug, host, log, name, state } = this;
     const { humidityFilePath } = config;
+    let humidity = null;
+    let temperature = null;
 
     if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateHumidityFromFile reading file: ${humidity}`);
 
-    fs.readFile(humidityFilePath, 'utf8', (err, humidity) => {
+    fs.readFile(humidityFilePath, 'utf8', (err, data) => {
       if (err) {
          log(`\x1b[31m[ERROR] \x1b[0m${name} updateHumidityFromFile\n\n${err.message}`);
       }
 
-      if (humidity === undefined || humidity.trim().length === 0) {
+      if (data === undefined || data.trim().length === 0) {
         log(`\x1b[33m[WARNING]\x1b[0m ${name} updateHumidityFromFile error reading file: ${humidityFilePath}, using previous Temperature`);
         humidity = (state.currentHumidity || 0);
       }
 
-      humidity = parseFloat(humidity);
+      const lines = data.split(/\r?\n/);
+      if (/^[0-9]+\.*[0-9]*$/.test(lines[0])){
+        log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateTemperatureFromFile Found a number: ${data}`);
+        humidity = parseFloat(data);
+      } else {
+        log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateTemperatureFromFile Need to parse: ${data}`);
+        lines.forEach((line) => {
+          if(-1 < line.indexOf(':')){
+            log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateTemperatureFromFile Parsing Line: ${line}`);
+            let value = line.split(':');
+            if(value[0] == 'temperature') temperature = parseFloat(value[1]);
+            if(value[0] == 'humidity') humidity = parseFloat(value[1]);
+          }
+        });
+      }
+
       if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateHumidityFromFile (parsed humidity: ${humidity})`);
 
-      this.onHumidity(null, humidity);
+      this.onHumidity(temperature, humidity);
     });
   }
   
