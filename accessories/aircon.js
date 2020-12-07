@@ -450,7 +450,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
   updateTemperatureFromFile () {
     const { config, debug, host, log, name, state } = this;
-    const { temperatureFilePath, noHumidity } = config;
+    const { temperatureFilePath, noHumidity, batteryAlerts } = config;
     let humidity = null;
     let temperature = null;
 
@@ -476,6 +476,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
             let value = line.split(':');
             if(value[0] == 'temperature') temperature = parseFloat(value[1]);
             if(value[0] == 'humidity' && !noHumidity) humidity = parseFloat(value[1]);
+            if(value[0] == 'battery' && batteryAlerts) state.batteryLevel = parseFloat(value[1]);
           }
         });
       }
