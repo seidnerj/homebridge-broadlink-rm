@@ -59,7 +59,7 @@ class HumiditySensorAccessory extends HumidifierAccessory {
     const { config, state, log, debug } = this;
 
     const batteryAlert = state.batteryLevel <= 20? Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW : Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL;
-    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} Battery Level:',state.batteryLevel,'Alert:',batteryAlert);
+    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} Battery Level:`,state.batteryLevel,'Alert:',batteryAlert);
 
     callback(null, batteryAlert);
   }
