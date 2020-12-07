@@ -1,7 +1,8 @@
 # Changes
 
 ## 4.3.9-BETA
- - [Improvement] Added Temperature and Humidity readings from files but finding lines with temperature:XX and/or humidity:XX
+ - [Improvement] Added Low Battery Alerts to Humidity and Temperature sensors (using battery:XX in readings from files)
+ - [Improvement] Extended Temperature and Humidity readings from files to support temperature:XX, humidity:XX, and battery:XX values on each line
  - [Improvement] Removed file and w1 Temperature readings being forced to 10 minutes. Now 1 minute minimum and adjustable
  - [Bug] Fixed dupliate monitorTemperature calls from Temperature Sensor accessories
 
