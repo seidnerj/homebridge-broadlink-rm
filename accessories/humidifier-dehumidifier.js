@@ -273,7 +273,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
   
   updateHumidityFromFile () {
     const { config, debug, host, log, name, state } = this;
-    const { humidityFilePath } = config;
+    const { humidityFilePath, batteryAlerts } = config;
     let humidity = null;
     let temperature = null;
 
@@ -298,6 +298,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
             let value = line.split(':');
             if(value[0] == 'temperature') temperature = parseFloat(value[1]);
             if(value[0] == 'humidity') humidity = parseFloat(value[1]);
+            if(value[0] == 'battery' && batteryAlerts) state.batteryLevel = parseFloat(value[1]);
           }
         });
       }
