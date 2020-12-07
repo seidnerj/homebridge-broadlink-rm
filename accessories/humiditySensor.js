@@ -63,6 +63,12 @@ class HumiditySensorAccessory extends HumidifierAccessory {
 
     callback(null, batteryAlert);
   }
+  
+  getBatteryLevel (callback) {
+    const { config, state, log, debug } = this;
+    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} Battery Level:`,state.batteryLevel);
+    callback(null, parseFloat(state.batteryLevel));
+  }
 
   // Service Manager Setup
   setupServiceManager () {
@@ -82,6 +88,13 @@ class HumiditySensorAccessory extends HumidifierAccessory {
         name: 'batteryAlert',
         type: Characteristic.StatusLowBattery,
         method: this.getBatteryAlert,
+        bind: this
+      })
+      
+      this.serviceManager.addGetCharacteristic({
+        name: 'batteryLevel',
+        type: Characteristic.BatteryLevel,
+        method: this.getBatteryLevel,
         bind: this
       })
     };
