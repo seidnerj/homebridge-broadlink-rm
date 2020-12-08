@@ -116,12 +116,17 @@ key | description | example | default
 noHumidity (optional) | Removes Humidity information from the device. It will be removed when using w1Device or temperatureFilePath | true | false
 tempertureAdjustment (optional) | An adjustment value to tune the value from the value the broadlink returns | -5 | 0 
 humidityAdjustment (optional) | An adjustment value to tune the value from the value the broadlink returns | -5 | 0 
+temperatureFilePath (optional) | path to a local file that Temperature (and other) readings can come from. Needs to be either a single number (used as temperature) or temperature:XX \nhumidity:XX\n battery:XX | /var/tmp/livingroom.txt | null
+batteryAlerts | Sets whether battery levels are monitored (using battery:XX in temperatureFilePath). Adds some HAP Characteristics errors on start-up as Battery Level is not native but supported in Eve app. | true | false
+
 
 ### HumiditySensor Accessory
 Adds a temperature and humidity sensor using the Broadlink device's sensors.
 key | description | example | default
 --- | ----------- | ------- | -------
 humidityAdjustment (optional) | An adjustment value to tune the value from the value the broadlink returns | -5 | 0 
+humidityFilePath (optional) | path to a local file that Humidity readings can come from. Needs to be either a single number (used as humidity) or humidity:XX\n battery:XX | /var/tmp/humidity.txt | null
+batteryAlerts | Sets whether battery levels are monitored (using battery:XX in humidityFilePath). Adds some HAP Characteristics errors on start-up as Battery Level is not native but supported in Eve app. | true | false
 
 ### TV Accessory
 
