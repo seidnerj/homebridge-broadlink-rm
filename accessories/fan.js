@@ -143,6 +143,8 @@ class FanAccessory extends SwitchAccessory {
 
     this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, Service.Fanv2, this.log);
 
+    this.setDefaults();
+    
     this.serviceManager.addToggleCharacteristic({
       name: 'switchState',
       type: Characteristic.Active,
