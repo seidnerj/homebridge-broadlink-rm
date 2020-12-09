@@ -394,7 +394,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
   addTemperatureCallbackToQueue (callback) {
     const { config, host, debug, log, name, state } = this;
-    const { mqttURL, temperatureFilePath, w1DeviceID } = config;
+    const { mqttURL, temperatureFilePath, w1DeviceID, noHumidity } = config;
 
     // Clear the previous callback
     if (Object.keys(this.temperatureCallbackQueue).length > 1) {
@@ -425,7 +425,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     // Read temperature from mqtt
     if (mqttURL) {
       const temperature = this.mqttValueForIdentifier('temperature');
-      const humidity = this.mqttValueForIdentifier('humidity');
+      const humidity = noHumidity ? null : this.mqttValueForIdentifier('humidity');
       this.onTemperature(temperature || 0,humidity);
 
       return;
