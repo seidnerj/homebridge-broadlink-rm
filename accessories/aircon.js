@@ -626,6 +626,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     super.onMQTTMessage(identifier, message);
 
+    //This is now used for more than just temperature readings and the variable name should be updated
     let temperature = this.mqttValuesTemp[identifier];
 
     if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onMQTTMessage (raw value: ${temperature})`);
@@ -657,7 +658,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     temperature = parseFloat(temperature);
 
-    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onMQTTMessage (parsed temperature: ${temperature})`);
+    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onMQTTMessage (parsed ${identifier}: ${temperature})`);
     if (identifier == 'battery'){
       state.batteryLevel = temperature;
       return;
