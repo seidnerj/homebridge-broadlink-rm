@@ -313,7 +313,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
   onMQTTMessage (identifier, message) {
     const { debug, log, name } = this;
 
-    if (identifier !== 'unknown' && identifier !== 'humidity') {
+    if (identifier !== 'unknown' && identifier !== 'humidity' && identifier !== 'battery') {
       log(`\x1b[31m[ERROR] \x1b[0m${name} onMQTTMessage (mqtt message received with unexpected identifier: ${identifier}, ${message.toString()})`);
 
       return;
