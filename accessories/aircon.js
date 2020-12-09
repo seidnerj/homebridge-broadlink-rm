@@ -425,7 +425,8 @@ class AirConAccessory extends BroadlinkRMAccessory {
     // Read temperature from mqtt
     if (mqttURL) {
       const temperature = this.mqttValueForIdentifier('temperature');
-      this.onTemperature(temperature || 0);
+      const humidity = this.mqttValueForIdentifier('humidity');
+      this.onTemperature(temperature || 0,humidity);
 
       return;
     }
@@ -615,9 +616,9 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
   // MQTT
   onMQTTMessage (identifier, message) {
-    const { debug, log, name } = this;
+    const { state, debug, log, name } = this;
 
-    if (identifier !== 'unknown' && identifier !== 'temperature') {
+    if (identifier !== 'unknown' && identifier !== 'temperature' && identifier !== 'humidity' && identifier !== 'battery') {
       log(`\x1b[31m[ERROR] \x1b[0m${name} onMQTTMessage (mqtt message received with unexpected identifier: ${identifier}, ${message.toString()})`);
 
       return;
@@ -657,7 +658,11 @@ class AirConAccessory extends BroadlinkRMAccessory {
     temperature = parseFloat(temperature);
 
     if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onMQTTMessage (parsed temperature: ${temperature})`);
-
+    if (identifier == 'battery'){
+      state.batteryLevel = temperature;
+      return;
+    }
+    
     this.mqttValues[identifier] = temperature;
     this.updateTemperatureUI();
   }
