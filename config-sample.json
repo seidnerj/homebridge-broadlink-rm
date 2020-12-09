@@ -92,7 +92,19 @@
 				"type": "humiditySensor"
 			},{
 				"name": "LivingRoom temperature",
-				"type": "temperatureSensor"
+				"type": "temperatureSensor",
+        "batteryAlerts": true,
+        "mqttURL": "mqtt://localhost",
+        "mqttTopic": [{
+          "identifier": "temperature",
+          "topic": "/mi_temp/LivingRoom/temperature"
+        },{
+          "identifier": "battery",
+          "topic": "/mi_temp/LivingRoom/battery"
+        },{
+          "identifier": "humidity",
+          "topic": "/mi_temp/LivingRoom/humidity"
+        }],
 			},{
 				"name": "Classic Dehumidifer",
 				"type": "humidifier-dehumidifier",
