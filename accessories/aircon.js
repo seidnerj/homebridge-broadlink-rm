@@ -626,45 +626,54 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     super.onMQTTMessage(identifier, message);
 
-    //This is now used for more than just temperature readings and the variable name should be updated
-    let temperature = this.mqttValuesTemp[identifier];
-
-    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onMQTTMessage (raw value: ${temperature})`);
-
+    let value = this.mqttValuesTemp[identifier];
+    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onMQTTMessage (raw value: ${value})`);
     try {
+      //Attempt to parse JSON - if result is JSON
       const temperatureJSON = JSON.parse(temperature);
 
       if (typeof temperatureJSON === 'object') {
         let values = findKey(temperatureJSON, 'temp');
-        if (values.length === 0) values = findKey(temperatureJSON, 'Temp');
-        if (values.length === 0) values = findKey(temperatureJSON, 'temperature');
-        if (values.length === 0) values = findKey(temperatureJSON, 'Temperature');
+        if(identifier == 'unknown' || identifier == 'temperature'){
+          //Try to locate other Temperature fields
+          if (values.length === 0) values = findKey(temperatureJSON, 'Temp');
+          if (values.length === 0) values = findKey(temperatureJSON, 'temperature');
+          if (values.length === 0) values = findKey(temperatureJSON, 'Temperature');
+        else if (identifier == 'humidity'){
+          //Try to locate other Humidity fields
+          if (values.length === 0) values = findKey(temperatureJSON, 'Hum');
+          if (values.length === 0) values = findKey(temperatureJSON, 'hum');
+          if (values.length === 0) values = findKey(temperatureJSON, 'Humidity');
+          if (values.length === 0) values = findKey(temperatureJSON, 'humidity');
+        }else{
+          //Try to locate other Battery fields
+          if (values.length === 0) values = findKey(temperatureJSON, 'Batt');
+          if (values.length === 0) values = findKey(temperatureJSON, 'batt');
+          if (values.length === 0) values = findKey(temperatureJSON, 'Battery');
+          if (values.length === 0) values = findKey(temperatureJSON, 'battery');
+        }
 
         if (values.length > 0) {
-          temperature = values[0];
+          value = values[0];
         } else {
-          temperature = undefined;
+          value = undefined;
         }
       }
-    } catch (err) {}
+    } catch (err) {//Result couldn't be parsed as JSON}
 
-    if (temperature === undefined || (typeof temperature === 'string' && temperature.trim().length === 0)) {
-      log(`\x1b[31m[ERROR] \x1b[0m${name} onMQTTMessage (mqtt temperature temperature not found)`);
-
+    if (value === undefined || (typeof value === 'string' && value.trim().length === 0)) {
+      log(`\x1b[31m[ERROR] \x1b[0m${name} onMQTTMessage (mqtt value not found)`);
       return;
     }
 
-    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onMQTTMessage (raw value 2: ${temperature.trim()})`);
+    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onMQTTMessage (parsed value: ${value.trim()})`);
+    value = parseFloat(value);
 
-    temperature = parseFloat(temperature);
-
-    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onMQTTMessage (parsed ${identifier}: ${temperature})`);
     if (identifier == 'battery'){
-      state.batteryLevel = temperature;
+      state.batteryLevel = value;
       return;
     }
-    
-    this.mqttValues[identifier] = temperature;
+    this.mqttValues[identifier] = value;
     this.updateTemperatureUI();
   }
 
