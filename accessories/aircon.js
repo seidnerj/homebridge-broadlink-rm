@@ -639,7 +639,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
           if (values.length === 0) values = findKey(temperatureJSON, 'Temp');
           if (values.length === 0) values = findKey(temperatureJSON, 'temperature');
           if (values.length === 0) values = findKey(temperatureJSON, 'Temperature');
-        else if (identifier == 'humidity'){
+        }else if (identifier == 'humidity'){
           //Try to locate other Humidity fields
           if (values.length === 0) values = findKey(temperatureJSON, 'Hum');
           if (values.length === 0) values = findKey(temperatureJSON, 'hum');
