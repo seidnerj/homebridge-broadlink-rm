@@ -349,7 +349,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
           value = undefined;
         }
       }
-    } catch (err) {}
+    } catch (err) {} //Couldn't parse as JSON
 
     if (value === undefined || (typeof value === 'string' && value.trim().length === 0)) {
       log(`\x1b[31m[ERROR] \x1b[0m${name} onMQTTMessage (mqtt value not found)`);
