@@ -661,7 +661,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
           value = undefined;
         }
       }
-    } catch (err) {//Result couldn't be parsed as JSON}
+    } catch (err) {} //Result couldn't be parsed as JSON
 
     if (value === undefined || (typeof value === 'string' && value.trim().length === 0)) {
       log(`\x1b[31m[ERROR] \x1b[0m${name} onMQTTMessage (mqtt value not found)`);
