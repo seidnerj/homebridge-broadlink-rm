@@ -315,45 +315,55 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
 
     if (identifier !== 'unknown' && identifier !== 'humidity' && identifier !== 'battery') {
       log(`\x1b[31m[ERROR] \x1b[0m${name} onMQTTMessage (mqtt message received with unexpected identifier: ${identifier}, ${message.toString()})`);
-
       return;
     }
 
     super.onMQTTMessage(identifier, message);
 
-    let humidity = this.mqttValuesTemp[identifier];
-
-    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onMQTTMessage (raw value: ${humidity})`);
+    let value = this.mqttValuesTemp[identifier];
+    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onMQTTMessage (raw value: ${value})`);
 
     try {
-      const humidityJSON = JSON.parse(humidity);
+      const humidityJSON = JSON.parse(value);
 
       if (typeof humidityJSON === 'object') {
-        let values = findKey(humidityJSON, 'temp');
-        if (values.length === 0) values = findKey(humidityJSON, 'RelativeHumidity');
-        if (values.length === 0) values = findKey(humidityJSON, 'Humidity');
+        let values = findKey(humidityJSON, 'humidity');
+        if (identifier == 'humidity' || identifier == 'unknown'){
+          //Try to locate other Humidity fields
+          if (values.length === 0) values = findKey(temperatureJSON, 'Hum');
+          if (values.length === 0) values = findKey(temperatureJSON, 'hum');
+          if (values.length === 0) values = findKey(temperatureJSON, 'Humidity');
+          if (values.length === 0) values = findKey(temperatureJSON, 'RelativeHumidity');
+          if (values.length === 0) values = findKey(temperatureJSON, 'relativehumidity');
+        }else{
+          //Try to locate other Battery fields
+          if (values.length === 0) values = findKey(temperatureJSON, 'Batt');
+          if (values.length === 0) values = findKey(temperatureJSON, 'batt');
+          if (values.length === 0) values = findKey(temperatureJSON, 'Battery');
+          if (values.length === 0) values = findKey(temperatureJSON, 'battery');
+        }
 
         if (values.length > 0) {
-          humidity = values[0];
+          value = values[0];
         } else {
-          humidity = undefined;
+          value = undefined;
         }
       }
     } catch (err) {}
 
-    if (humidity === undefined || (typeof humidity === 'string' && humidity.trim().length === 0)) {
-      log(`\x1b[31m[ERROR] \x1b[0m${name} onMQTTMessage (mqtt humidity not found)`);
-
+    if (value === undefined || (typeof value === 'string' && value.trim().length === 0)) {
+      log(`\x1b[31m[ERROR] \x1b[0m${name} onMQTTMessage (mqtt value not found)`);
       return;
     }
 
-    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onMQTTMessage (raw value 2: ${humidity.trim()})`);
-
-    humidity = parseFloat(humidity);
-
-    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onMQTTMessage (parsed temperature: ${humidity})`);
-
-    this.mqttValues[identifier] = humidity;
+    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onMQTTMessage (parsed value: ${value})`);
+    value = parseFloat(value);
+    
+    if (identifier == 'battery'){
+      state.batteryLevel = value;
+      return;
+    }
+    this.mqttValues[identifier] = value;
     this.updateHumidityUI();
   }
 
