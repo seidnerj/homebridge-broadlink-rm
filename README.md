@@ -34,6 +34,8 @@ Thank you!
 
 ## Documentation
 
+Base documentation can be found [here](https://lprhodes.github.io/slate/). With additional configuration options outlined below.
+
 If the plugin is unable to discover your device, it's likely you've locked the device with the cloud so it no longer accepts local connections. In this case, follow these steps:
 1. Open the [Broadlink app](https://apps.apple.com/us/app/broadlink/id1450257910)
 2. From the Home screen, tap on your Broadlink device
@@ -44,8 +46,6 @@ If the plugin is unable to discover your device, it's likely you've locked the d
 <img src="https://i.imgur.com/DMTUbDo.png" width="40%" height="40%">
 
 This plugin should now be able to discover your device.
-
-Base documentation can be found [here](https://lprhodes.github.io/slate/). With the following additional configuration options available in this fork:
 
 ### Hosts Configuration
 By default the plugin will search the network and discover your Broadlink devices. If you'd prefer to manaually add devices you can add a hosts section to your config.json (refer to the [sample config](https://github.com/kiwi-cam/homebridge-broadlink-rm/blob/master/config-sample.json#L18-L27))
@@ -77,6 +77,8 @@ w1DeviceID (optional) | Updates device current temperature from a Raspberry Pi W
 heatOnly (optional) | Forces the Aircon accessory to only operate in Heat mode | true | false
 coolOnly (optional) | Forces the Aircon accessory to only operate in Cool mode | true | false
 noHumidity (optional) | Removes Humidity information from the device. It will be removed when using w1Device or temperatureFilePath | true | false
+mqttURL (optional) | The URL to monitor for MQTT topics (below) | mqtt://localhost | null
+mqttTopic (optional) | The mqtt topic for temperature data, or an array of objects with an identifier and topic. Identifier can be temperature or humidity. | "/mi_temp/LivingRoom/temperature" | null
 
 #### "data" key-value object
 The device can be setup to manage modes in one of two ways. If your AC unit accepts a hexcade to change mode only (without temperature details) you can set the mode keys (heat/cool) and then the temperatureX values to change the teperature. If your AC unit sends hexcodes that contain the mode AND temperature you can use the modeX codes alone.
@@ -108,6 +110,8 @@ noHumidity (optional) | Removes Humidity information from the device. It will be
 humidityAdjustment (optional) | An adjustment value to tune the value from the value the broadlink returns | -5 | 0 
 humidityFilePath (optional) | path to a local file that Humidity readings can come from | /var/tmp/humidity.txt | null
 data>fanOnly (optional) | Hex code used to disable both Humidifer and Dehumifier functions | 0020000... | off code used if not supplied 
+mqttURL (optional) | The URL to monitor for MQTT topics (below) | mqtt://localhost | null
+mqttTopic (optional) | The mqtt topic for humidity data | "/mi_temp/LivingRoom/humidity" | null
 
 ### TemperatureSensor Accessory
 Adds a temperature and humidity sensor using the Broadlink device's sensors.
@@ -117,8 +121,9 @@ noHumidity (optional) | Removes Humidity information from the device. It will be
 tempertureAdjustment (optional) | An adjustment value to tune the value from the value the broadlink returns | -5 | 0 
 humidityAdjustment (optional) | An adjustment value to tune the value from the value the broadlink returns | -5 | 0 
 temperatureFilePath (optional) | path to a local file that Temperature (and other) readings can come from. Needs to be either a single number (used as temperature) or temperature:XX \nhumidity:XX\n battery:XX | /var/tmp/livingroom.txt | null
-batteryAlerts | Sets whether battery levels are monitored (using battery:XX in temperatureFilePath). Adds some HAP Characteristics errors on start-up as Battery Level is not native but supported in Eve app. | true | false
-
+batteryAlerts (optional) | Sets whether battery levels are monitored (using battery:XX in humidityFilePath). Adds some HAP Characteristics errors on start-up as Battery Level is not native but supported in Eve app. Requires file or MQTT to include 'battery' field | true | false
+mqttURL (optional) | The URL to monitor for MQTT topics (below) | mqtt://localhost | null
+mqttTopic (optional) | The mqtt topic for temperature data, or an array of objects with an identifier and topic. Identifier can be temperature,humidity, or battery. |  "/mi_temp/LivingRoom/temperature" | null
 
 ### HumiditySensor Accessory
 Adds a temperature and humidity sensor using the Broadlink device's sensors.
@@ -126,7 +131,9 @@ key | description | example | default
 --- | ----------- | ------- | -------
 humidityAdjustment (optional) | An adjustment value to tune the value from the value the broadlink returns | -5 | 0 
 humidityFilePath (optional) | path to a local file that Humidity readings can come from. Needs to be either a single number (used as humidity) or humidity:XX\n battery:XX | /var/tmp/humidity.txt | null
-batteryAlerts | Sets whether battery levels are monitored (using battery:XX in humidityFilePath). Adds some HAP Characteristics errors on start-up as Battery Level is not native but supported in Eve app. | true | false
+batteryAlerts (optional) | Sets whether battery levels are monitored (using battery:XX in humidityFilePath). Adds some HAP Characteristics errors on start-up as Battery Level is not native but supported in Eve app. Requires file or MQTT to include 'battery' field | true | false
+mqttURL (optional) | The URL to monitor for MQTT topics (below) | mqtt://localhost | null
+mqttTopic (optional) | The mqtt topic for humidity data, or an array of objects with an identifier and topic. Identifier can be humidity or battery. |  "/mi_temp/LivingRoom/humidity" | null
 
 ### TV Accessory
 
