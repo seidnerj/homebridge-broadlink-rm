@@ -7,6 +7,7 @@
  - [Improvement] Removed file and w1 Temperature readings being forced to 10 minutes. Now 1 minute minimum and adjustable
  - [Improvement] Added MQTT support to AC and Temperature sensor using temperature,humidity, and battery identifiers
  - [Bug] Fixed dupliate monitorTemperature calls from Temperature Sensor accessories
+ - [Bug] Fixed SIGTERM when unexpected packet received
 
 ## 4.3.8
 - [Improvement] Added Keep Alive packet to RM Devices to avoid reboots when the cloud is unreachable.
