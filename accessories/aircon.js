@@ -645,6 +645,8 @@ class AirConAccessory extends BroadlinkRMAccessory {
           if (values.length === 0) values = findKey(temperatureJSON, 'hum');
           if (values.length === 0) values = findKey(temperatureJSON, 'Humidity');
           if (values.length === 0) values = findKey(temperatureJSON, 'humidity');
+          if (values.length === 0) values = findKey(temperatureJSON, 'RelativeHumidity');
+          if (values.length === 0) values = findKey(temperatureJSON, 'relativehumidity');
         }else{
           //Try to locate other Battery fields
           if (values.length === 0) values = findKey(temperatureJSON, 'Batt');
