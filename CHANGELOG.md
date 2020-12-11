@@ -6,7 +6,7 @@
  - [Improvement] Extended Temperature and Humidity readings from files to support temperature:XX, humidity:XX, and battery:XX values on each line
  - [Improvement] Removed file and w1 Temperature readings being forced to 10 minutes. Now 1 minute minimum and adjustable
  - [Improvement] Added MQTT support to AC and Temperature sensor using temperature,humidity, and battery identifiers
- - [Bug] Fixed dupliate monitorTemperature calls from Temperature Sensor accessories
+ - [Bug] Fixed duplicate monitorTemperature calls from Temperature Sensor accessories
  - [Bug] Fixed SIGTERM when unexpected packet received
 
 ## 4.3.8
