@@ -7,6 +7,7 @@
  - [Improvement] Removed file and w1 Temperature readings being forced to 10 minutes. Now 1 minute minimum and adjustable
  - [Improvement] Added MQTT support to AC and Temperature sensor using temperature,humidity, and battery identifiers
  - [Improvement] Added HeaterCooler accessory option. Refer to [this document](https://github.com/kiwi-cam/homebridge-broadlink-rm/blob/kiwi-cam-beta-1/docs/heater-cooler.md) to read @newt10's work here.
+ - [Improvement] Integrated the platform helper module to improve maintainability.
  - [Bug] Fixed duplicate monitorTemperature calls from Temperature Sensor accessories
  - [Bug] Fixed SIGTERM when unexpected packet received
 
