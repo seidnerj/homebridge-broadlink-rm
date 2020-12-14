@@ -54,7 +54,12 @@ class AirConAccessory extends BroadlinkRMAccessory {
     if (config.minimumAutoOnOffDuration === undefined) config.minimumAutoOnOffDuration = config.autoMinimumDuration || 120; // Backwards compatible with `autoMinimumDuration`
     config.minTemperature = config.minTemperature || -15;
     config.maxTemperature = config.maxTemperature || 50;
-    config.temperatureUpdateFrequency = config.temperatureUpdateFrequency || 10;
+    if(config.mqttURL) {
+      //MQTT updates when published so frequent refreshes aren't required ( 10 minute default as a fallback )
+      config.temperatureUpdateFrequency = config.temperatureUpdateFrequency || 600;
+    } else {
+      config.temperatureUpdateFrequency = config.temperatureUpdateFrequency || 10;
+    }
     config.units = config.units ? config.units.toLowerCase() : 'c';
     config.temperatureAdjustment = config.temperatureAdjustment || 0;
     config.humidityAdjustment = config.humidityAdjustment || 0;
