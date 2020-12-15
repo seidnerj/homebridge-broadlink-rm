@@ -34,7 +34,7 @@ Thank you!
 
 ## Documentation
 
-Base documentation can be found [here](https://lprhodes.github.io/slate/). With additional configuration options outlined below.
+Base documentation can be found [here](https://kiwi-cam.github.io/broadlinkrm-docs/). With additional configuration options outlined below.
 
 If the plugin is unable to discover your device, it's likely you've locked the device with the cloud so it no longer accepts local connections. In this case, follow these steps:
 1. Open the [Broadlink app](https://apps.apple.com/us/app/broadlink/id1450257910)
