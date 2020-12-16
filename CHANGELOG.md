@@ -1,6 +1,6 @@
 # Changes
 
-## 4.3.9-BETA
+## 4.4.0
  - [Improvement] Updated all dependencies to remove some security vulnerabilities 
  - [Improvement] Added Low Battery Alerts to Humidity and Temperature sensors (using battery:XX in readings from files)
  - [Improvement] Extended Temperature and Humidity readings from files to support temperature:XX, humidity:XX, and battery:XX values on each line
