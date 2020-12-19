@@ -1,5 +1,8 @@
 # Changes
 
+## 4.4.1-BETA
+ - [Improvement] Added heater-cooler tempStepSize to support devices without 0.5 temperaure codes
+
 ## 4.4.0
  - [Improvement] Updated all dependencies to remove some security vulnerabilities 
  - [Improvement] Added Low Battery Alerts to Humidity and Temperature sensors (using battery:XX in readings from files)
