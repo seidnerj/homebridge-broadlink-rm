@@ -13,9 +13,12 @@ class LearnIRAccessory extends BroadlinkRMAccessory {
     config.persistState = false;
 
     super(log, config, serviceManagerType);
-    this.state.switchState = false;
   }
 
+  setDefaults () {
+    this.state.switchState = false;
+  }
+  
   toggleLearning (props, on, callback) {
     const { config, serviceManager } = this;
     const { disableAutomaticOff, scanRF, scanFrequency } = config;
