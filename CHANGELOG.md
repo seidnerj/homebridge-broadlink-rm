@@ -2,6 +2,7 @@
 
 ## 4.4.1-BETA
  - [Improvement] Added heater-cooler tempStepSize to support devices without 0.5 temperaure codes
+ - [Bug] Fixes "'Temperature Display Units': characteristic was supplied illegal value: undefined!"
 
 ## 4.4.0
  - [Improvement] Updated all dependencies to remove some security vulnerabilities 
