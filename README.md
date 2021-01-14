@@ -13,7 +13,7 @@ Thank you!
 
 ## Documentation
 
-Documentation can be found [here](https://broadlink.kiwicam.nz). If you have any trouble after reading through the information please raise an issue and we'll halp out as best we can.
+Documentation can be found [here](https://broadlink.kiwicam.nz). If you have any trouble after reading through the information please raise an issue and we'll help out as best we can.
 
 If the plugin is unable to discover your device, it's likely you've locked the device with the cloud so it no longer accepts local connections. In this case, follow these steps:
 1. Open the [Broadlink app](https://apps.apple.com/us/app/broadlink/id1450257910)
