@@ -1,7 +1,8 @@
 # Changes
 
 ## 4.4.1-BETA
- - [Improvement] Added heater-cooler tempStepSize to support devices without 0.5 temperaure codes
+ - [Improvement] Adds pingUseArp configuration to use an ARP lookup instead of ICMP ping to test a device's status
+ - [Improvement] Adds heater-cooler tempStepSize to support devices without 0.5 temperaure codes
  - [Bug] Fixes "'Temperature Display Units': characteristic was supplied illegal value: undefined!"
  - [Bug] Fixes "SET handler returned write response value, though the characteristic doesn't support write response! when returning a value"
  - [Bug] Fixes Learn Button error "the characteristic 'On': characteristic was supplied illegal value: undefined!"
