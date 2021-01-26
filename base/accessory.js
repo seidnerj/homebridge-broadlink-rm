@@ -110,7 +110,6 @@ class HomebridgeAccessory {
         log(`${name} set${capitalizedPropertyName}: already ${value} (no data sent - A)`);
 
         callback(null);
-
         return;
       }
 
@@ -119,7 +118,6 @@ class HomebridgeAccessory {
           log(`${name} set${capitalizedPropertyName}: already ${value} (no data sent - B)`);
 
           callback(null);
-
           return;
         }
       }
@@ -139,7 +137,6 @@ class HomebridgeAccessory {
       } else if (data) {
         this.performSetValueAction({ host, data, log, name });
       }
-
       callback(null);
     } catch (err) {
       log('setCharacteristicValue error:', err.message)
