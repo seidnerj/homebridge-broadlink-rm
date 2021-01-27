@@ -131,7 +131,7 @@ const start = (host, callback, turnOffCallback, log, disableTimeout) => {
     device.cancelLearn()
 
     setTimeout(() => {
-      if (debug) log('\x1b[35m[INFO]\x1b[0m Scan RF Frequencies (stopped)');
+      //After 10 Seconds use getData2 to confirm the frequency has been identified
       getData2(device);
     }, 1000);
   }, 10 * 1000); //10s
