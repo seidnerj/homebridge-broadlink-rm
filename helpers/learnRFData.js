@@ -36,7 +36,7 @@ const start = (host, callback, turnOffCallback, log, disableTimeout) => {
   }
 
   if (!device.enterLearning) return log(`\x1b[31m[ERROR]\x1b[0m Learn Code (IR/RF learning not supported for device at ${host})`);
-  if (!device.enterRFSweep) return log(`\x1b[31m[ERROR]\x1b[0m Scan RF (RF learning not supported for device (${device.type}) at ${host})`);
+  if (!device.enterRFSweep) return log(`\x1b[31m[ERROR]\x1b[0m Scan RF (RF learning not supported for device (${device.type.toString(16)}) at ${host})`);
 
   currentDevice = device
 
