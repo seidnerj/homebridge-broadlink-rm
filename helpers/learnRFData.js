@@ -31,12 +31,12 @@ const start = (host, callback, turnOffCallback, log, disableTimeout) => {
 
   // Get the Broadlink device
   const device = getDevice({ host, log, learnOnly: true })
-  if (!device) { 
+  if (!device) {
     return log(`\x1b[35m[INFO]\x1b[0m Learn Code (Couldn't learn code, device not found)`);
   }
 
   if (!device.enterLearning) return log(`\x1b[31m[ERROR]\x1b[0m Learn Code (IR/RF learning not supported for device at ${host})`);
-  if (!device.enterRFSweep) return log(`\x1b[31m[ERROR]\x1b[0m Scan RF (RF learning not supported for device (${device.type.toString(16)}) at ${host})`);
+  if (!device.enterRFSweep) return log(`\x1b[31m[ERROR]\x1b[0m Scan RF (RF learning not supported for device (${device.type}) at ${host})`);
 
   currentDevice = device
 
@@ -126,15 +126,18 @@ const start = (host, callback, turnOffCallback, log, disableTimeout) => {
 
   if (disableTimeout) return;
 
-  // Run frequenc scan for 10 seconds
+  // Timeout the client after 20 seconds
   timeout = setTimeout(() => {
     device.cancelLearn()
 
     setTimeout(() => {
-      //After 10 Seconds use getData2 to confirm the frequency has been identified
+      log('\x1b[35m[INFO]\x1b[0m Scan RF (stopped - 30s timeout)');
       getData2(device);
+      //closeClient();
+
+      //turnOffCallback();
     }, 1000);
-  }, 10 * 1000); //10s
+  }, 10 * 1000); //30s
 }
 
 const getData = (device) => {
@@ -157,7 +160,7 @@ const getData2 = (device) => {
   getDataTimeout2 = setTimeout(() => {
     getData2(device);
   }, 1000);
-  
+
   getData3(device);
 }
 
@@ -165,7 +168,7 @@ const getData3 = (device) => {
   if (getDataTimeout3) clearTimeout(getDataTimeout3);
   if (!closeClient) return;
 
-  device.checkData();
+  device.checkData()
 
   getDataTimeout3 = setTimeout(() => {
     getData3(device);
