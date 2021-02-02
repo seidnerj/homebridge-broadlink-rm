@@ -1,4 +1,4 @@
-onst { getDevice } = require('./getDevice');
+const { getDevice } = require('./getDevice');
 
 let closeClient = null;
 let isClosingClient = false;
