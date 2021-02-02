@@ -1,4 +1,4 @@
-const { getDevice } = require('./getDevice');
+onst { getDevice } = require('./getDevice');
 
 let closeClient = null;
 let isClosingClient = false;
@@ -6,7 +6,6 @@ let timeout = null;
 let getDataTimeout = null;
 let getDataTimeout2 = null;
 let getDataTimeout3 = null;
-let foundFrequency = false;
 
 let currentDevice
 
@@ -32,7 +31,7 @@ const start = (host, callback, turnOffCallback, log, disableTimeout) => {
 
   // Get the Broadlink device
   const device = getDevice({ host, log, learnOnly: true })
-  if (!device) {
+  if (!device) { 
     return log(`\x1b[35m[INFO]\x1b[0m Learn Code (Couldn't learn code, device not found)`);
   }
 
@@ -67,15 +66,34 @@ const start = (host, callback, turnOffCallback, log, disableTimeout) => {
   onRawData = (message) => {
     if (!closeClient) return;
 
+    if (getDataTimeout) clearTimeout(getDataTimeout);
+    getDataTimeout = null;
+
+    log(`\x1b[35m[INFO]\x1b[0m Scan RF (found frequency - 1 of 2)`);
+
     if (device.type === 0x279d || device.type === 0x27a9) {
       return device.enterLearning();
     }
+
+    log(`\x1b[35m[ACTION]\x1b[0m Keep holding that button!`)
+
+    getDataTimeout2 = setTimeout(() => {
+      getData2(device);
+    }, 1000);
   };
 
   onRawData2 = (message) => {
     if (!closeClient) return;
-    
-    foundFrequency = true;
+
+    if (getDataTimeout2) clearTimeout(getDataTimeout2);
+    getDataTimeout = null;
+
+    log(`\x1b[35m[INFO]\x1b[0m Scan RF (found frequency - 2 of 2)`)
+    log(`\x1b[35m[ACTION]\x1b[0m Press the RF button multiple times with a pause between them to get code.`);
+
+    getDataTimeout3 = setTimeout(() => {
+      getData3(device);
+    }, 1000);
   };
 
   onRawData3 = (message) => {
@@ -108,34 +126,17 @@ const start = (host, callback, turnOffCallback, log, disableTimeout) => {
 
   if (disableTimeout) return;
 
-  // Scan frequencies for 10 seconds 
+  // Timeout the client after 20 seconds
   timeout = setTimeout(() => {
-    // After the scan getData2 confirms a frequency was found    
-    clearTimeout(getDataTimeout);
-    getDataTimeout2 = setTimeout(() => {
-      getData2(device);
-      getDataTimeout3 = setTimeout(() => {
-        //After the frequency is found, scan for the code
-        if(foundFrequency){
-          log(`\x1b[35m[INFO]\x1b[0m Frequency found. To complete learning, single press the button you want to learn.`);
-          getData3(device);
+    device.cancelLearn()
 
-          setTimeout(() => {
-            // Cancel after 5 seconds if nothing found    
-            log(`\x1b[35m[INFO]\x1b[0m Code not found. Please try again.`);
-            device.cancelLearn();
-            closeClient();
-            turnOffCallback();
-          }, 5000); //5 seconds to 
-        }else{
-          log(`\x1b[35m[INFO]\x1b[0m Frequency could not be identified. Please try again.`);
-          device.cancelLearn();
-          closeClient();
-          turnOffCallback();
-        }
-      }, 3000); // 3 seconds to confirm Frequency found
+    setTimeout(() => {
+      log('\x1b[35m[INFO]\x1b[0m Scan RF (stopped - 20s timeout)');
+      closeClient();
+
+      turnOffCallback();
     }, 1000);
-  }, 10 * 1000); //Frequency Scan for 10 seconds
+  }, 20 * 1000); //20s
 }
 
 const getData = (device) => {
@@ -144,7 +145,6 @@ const getData = (device) => {
 
   device.checkRFData();
 
-  //Retry every second
   getDataTimeout = setTimeout(() => {
     getData(device);
   }, 1000);
@@ -155,6 +155,10 @@ const getData2 = (device) => {
   if (!closeClient) return;
 
   device.checkRFData2();
+
+  getDataTimeout2 = setTimeout(() => {
+    getData2(device);
+  }, 1000);
 }
 
 const getData3 = (device) => {
@@ -163,7 +167,6 @@ const getData3 = (device) => {
 
   device.checkData()
 
-  //Retry every second
   getDataTimeout3 = setTimeout(() => {
     getData3(device);
   }, 1000);
