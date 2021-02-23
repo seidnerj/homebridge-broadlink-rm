@@ -66,6 +66,10 @@ class TVAccessory extends BroadlinkRMAccessory {
       this.pingGraceTimeout.cancel();
       this.pingGraceTimeout = null;
     }
+    
+	  if (serviceManager.getCharacteristic(Characteristic.Active) === undefined) {
+      serviceManager.setCharacteristic(Characteristic.Active, false);
+    }
   }
   
   checkAutoOnOff() {
