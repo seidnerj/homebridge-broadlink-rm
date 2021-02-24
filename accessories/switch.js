@@ -61,9 +61,9 @@ class SwitchAccessory extends BroadlinkRMAccessory {
       this.pingGraceTimeout = null;
     }
     
-    if (serviceManager.getCharacteristic(Characteristic.On) === undefined) {
-      state.switchState = false;
-      serviceManager.refreshCharacteristicUI(Characteristic.On);
+    if (this.serviceManager.getCharacteristic(Characteristic.On) === undefined) {
+      this.state.switchState = false;
+      this.serviceManager.refreshCharacteristicUI(Characteristic.On);
     }
   }
 
