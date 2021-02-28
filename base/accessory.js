@@ -152,7 +152,7 @@ class HomebridgeAccessory {
 
     const capitalizedPropertyName = propertyName.charAt(0).toUpperCase() + propertyName.slice(1);
 
-    let value = this.state[propertyName];
+    let value = (this.state[propertyName] === undefined) ? 0 : this.state[propertyName];
 
     log(`${name} get${capitalizedPropertyName}: ${value}`);
     callback(null, value);
