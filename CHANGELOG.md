@@ -1,5 +1,8 @@
 # Changes
 
+## 4.4.2-BETA
+ - [Improvement] Set node-persist to ignore parse errors to stop crashing the plugin on read errors
+
 ## 4.4.1
  - [Improvement] Adds pingUseArp configuration to use an ARP lookup instead of ICMP ping to test a device's status
  - [Improvement] Adds heater-cooler tempStepSize to support devices without 0.5 temperaure codes
