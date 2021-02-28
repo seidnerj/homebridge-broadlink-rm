@@ -2,6 +2,7 @@
 
 ## 4.4.2-BETA
  - [Improvement] Set node-persist to ignore parse errors to stop crashing the plugin on read errors
+ - [Improvement] Sets "undefined" On/Active characteristics to Off to prevent future Homebridge errors
 
 ## 4.4.1
  - [Improvement] Adds pingUseArp configuration to use an ARP lookup instead of ICMP ping to test a device's status
