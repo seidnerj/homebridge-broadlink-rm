@@ -38,7 +38,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
   correctReloadedState (state) {
     if (state.currentHeatingCoolingState === Characteristic.CurrentHeatingCoolingState.OFF)  {
-      state.targetTemperature = undefined
+      state.targetTemperature = state.currentTemperature;
     }
 
     state.targetHeatingCoolingState = state.currentHeatingCoolingState;
