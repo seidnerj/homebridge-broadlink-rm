@@ -3,7 +3,8 @@
 ## 4.4.2-BETA
  - [Improvement] Set node-persist to ignore parse errors to stop crashing the plugin on read errors
  - [Improvement] Sets "undefined" On/Active characteristics to Off to prevent future Homebridge errors
- - [Improvement] Adds offDryMode to the airconditioner accessory. Thanks @pixeleyesltd
+ - [Improvement] Adds offDryMode configuration option to the airconditioner accessory. Thanks @pixeleyesltd
+ - [Improvement] Adds stateless configuration switch option to have a switch "forget" its state
 
 ## 4.4.1
  - [Improvement] Adds pingUseArp configuration to use an ARP lookup instead of ICMP ping to test a device's status
