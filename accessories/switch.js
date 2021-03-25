@@ -82,8 +82,11 @@ class SwitchAccessory extends BroadlinkRMAccessory {
     if (!pingIPAddress) return
     
     // Setup Ping/Arp-based State
-    if(!pingUseArp) ping(pingIPAddress, pingFrequency, this.pingCallback.bind(this))
-    else arp(pingIPAddress, pingFrequency, this.pingCallback.bind(this))
+    if(!pingUseArp) {
+      ping(pingIPAddress, pingFrequency, this.pingCallback.bind(this));
+    } else {
+      arp(pingIPAddress, pingFrequency, this.pingCallback.bind(this));
+    }
   }
 
   pingCallback (active) {
@@ -112,7 +115,8 @@ class SwitchAccessory extends BroadlinkRMAccessory {
     if (hexData) await this.performSend(hexData);
     
     if (config.stateless === true) { 
-      serviceManager.setCharacteristic(Characteristic.On, false);
+      state.switchState = false;
+      serviceManager.refreshCharacteristicUI(Characteristic.On);
     } else {
       this.checkAutoOnOff();
     }
@@ -125,7 +129,6 @@ class SwitchAccessory extends BroadlinkRMAccessory {
       let { pingGrace } = config;
 
       if (pingGrace) {
-
         this.pingGraceTimeoutPromise = delayForDuration(pingGrace);
         await this.pingGraceTimeoutPromise;
 
@@ -184,15 +187,6 @@ class SwitchAccessory extends BroadlinkRMAccessory {
         setValuePromise: this.setSwitchState.bind(this)
       }
     });
-    
-    //If Stateless, ignore off data
-    if(config.stateless) {
-      this.serviceManager
-        .getCharacteristic(Characteristic.On)
-          .setProps({
-            offData: null
-      });
-    }
   }
 }
 
