@@ -70,7 +70,7 @@ class TemperatureSensorAccessory extends AirconAccessory {
       bind: this,
       props: {
         minStep: 0.1
-      };
+      }
     });
 
     if (!config.noHumidity){
