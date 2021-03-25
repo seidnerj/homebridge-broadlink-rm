@@ -112,8 +112,7 @@ class SwitchAccessory extends BroadlinkRMAccessory {
     if (hexData) await this.performSend(hexData);
     
     if (config.stateless === true) { 
-      state.switchState = false;
-      serviceManager.refreshCharacteristicUI(Characteristic.On);
+      serviceManager.setCharacteristic(Characteristic.On, false);
     } else {
       this.checkAutoOnOff();
     }
@@ -185,6 +184,15 @@ class SwitchAccessory extends BroadlinkRMAccessory {
         setValuePromise: this.setSwitchState.bind(this)
       }
     });
+    
+    //If Stateless, ignore off data
+    if(config.stateless) {
+      this.serviceManager
+        .getCharacteristic(Characteristic.On)
+          .setProps({
+            .offData: null
+      });
+    }
   }
 }
 
