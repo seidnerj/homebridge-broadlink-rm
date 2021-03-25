@@ -5,6 +5,7 @@
  - [Improvement] Sets "undefined" On/Active characteristics to Off to prevent future Homebridge errors
  - [Improvement] Adds offDryMode configuration option to the airconditioner accessory. Thanks @pixeleyesltd
  - [Improvement] Adds stateless configuration switch option to have a switch "forget" its state
+ - [Bug] Fixes mac address formatting error when using manual hosts devices #266
 
 ## 4.4.1
  - [Improvement] Adds pingUseArp configuration to use an ARP lookup instead of ICMP ping to test a device's status
