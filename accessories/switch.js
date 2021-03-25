@@ -190,7 +190,7 @@ class SwitchAccessory extends BroadlinkRMAccessory {
       this.serviceManager
         .getCharacteristic(Characteristic.On)
           .setProps({
-            .offData: null
+            offData: null
       });
     }
   }
