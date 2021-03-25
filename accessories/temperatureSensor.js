@@ -8,7 +8,7 @@ const ServiceManagerTypes = require('../helpers/serviceManagerTypes');
 const catchDelayCancelError = require('../helpers/catchDelayCancelError');
 const { getDevice } = require('../helpers/getDevice');
 const AirconAccessory = require('./aircon');
-const FakeGatoHistoryService = require('fakegato-history')(homebridge);
+const FakeGatoHistoryService = require('fakegato-history');
 
 class TemperatureSensorAccessory extends AirconAccessory {
 
