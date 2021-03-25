@@ -8,7 +8,6 @@ const ServiceManagerTypes = require('../helpers/serviceManagerTypes');
 const catchDelayCancelError = require('../helpers/catchDelayCancelError');
 const { getDevice } = require('../helpers/getDevice');
 const AirconAccessory = require('./aircon');
-const FakeGatoHistoryService = require('fakegato-history');
 
 class TemperatureSensorAccessory extends AirconAccessory {
 
@@ -61,9 +60,6 @@ class TemperatureSensorAccessory extends AirconAccessory {
 
   setupServiceManager () {
     const { config, name, serviceManagerType } = this;
-    
-    Accessory.log = this.log;
-    this.loggingService = new FakeGatoHistoryService(accessoryType, Accessory, length);
 
     this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, Service.TemperatureSensor, this.log);
 
