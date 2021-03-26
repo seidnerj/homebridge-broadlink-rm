@@ -67,10 +67,7 @@ class TemperatureSensorAccessory extends AirconAccessory {
       name: 'currentTemperature',
       type: Characteristic.CurrentTemperature,
       method: this.getCurrentTemperature,
-      bind: this,
-      props: {
-        minStep: 0.1
-      }
+      bind: this
     });
 
     if (!config.noHumidity){
@@ -104,6 +101,12 @@ class TemperatureSensorAccessory extends AirconAccessory {
       method: this.getTemperatureDisplayUnits,
       bind: this
     })
+    
+    this.serviceManager
+      .getCharacteristic(Characteristic.CurrentTemperature)
+      .setProps({
+        minStep: 0.1
+      });
   }
 }
 
