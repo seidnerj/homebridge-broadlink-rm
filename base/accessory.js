@@ -231,6 +231,11 @@ class HomebridgeAccessory {
     const services = this.getInformationServices();
 
     services.push(this.serviceManager.service);
+    
+    if(this.historyService && this.config.noHistory !== true) {
+      //Note that noHistory is not working as intended. Need to pull from platform config
+      services.push(this.historyService);
+    }
 
     return services;
   }
