@@ -410,7 +410,8 @@ class AirConAccessory extends BroadlinkRMAccessory {
     }
     
     //Process Fakegato history
-    if(config.noHistory !== true) {
+    //Ignore readings of exactly zero - the default no value value.
+    if(config.noHistory !== true && this.state.currentTemperature != 0.00) {
       this.lastUpdatedAt = Date.now();
       if(debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} Logging data to history: temp: ${this.state.currentTemperature}, humidity: ${this.state.currentHumidity}`);
       if(noHumidity){
@@ -457,7 +458,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     if (mqttURL) {
       const temperature = this.mqttValueForIdentifier('temperature');
       const humidity = noHumidity ? null : this.mqttValueForIdentifier('humidity');
-      this.onTemperature(temperature,humidity);
+      this.onTemperature(temperature || 0,humidity);
 
       return;
     }
@@ -471,7 +472,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
         log(`${name} addTemperatureCallbackToQueue (device no longer active, using existing temperature)`);
       }
 
-      this.processQueuedTemperatureCallbacks(state.currentTemperature);
+      this.processQueuedTemperatureCallbacks(state.currentTemperature || 0);
 
       return;
     }
@@ -495,8 +496,8 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
       if (data === undefined || data.trim().length === 0) {
         log(`\x1b[33m[WARNING]\x1b[0m ${name} updateTemperatureFromFile error reading file: ${temperatureFilePath}, using previous Temperature`);
-        if (!noHumidity) humidity = (state.currentHumidity);
-        temperature = (state.currentTemperature);
+        if (!noHumidity) humidity = (state.currentHumidity || 0);
+        temperature = (state.currentTemperature || 0);
       }
 
       const lines = data.split(/\r?\n/);
@@ -539,7 +540,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
         temperature = parseInt(matches[1]) / 1000;
       }else{
         log(`\x1b[33m[WARNING]\x1b[0m ${name} updateTemperatureFromW1 error reading file: ${fName}, using previous Temperature`);
-        temperature = (state.currentTemperature);
+        temperature = (state.currentTemperature || 0);
       }
 
       if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateTemperatureFromW1 (parsed temperature: ${temperature})`);
