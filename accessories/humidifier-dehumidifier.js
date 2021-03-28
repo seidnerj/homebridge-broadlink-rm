@@ -215,7 +215,8 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     if(debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onHumidity (` + humidity + `)`);
 	 
 	  //Fakegato history update 
-    if(config.noHistory !== true) {
+    //Ignore readings of exactly zero - the default no value value.
+    if(config.noHistory !== true && this.state.currentHumidity != 0) {
       this.lastUpdatedAt = Date.now();
       if(debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} Logging data to history: humidity: ${this.state.currentHumidity}`);
       this.historyService.addEntry({ time: Math.round(new Date().valueOf() / 1000), humidity: this.state.currentHumidity });
