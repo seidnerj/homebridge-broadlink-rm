@@ -8,7 +8,7 @@
  - [Improvement] Adds Eve History service support. This can be disabled by adding `"noHistory":true` to your config
  - [Improvement] Moves onTemperature and onHumidity logging to Debug only, reducing noice in the logs from all updates
  - [Bug] Fixes mac address formatting error when using manual hosts devices #266
- - [Bug] Fixes Accessory mac address formatting to support all formats the hosts section does - and impromve matching to devices.
+ - [Bug] Fixes Accessory mac address formatting to support all formats the hosts section does - and improve matching to devices.
  - [Bug] Stopped MQTT updates from defaulting to 0 when the topic isn't found. This does create messages that the plugin is slowing homebridge until MQTT updates are recieved.
 
 ## 4.4.1
