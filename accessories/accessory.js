@@ -12,6 +12,7 @@ class BroadlinkRMAccessory extends HomebridgeAccessory {
     if (!config.name) config.name = "Unknown Accessory"
 
     config.resendDataAfterReload = config.resendHexAfterReload;
+    if (config.host) config.host = config.host.toUpperCase();
 
     super(log, config, serviceManagerType);
     if (config.debug) this.debug = true
