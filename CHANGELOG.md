@@ -2,7 +2,7 @@
 
 ## 4.4.2-BETA
  - [Improvement] Set node-persist to ignore parse errors to stop crashing the plugin on read errors
- - [Improvement] Sets "undefined" On/Active characteristics to Off to prevent future Homebridge errors
+ - [Improvement] Sets "undefined" characteristics to either 0 or minValue to prevent future Homebridge errors
  - [Improvement] Adds offDryMode configuration option to the airconditioner accessory. Thanks @pixeleyesltd
  - [Improvement] Adds stateless configuration switch option to have a switch "forget" its state
  - [Improvement] Adds Eve History service support. This can be disabled by adding `"noHistory":true` to your config
