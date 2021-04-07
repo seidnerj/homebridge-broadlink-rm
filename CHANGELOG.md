@@ -1,7 +1,8 @@
 # Changes
 
 ## 4.4.3-BETA
-
+ - [Improvement] Adds Mute button to TV accessories
+ - 
 ## 4.4.2
  - [Improvement] Set node-persist to ignore parse errors to stop crashing the plugin on read errors
  - [Improvement] Sets "undefined" characteristics to either 0 or minValue to prevent future Homebridge errors
