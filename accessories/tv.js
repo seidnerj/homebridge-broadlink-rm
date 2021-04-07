@@ -380,6 +380,29 @@ class TVAccessory extends BroadlinkRMAccessory {
         this.performSend(hexData);
         callback(null);
       });
+    speakerService
+      .getCharacteristic(Characteristic.Mute)
+      .on('set', (newValue, callback) => {
+        if (!data || !data.volume || !data.volume.mute) {
+          log(
+            `${name} VolumeSelector: No mute data found. Ignoring request.`
+          );
+          callback(null);
+          return;
+        }
+      
+      let hexData = data.volume.mute;
+      if (!hexData) {
+        log(
+          `${name} VolumeSelector: No IR code found for mute!`
+        );
+        callback(null);
+        return;
+      }
+
+      this.performSend(hexData);
+      callback(null);         
+    });
 
     this.serviceManagers.push(speakerService);
 
