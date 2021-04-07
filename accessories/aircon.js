@@ -31,6 +31,14 @@ class AirConAccessory extends BroadlinkRMAccessory {
     HeatingCoolingConfigKeys[Characteristic.TargetHeatingCoolingState.HEAT] = 'heat';
     HeatingCoolingConfigKeys[Characteristic.TargetHeatingCoolingState.AUTO] = 'auto';
     this.HeatingCoolingConfigKeys = HeatingCoolingConfigKeys;
+    
+    // Fakegato setup
+    if(config.noHistory !== true) {
+      this.displayName = config.name;
+      this.lastUpdatedAt = undefined;
+      this.historyService = new HistoryService("room", this, { storage: 'fs', filename: 'RMPro_' + config.name.replace(' ','-') + '_persist.json'});
+      this.historyService.log = this.log;  
+    }
 
     this.temperatureCallbackQueue = {};
     this.monitorTemperature();
@@ -38,7 +46,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
   correctReloadedState (state) {
     if (state.currentHeatingCoolingState === Characteristic.CurrentHeatingCoolingState.OFF)  {
-      state.targetTemperature = undefined
+      state.targetTemperature = state.currentTemperature;
     }
 
     state.targetHeatingCoolingState = state.currentHeatingCoolingState;
@@ -198,7 +206,14 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     if (targetHeatingCoolingState === 'off') {
       this.updateServiceCurrentHeatingCoolingState(HeatingCoolingStates.off);
-      await this.performSend(data.off);
+
+      if (currentHeatingCoolingState === 'cool' && data.offDryMode !== undefined) {
+        // Dry off mode when previously cooling
+        log(`${name} Previous state ${currentHeatingCoolingState}, setting off with dry mode`);
+        await this.performSend(data.offDryMode);
+      } else {
+        await this.performSend(data.off);
+      }
 
       return;
     }
@@ -373,7 +388,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
   }
 
   onTemperature (temperature,humidity) {
-    const { config, host, log, name, state } = this;
+    const { config, host, debug, log, name, state } = this;
     const { minTemperature, maxTemperature, temperatureAdjustment, humidityAdjustment, noHumidity } = config;
 
     // onTemperature is getting called twice. No known cause currently.
@@ -382,7 +397,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     temperature += temperatureAdjustment;
     state.currentTemperature = temperature;
-    log(`${name} onTemperature (${temperature})`);
+    if(debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onTemperature (${temperature})`);
 
     if(humidity) {
       if(noHumidity){
@@ -390,7 +405,19 @@ class AirConAccessory extends BroadlinkRMAccessory {
       }else{
         humidity += humidityAdjustment;
         state.currentHumidity = humidity;
-        log(`${name} onHumidity (` + humidity + `)`);
+        if(debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onHumidity (` + humidity + `)`);
+      }
+    }
+    
+    //Process Fakegato history
+    //Ignore readings of exactly zero - the default no value value.
+    if(config.noHistory !== true && this.state.currentTemperature != 0.00) {
+      this.lastUpdatedAt = Date.now();
+      if(debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} Logging data to history: temp: ${this.state.currentTemperature}, humidity: ${this.state.currentHumidity}`);
+      if(noHumidity){
+        this.historyService.addEntry({ time: Math.round(new Date().valueOf() / 1000), temp: this.state.currentTemperature });
+      }else{
+        this.historyService.addEntry({ time: Math.round(new Date().valueOf() / 1000), temp: this.state.currentTemperature, humidity: this.state.currentHumidity });
       }
     }
     
