@@ -2,6 +2,8 @@
 
 ## 4.4.3-BETA
  - [Improvement] Adds Mute button to TV accessories
+ - [Improvement] Adds the RM Mini 3 6507
+ - [Improvement] Adds fan speed step functionality - thanks @EpicKris
 
 ## 4.4.2
  - [Improvement] Set node-persist to ignore parse errors to stop crashing the plugin on read errors
