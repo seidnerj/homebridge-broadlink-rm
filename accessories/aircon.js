@@ -700,7 +700,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
       return;
     }
 
-    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onMQTTMessage (parsed value: ${value.trim()})`);
+    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onMQTTMessage (parsed value: ${value})`);
     value = parseFloat(value);
 
     if (identifier == 'battery'){
