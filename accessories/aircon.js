@@ -662,7 +662,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onMQTTMessage (raw value: ${value})`);
     try {
       //Attempt to parse JSON - if result is JSON
-      const temperatureJSON = JSON.parse(temperature);
+      const temperatureJSON = JSON.parse(value);
 
       if (typeof temperatureJSON === 'object') {
         let values = findKey(temperatureJSON, 'temp');
