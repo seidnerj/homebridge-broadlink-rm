@@ -1,7 +1,7 @@
 # Changes
 
 ## 4.4.3-BETA
- - [Improvement] Adds Mute button to TV accessories
+ - [Improvement] Adds Mute button to TV accessories (No HomeKit support and untested yet)
  - [Improvement] Adds the RM Mini 3 6507
  - [Improvement] Adds fan speed step functionality - thanks @EpicKris
  - [Bug] Fixes bug with Parsing JSON MQTT messages (#298)
