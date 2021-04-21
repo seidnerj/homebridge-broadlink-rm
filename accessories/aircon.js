@@ -669,7 +669,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
       if (typeof temperatureJSON === 'object') {
         objectFound = true;
         let values = [];
-        if (identifier !== 'temperature' && identifier !== 'battery' && identifier !== 'unknown'){
+        if (identifier !== 'temperature' && identifier !== 'battery'){
           //Try to locate other Humidity fields
           if (values.length === 0) values = findKey(temperatureJSON, 'Hum');
           if (values.length === 0) values = findKey(temperatureJSON, 'hum');
@@ -682,7 +682,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
             values = [];
           }
         }
-        if (identifier !== 'temperature' && identifier !== 'humidity' && identifier !== 'unknown'){
+        if (identifier !== 'temperature' && identifier !== 'humidity'){
           //Try to locate other Battery fields
           if (values.length === 0) values = findKey(temperatureJSON, 'Batt');
           if (values.length === 0) values = findKey(temperatureJSON, 'batt');
@@ -693,7 +693,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
             values = [];
           }
         }
-        if(identifier !== 'battery' && identifier !== 'humidity'){
+        if(identifier !== 'battery' && identifier !== 'humidity' && identifier !== 'unknown'){
           //Try to locate other Temperature fields
           if (values.length === 0) values = findKey(temperatureJSON, 'temp');
           if (values.length === 0) values = findKey(temperatureJSON, 'Temp');
