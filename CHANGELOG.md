@@ -4,6 +4,7 @@
  - [Improvement] Adds Mute button to TV accessories (No HomeKit support and untested yet)
  - [Improvement] Adds the RM Mini 3 6507
  - [Improvement] Adds fan speed step functionality - thanks @EpicKris
+ - [Improvement] Adds Current Temperature support to Heater-Cooler accessories. Offers all the same options: file, MQTT, or RM Pro Device Thanks @uzumaki20398
  - [Bug] Fixes bug with Parsing JSON MQTT messages (#298)
 
 ## 4.4.2
