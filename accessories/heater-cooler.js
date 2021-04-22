@@ -508,7 +508,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
   }
 
   onTemperature (temperature,humidity) {
-    const { config, host, log, name, state } = this;
+    const { config, host, log, debug, name, state } = this;
     const { minTemperature, maxTemperature, temperatureAdjustment, humidityAdjustment, noHumidity } = config;
 
     // onTemperature is getting called twice. No known cause currently.
