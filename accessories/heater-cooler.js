@@ -974,11 +974,11 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
     } else if (temperatureUnits === "f") {
       config.heatingThresholdTemperature = this.temperatureFtoC(heatingThresholdTemperature)
     }
-    if (defaultNowTemperature === undefined) {
-      config.defaultNowTemperature = 24
-    } else if (temperatureUnits === "f") {
-      config.defaultNowTemperature = this.temperatureFtoC(defaultNowTemperature)
-    }
+    //if (defaultNowTemperature === undefined) {
+    //  config.defaultNowTemperature = 24
+    //} else if (temperatureUnits === "f") {
+    //  config.defaultNowTemperature = this.temperatureFtoC(defaultNowTemperature)
+    //}
     // convert min and max temperatures to degree Celsius if defined as fahrenheit
     if (temperatureUnits === "f") {
       if (config.minTemperature) { config.minTemperature = this.temperatureFtoC(config.minTemperature) }
