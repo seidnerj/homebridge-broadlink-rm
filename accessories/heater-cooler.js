@@ -13,12 +13,12 @@ const BroadlinkRMAccessory = require('./accessory');
 // All temperature values passed and received from homekit API are defined in degree Celsius
 let COOLING_THRESHOLD_TEMPERATURE = {
   minValue: 10,
-  maxValue: 35,
+  maxValue: 30,
   minStep: 0.1
 }
 
 let HEATING_THRESHOLD_TEMPERATURE = {
-  minValue: 0,
+  minValue: 18,
   maxValue: 25,
   minStep: 0.1
 }
@@ -66,6 +66,8 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
       this.historyService = new HistoryService("room", this, { storage: 'fs', filename: 'RMPro_' + config.name.replace(' ','-') + '_persist.json'});
       this.historyService.log = this.log;  
     }
+    
+    this.temperatureCallbackQueue = {};
   }
 
   /**
@@ -93,7 +95,9 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
       state.targetHeaterCoolerState = defaultMode === "cool" ? Characteristic.TargetHeaterCoolerState.COOL : Characteristic.TargetHeaterCoolerState.HEAT
     }
     if (state.currentTemperature === undefined) { state.currentTemperature = config.defaultNowTemperature }
-
+    config.temperatureAdjustment = config.temperatureAdjustment || 0;
+    config.humidityAdjustment = config.humidityAdjustment || 0;
+    
     const { internalConfig } = config
     const { available } = internalConfig
     if (available.cool.rotationSpeed || available.heat.rotationSpeed) {
@@ -985,12 +989,12 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
     const { coolingThresholdTemperature, heatingThresholdTemperature, temperatureUnits, defaultNowTemperature } = config
 
     if (coolingThresholdTemperature === undefined) {
-      config.coolingThresholdTemperature = 35
+      config.coolingThresholdTemperature = 30
     } else if (temperatureUnits === "f") {
       config.coolingThresholdTemperature = this.temperatureFtoC(coolingThresholdTemperature)
     }
     if (heatingThresholdTemperature === undefined) {
-      config.heatingThresholdTemperature = 10
+      config.heatingThresholdTemperature = 18
     } else if (temperatureUnits === "f") {
       config.heatingThresholdTemperature = this.temperatureFtoC(heatingThresholdTemperature)
     }
