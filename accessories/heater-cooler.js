@@ -466,10 +466,375 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
    * instead send a default value.
    * @param {func} callback - callback function passed in by homebridge API to be called at the end of the method
    */
-  getCurrentTemperature(callback) {
-    const currentTemp = this.config.defaultNowTemperature
-    this.log(`${this.name} getCurrentTemperature: ${currentTemp}`)
-    callback(null, currentTemp)
+  async monitorTemperature () {
+    const { config, host, log, name, state } = this;
+    const { temperatureFilePath, defaultNowTemperature, w1DeviceID } = config;
+
+    if (defaultNowTemperature !== undefined) return;
+
+    //Force w1 and file devices to a minimum 1 minute refresh
+    if (w1DeviceID || temperatureFilePath) config.temperatureUpdateFrequency = Math.max(config.temperatureUpdateFrequency,60);
+
+    const device = getDevice({ host, log });
+
+    // Try again in a second if we don't have a device yet
+    if (!device) {
+      await delayForDuration(1);
+
+      this.monitorTemperature();
+
+      return;
+    }
+
+    log(`${name} monitorTemperature`);
+
+    device.on('temperature', this.onTemperature.bind(this));
+    device.checkTemperature();
+
+    this.updateTemperatureUI();
+    if (!config.isUnitTest) setInterval(this.updateTemperatureUI.bind(this), config.temperatureUpdateFrequency * 1000)
+  }
+
+  onTemperature (temperature,humidity) {
+    const { config, host, log, name, state } = this;
+    const { minTemperature, maxTemperature, temperatureAdjustment, humidityAdjustment, noHumidity } = config;
+
+    // onTemperature is getting called twice. No known cause currently.
+    // This helps prevent the same temperature from being processed twice
+    if (Object.keys(this.temperatureCallbackQueue).length === 0) return;
+
+    temperature += temperatureAdjustment;
+    state.currentTemperature = temperature;
+    log(`${name} onTemperature (${temperature})`);
+
+    if(humidity) {
+      if(noHumidity){
+        state.currentHumidity = null;
+      }else{
+        humidity += humidityAdjustment;
+        state.currentHumidity = humidity;
+        log(`${name} onHumidity (` + humidity + `)`);
+      }
+    }
+    
+    this.processQueuedTemperatureCallbacks(temperature);
+  }
+
+  addTemperatureCallbackToQueue (callback) {
+    const { config, host, debug, log, name, state } = this;
+    const { mqttURL, temperatureFilePath, w1DeviceID, noHumidity } = config;
+
+    // Clear the previous callback
+    if (Object.keys(this.temperatureCallbackQueue).length > 1) {
+      if (state.currentTemperature) {
+        if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} addTemperatureCallbackToQueue (clearing previous callback, using existing temperature)`);
+        this.processQueuedTemperatureCallbacks(state.currentTemperature);
+      }
+    }
+
+    // Add a new callback
+    const callbackIdentifier = uuid.v4();
+    this.temperatureCallbackQueue[callbackIdentifier] = callback;
+
+    // Read temperature from file
+    if (temperatureFilePath) {
+      this.updateTemperatureFromFile();
+
+      return;
+    }
+
+    // Read temperature from W1 Device
+    if (w1DeviceID) {
+      this.updateTemperatureFromW1();
+
+      return;
+    }
+
+    // Read temperature from mqtt
+    if (mqttURL) {
+      const temperature = this.mqttValueForIdentifier('temperature');
+      const humidity = noHumidity ? null : this.mqttValueForIdentifier('humidity');
+      this.onTemperature(temperature || 0,humidity);
+
+      return;
+    }
+
+    // Read temperature from Broadlink RM device
+    // If the device is no longer available, use previous tempeature
+    const device = getDevice({ host, log });
+
+    if (!device || device.state === 'inactive') {
+      if (device && device.state === 'inactive') {
+        log(`${name} addTemperatureCallbackToQueue (device no longer active, using existing temperature)`);
+      }
+
+      this.processQueuedTemperatureCallbacks(state.currentTemperature || 0);
+
+      return;
+    }
+
+    device.checkTemperature();
+    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} addTemperatureCallbackToQueue (requested temperature from device, waiting)`);
+  }
+
+  updateTemperatureFromFile () {
+    const { config, debug, host, log, name, state } = this;
+    const { temperatureFilePath, noHumidity, batteryAlerts } = config;
+    let humidity = null;
+    let temperature = null;
+
+    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateTemperatureFromFile reading file: ${temperatureFilePath}`);
+
+    fs.readFile(temperatureFilePath, 'utf8', (err, data) => {
+      if (err) {
+         log(`\x1b[31m[ERROR] \x1b[0m${name} updateTemperatureFromFile\n\n${err.message}`);
+      }
+
+      if (data === undefined || data.trim().length === 0) {
+        log(`\x1b[33m[WARNING]\x1b[0m ${name} updateTemperatureFromFile error reading file: ${temperatureFilePath}, using previous Temperature`);
+        if (!noHumidity) humidity = (state.currentHumidity || 0);
+        temperature = (state.currentTemperature || 0);
+      }
+
+      const lines = data.split(/\r?\n/);
+      if (/^[0-9]+\.*[0-9]*$/.test(lines[0])){
+        temperature = parseFloat(data);
+      } else {
+        lines.forEach((line) => {
+          if(-1 < line.indexOf(':')){
+            let value = line.split(':');
+            if(value[0] == 'temperature') temperature = parseFloat(value[1]);
+            if(value[0] == 'humidity' && !noHumidity) humidity = parseFloat(value[1]);
+            if(value[0] == 'battery' && batteryAlerts) state.batteryLevel = parseFloat(value[1]);
+          }
+        });
+      }
+
+      if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateTemperatureFromFile (parsed temperature: ${temperature} humidity: ${humidity})`);
+
+      this.onTemperature(temperature, humidity);
+    });
+  }
+
+  updateTemperatureFromW1 () {
+    const { config, debug, host, log, name, state } = this;
+    const { w1DeviceID } = config;
+
+    var W1PATH = "/sys/bus/w1/devices";
+    var fName = W1PATH + "/" + w1DeviceID + "/w1_slave";
+    var temperature;
+
+    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateTemperatureFromW1 reading file: ${fName}`);
+
+    fs.readFile(fName, 'utf8', (err, data) => {
+      if (err) {
+        log(`\x1b[31m[ERROR] \x1b[0m${name} updateTemperatureFromW1\n\n${err.message}`);
+      }
+
+      if(data.includes("t=")){
+        var matches = data.match(/t=([0-9]+)/);
+        temperature = parseInt(matches[1]) / 1000;
+      }else{
+        log(`\x1b[33m[WARNING]\x1b[0m ${name} updateTemperatureFromW1 error reading file: ${fName}, using previous Temperature`);
+        temperature = (state.currentTemperature || 0);
+      }
+
+      if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateTemperatureFromW1 (parsed temperature: ${temperature})`);
+      this.onTemperature(temperature);
+    });
+  }
+
+  processQueuedTemperatureCallbacks (temperature) {
+    if (Object.keys(this.temperatureCallbackQueue).length === 0) return;
+
+    Object.keys(this.temperatureCallbackQueue).forEach((callbackIdentifier) => {
+      const callback = this.temperatureCallbackQueue[callbackIdentifier];
+
+      callback(null, temperature);
+      delete this.temperatureCallbackQueue[callbackIdentifier];
+    })
+
+    this.temperatureCallbackQueue = {};
+
+    this.checkTemperatureForAutoOnOff(temperature);
+  }
+
+  updateTemperatureUI () {
+    const { config, serviceManager } = this;
+    const { noHumidity } = config;
+
+    serviceManager.refreshCharacteristicUI(Characteristic.CurrentTemperature);
+    if(!noHumidity){serviceManager.refreshCharacteristicUI(Characteristic.CurrentRelativeHumidity);};
+  }
+
+  getCurrentTemperature (callback) {
+    const { config, host, debug, log, name, state } = this;
+    const { defaultNowTemperature } = config;
+
+    // Some devices don't include a thermometer and so we can use `defaultNowTemperature` instead
+    if (defaultNowTemperature !== undefined) {
+      if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} getCurrentTemperature (using defaultNowTemperature ${defaultNowTemperature} from config)`);
+      return callback(null, defaultNowTemperature);
+    }
+
+    this.addTemperatureCallbackToQueue(callback);
+  }
+
+  getCurrentHumidity (callback) {
+    const { config, host, debug, log, name, state } = this;
+    const { defaultNowTemperature } = config;
+
+    return callback(null, state.currentHumidity);
+  }
+
+  async checkTemperatureForAutoOnOff (temperature) {
+    const { config, host, log, name, serviceManager, state } = this;
+    let { autoHeatTemperature, autoCoolTemperature, minimumAutoOnOffDuration } = config;
+
+    if (this.shouldIgnoreAutoOnOff) {
+      this.log(`${name} checkTemperatureForAutoOn (ignore within ${minimumAutoOnOffDuration}s of previous auto-on/off due to "minimumAutoOnOffDuration")`);
+
+      return;
+    }
+
+    if (!autoHeatTemperature && !autoCoolTemperature) return;
+
+    if (!this.isAutoSwitchOn()) {
+      this.log(`${name} checkTemperatureForAutoOnOff (autoSwitch is off)`);
+      return;
+    }
+
+    this.log(`${name} checkTemperatureForAutoOnOff`);
+
+    if (autoHeatTemperature && temperature < autoHeatTemperature) {
+      this.state.isRunningAutomatically = true;
+
+      this.log(`${name} checkTemperatureForAutoOnOff (${temperature} < ${autoHeatTemperature}: auto heat)`);
+      serviceManager.setCharacteristic(Characteristic.TargetHeatingCoolingState, Characteristic.TargetHeatingCoolingState.HEAT);
+    } else if (autoCoolTemperature && temperature > autoCoolTemperature) {
+      this.state.isRunningAutomatically = true;
+
+      this.log(`${name} checkTemperatureForAutoOnOff (${temperature} > ${autoCoolTemperature}: auto cool)`);
+      serviceManager.setCharacteristic(Characteristic.TargetHeatingCoolingState, Characteristic.TargetHeatingCoolingState.COOL);
+    } else {
+      this.log(`${name} checkTemperatureForAutoOnOff (temperature is ok)`);
+
+      if (this.state.isRunningAutomatically) {
+        this.isAutomatedOff = true;
+        this.log(`${name} checkTemperatureForAutoOnOff (auto off)`);
+        serviceManager.setCharacteristic(Characteristic.TargetHeatingCoolingState, Characteristic.TargetHeatingCoolingState.OFF);
+      } else {
+        return;
+      }
+    }
+
+    this.shouldIgnoreAutoOnOff = true;
+    this.shouldIgnoreAutoOnOffPromise = delayForDuration(minimumAutoOnOffDuration);
+    await this.shouldIgnoreAutoOnOffPromise;
+
+    this.shouldIgnoreAutoOnOff = false;
+  }
+
+  getTemperatureDisplayUnits (callback) {
+    const { config } = this;
+    const temperatureDisplayUnits = (config.units.toLowerCase() === 'f') ? Characteristic.TemperatureDisplayUnits.FAHRENHEIT : Characteristic.TemperatureDisplayUnits.CELSIUS;
+
+    callback(null, temperatureDisplayUnits);
+  }
+
+  // MQTT
+  onMQTTMessage (identifier, message) {
+    const { state, debug, log, name } = this;
+
+    if (identifier !== 'unknown' && identifier !== 'temperature' && identifier !== 'humidity' && identifier !== 'battery' && identifier !== 'combined') {
+      log(`\x1b[31m[ERROR] \x1b[0m${name} onMQTTMessage (mqtt message received with unexpected identifier: ${identifier}, ${message.toString()})`);
+
+      return;
+    }
+
+    super.onMQTTMessage(identifier, message);
+
+    let temperatureValue, humidityValue, batteryValue;
+    let objectFound = false;
+    let value = this.mqttValuesTemp[identifier];
+    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onMQTTMessage (raw value: ${value})`);
+    try {
+      //Attempt to parse JSON - if result is JSON
+      const temperatureJSON = JSON.parse(value);
+
+      if (typeof temperatureJSON === 'object') {
+        objectFound = true;
+        let values = [];
+        if (identifier !== 'temperature' && identifier !== 'battery'){
+          //Try to locate other Humidity fields
+          if (values.length === 0) values = findKey(temperatureJSON, 'Hum');
+          if (values.length === 0) values = findKey(temperatureJSON, 'hum');
+          if (values.length === 0) values = findKey(temperatureJSON, 'Humidity');
+          if (values.length === 0) values = findKey(temperatureJSON, 'humidity');
+          if (values.length === 0) values = findKey(temperatureJSON, 'RelativeHumidity');
+          if (values.length === 0) values = findKey(temperatureJSON, 'relativehumidity');
+          if(values.length > 0) {
+            humidityValue = values;
+            values = [];
+          }
+        }
+        if (identifier !== 'temperature' && identifier !== 'humidity'){
+          //Try to locate other Battery fields
+          if (values.length === 0) values = findKey(temperatureJSON, 'Batt');
+          if (values.length === 0) values = findKey(temperatureJSON, 'batt');
+          if (values.length === 0) values = findKey(temperatureJSON, 'Battery');
+          if (values.length === 0) values = findKey(temperatureJSON, 'battery');
+          if(values.length > 0) {
+            batteryValue = values;
+            values = [];
+          }
+        }
+        if(identifier !== 'battery' && identifier !== 'humidity'){
+          //Try to locate other Temperature fields
+          if (values.length === 0) values = findKey(temperatureJSON, 'temp');
+          if (values.length === 0) values = findKey(temperatureJSON, 'Temp');
+          if (values.length === 0) values = findKey(temperatureJSON, 'temperature');
+          if (values.length === 0) values = findKey(temperatureJSON, 'Temperature');
+          if(values.length > 0) {
+            temperatureValue = values;
+          }
+        }
+             
+        if (values.length > 0) {
+          value = values[0];
+        } else {
+          value = undefined;
+        }
+      }
+    } catch (err) {} //Result couldn't be parsed as JSON
+
+    if(objectFound) {
+      if(temperatureValue !== undefined && temperatureValue.length > 0) {
+        this.mqttValues['temperature'] = parseFloat(temperatureValue[0]);
+      }
+      if(batteryValue !== undefined && batteryValue.length > 0) {
+        state.batteryLevel = parseFloat(batteryValue[0]);
+        this.mqttValues['battery'] = parseFloat(batteryValue[0]);
+      }
+      if(humidityValue !== undefined && humidityValue.length > 0) {
+        this.mqttValues['humidity'] = parseFloat(humidityValue[0]);
+      }
+    }else{
+      if (value === undefined || (typeof value === 'string' && value.trim().length === 0)) {
+        log(`\x1b[31m[ERROR] \x1b[0m${name} onMQTTMessage (mqtt value not found)`);
+        return;
+      }
+
+      if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onMQTTMessage (parsed value: ${value})`);
+      value = parseFloat(value);
+
+      if (identifier == 'battery'){
+        state.batteryLevel = value;
+        return;
+      } 
+      this.mqttValues[identifier] = value;
+    }
+    this.updateTemperatureUI();
   }
 
   /**
