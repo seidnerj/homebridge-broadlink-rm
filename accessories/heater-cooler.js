@@ -57,7 +57,15 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
    * @param {classType} serviceManagerType - represents object type of service manager
    */
   constructor(log, config = {}, serviceManagerType) {
-    super(log, config, serviceManagerType)
+    super(log, config, serviceManagerType);
+    
+    // Fakegato setup
+    if(config.noHistory !== true) {
+      this.displayName = config.name;
+      this.lastUpdatedAt = undefined;
+      this.historyService = new HistoryService("room", this, { storage: 'fs', filename: 'RMPro_' + config.name.replace(' ','-') + '_persist.json'});
+      this.historyService.log = this.log;  
+    }
   }
 
   /**
@@ -505,7 +513,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
 
     temperature += temperatureAdjustment;
     state.currentTemperature = temperature;
-    log(`${name} onTemperature (${temperature})`);
+    if(debug) log(`${name} onTemperature (${temperature})`);
 
     if(humidity) {
       if(noHumidity){
@@ -513,7 +521,19 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
       }else{
         humidity += humidityAdjustment;
         state.currentHumidity = humidity;
-        log(`${name} onHumidity (` + humidity + `)`);
+        if(debug) log(`${name} onHumidity (` + humidity + `)`);
+      }
+    }
+    
+    //Process Fakegato history
+    //Ignore readings of exactly zero - the default no value value.
+    if(config.noHistory !== true && this.state.currentTemperature != 0.00) {
+      this.lastUpdatedAt = Date.now();
+      if(debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} Logging data to history: temp: ${this.state.currentTemperature}, humidity: ${this.state.currentHumidity}`);
+      if(noHumidity){
+        this.historyService.addEntry({ time: Math.round(new Date().valueOf() / 1000), temp: this.state.currentTemperature });
+      }else{
+        this.historyService.addEntry({ time: Math.round(new Date().valueOf() / 1000), temp: this.state.currentTemperature, humidity: this.state.currentHumidity });
       }
     }
     
