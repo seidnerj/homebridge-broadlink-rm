@@ -517,7 +517,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
 
     temperature += temperatureAdjustment;
     state.currentTemperature = temperature;
-    if(debug) log(`${name} onTemperature (${temperature})`);
+    if(debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onTemperature (${temperature})`);
 
     if(humidity) {
       if(noHumidity){
@@ -525,7 +525,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
       }else{
         humidity += humidityAdjustment;
         state.currentHumidity = humidity;
-        if(debug) log(`${name} onHumidity (` + humidity + `)`);
+        if(debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onHumidity (` + humidity + `)`);
       }
     }
     
