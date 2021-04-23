@@ -68,6 +68,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
     }
     
     this.temperatureCallbackQueue = {};
+    this.monitorTemperature();
   }
 
   /**
@@ -97,6 +98,12 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
     if (state.currentTemperature === undefined) { state.currentTemperature = config.defaultNowTemperature }
     config.temperatureAdjustment = config.temperatureAdjustment || 0;
     config.humidityAdjustment = config.humidityAdjustment || 0;
+    if(config.mqttURL) {
+      //MQTT updates when published so frequent refreshes aren't required ( 10 minute default as a fallback )
+      config.temperatureUpdateFrequency = config.temperatureUpdateFrequency || 600;
+    } else {
+      config.temperatureUpdateFrequency = config.temperatureUpdateFrequency || 10;
+    }
     
     const { internalConfig } = config
     const { available } = internalConfig
