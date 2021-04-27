@@ -420,7 +420,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
         newCode.push({"data": hexData});
         hexData = newCode;
       } else {
-        newCode.push(hexData);
+        hexData = newCode.concat(hexData);
       }
     }
     
