@@ -406,15 +406,21 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
     if(turnOnWhenOff === true && state.active === Characteristic.Active.ACTIVE && previousValue === Characteristic.Active.INACTIVE){
       //Add ON hex to be sent first
       this.log(`\tAdding ON code first`);
+      //Add pause to the ON Code
       let onCode = targetHeaterCoolerState === Characteristic.TargetHeaterCoolerState.COOL ? data.cool.on : data.heat.on;
-      let newCode = [{"data": onCode,"pause": 0.3}];
-      //Append the On code to the state code.
+      let newCode = [];
+      if (typeof onCode === 'string') {
+        newCode = [{"data": onCode,"pause": 0.3}];
+      } else {
+        onCode[onCode.length-1].pause = 0.3;
+        newCode = onCode;
+      }
+      //Append the On code (with pause) to the state code.
       if (typeof hexData === 'string') {
         newCode.push({"data": hexData});
         hexData = newCode;
       } else {
         newCode.push(hexData);
-        hexData = newCode;
       }
     }
     
