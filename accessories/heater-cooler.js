@@ -86,6 +86,8 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
     } else if (config.allowResend !== undefined) {
       config.preventResendHex = !config.allowResend;
     }
+    
+    config.turnOnWhenOff = config.turnOnWhenOff || false;
 
     state.active = state.active || Characteristic.Active.INACTIVE
     state.currentHeaterCoolerState = state.currentHeaterCoolerState || Characteristic.CurrentHeaterCoolerState.INACTIVE
@@ -393,12 +395,29 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
    * @param {int} previousValue 
    */
   async setActive(hexData, previousValue) {
-    const { state, config } = this
-    const { resetPropertiesOnRestart } = config
+    const { state, config, data } = this
+    const { resetPropertiesOnRestart, turnOnWhenOff } = config
     const { available } = config.internalConfig
+    const { targetHeaterCoolerState } = state
     const requestedValue = state.active // state is already set by main handler before this subhandler is called
 
     hexData = this.decodeHexFromConfig(CharacteristicName.ACTIVE)
+    
+    if(turnOnWhenOff === true && state.active === Characteristic.Active.ACTIVE && previousValue === Characteristic.Active.INACTIVE){
+      //Add ON hex to be sent first
+      this.log(`\tAdding ON code first`);
+      let onCode = targetHeaterCoolerState === Characteristic.TargetHeaterCoolerState.COOL ? data.cool.on : data.heat.on;
+      let newCode = [{"data": onCode,"pause": 0.3}];
+      //Append the On code to the state code.
+      if (typeof hexData === 'string') {
+        newCode.push({"data": hexData});
+        hexData = newCode;
+      } else {
+        newCode.push(hexData);
+        hexData = newCode;
+      }
+    }
+    
     await this.performSend(hexData)
 
     // Update homebridge and home app state to reflect the cached state of all the available
