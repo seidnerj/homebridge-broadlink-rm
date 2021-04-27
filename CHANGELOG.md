@@ -6,6 +6,7 @@
  - [Improvement] Adds fan speed step functionality and speed improvements (Thanks @EpicKris)
  - [Improvement] Adds Current Temperature support to Heater-Cooler accessories. Offers all the same options: file, MQTT, or RM Pro Device (Thanks @uzumaki20398)
  - [Improvement] Allows HEX Objects for additional charactistics on Fan, Air-Purifier, and HumidifierDehumidifier Accessories (Thanks @ aymericbaur)
+ - [Improvement] Adds turnOnWhenOff support to the HeaterCooler Accessory
  - [Bug] Fixes bug with Parsing JSON MQTT messages (#298)
 
 ## 4.4.2
