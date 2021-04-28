@@ -410,9 +410,9 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
       let onCode = targetHeaterCoolerState === Characteristic.TargetHeaterCoolerState.COOL ? data.cool.on : data.heat.on;
       let newCode = [];
       if (typeof onCode === 'string') {
-        newCode = [{"data": onCode,"pause": 0.3}];
+        newCode = [{"data": onCode,"pause": 1}];
       } else {
-        onCode[onCode.length-1].pause = 0.3;
+        onCode[onCode.length-1].pause = 1;
         newCode = onCode;
       }
       //Append the On code (with pause) to the state code.
