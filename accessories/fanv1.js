@@ -96,8 +96,8 @@ class Fanv1Accessory extends FanAccessory {
         setMethod: this.setCharacteristicValue,
         bind: this,
         props: {
-          onData: counterClockwise,
-          offData: clockwise,
+          onData: config.counterClockwise,
+          offData: config.clockwise,
           setValuePromise: this.performSend.bind(this)
         }
       });
