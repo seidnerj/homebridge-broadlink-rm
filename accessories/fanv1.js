@@ -55,7 +55,7 @@ class Fanv1Accessory extends FanAccessory {
 
   setupServiceManager () {
     const { config, data, name, serviceManagerType } = this;
-    const { on, off } = data || {};
+    const { on, off, counterClockwise, clockwise } = data || {};
 
     this.setDefaults();
 
@@ -96,8 +96,8 @@ class Fanv1Accessory extends FanAccessory {
         setMethod: this.setCharacteristicValue,
         bind: this,
         props: {
-          onData: config.counterClockwise,
-          offData: config.clockwise,
+          onData: counterClockwise,
+          offData: clockwise,
           setValuePromise: this.performSend.bind(this)
         }
       });
