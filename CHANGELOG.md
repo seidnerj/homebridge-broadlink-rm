@@ -1,6 +1,6 @@
 # Changes
 
-## 4.4.
+## 4.4.3
  - [Improvement] Adds Mute button to TV accessories (No HomeKit support and untested yet)
  - [Improvement] Adds the RM Mini 3 6507
  - [Improvement] Adds fan speed step functionality and speed improvements (Thanks @EpicKris)
