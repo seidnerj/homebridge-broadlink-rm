@@ -1,5 +1,15 @@
 # Changes
 
+## 4.4.
+ - [Improvement] Adds Mute button to TV accessories (No HomeKit support and untested yet)
+ - [Improvement] Adds the RM Mini 3 6507
+ - [Improvement] Adds fan speed step functionality and speed improvements (Thanks @EpicKris)
+ - [Improvement] Adds Current Temperature support to Heater-Cooler accessories. Offers all the same options: file, MQTT, or RM Pro Device (Thanks @uzumaki20398)
+ - [Improvement] Allows HEX Objects for additional charactistics on Fan, Air-Purifier, and HumidifierDehumidifier Accessories (Thanks @ aymericbaur)
+ - [Improvement] Adds turnOnWhenOff support to the HeaterCooler Accessory
+ - [Bug] Fixes bug with Parsing JSON MQTT messages (#298)
+ - [Bug] Fixes fanv1 "counterClockwise is undefined" error when showRotationDirection is true (#306)
+
 ## 4.4.2
  - [Improvement] Set node-persist to ignore parse errors to stop crashing the plugin on read errors
  - [Improvement] Sets "undefined" characteristics to either 0 or minValue to prevent future Homebridge errors
