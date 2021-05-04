@@ -179,6 +179,8 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
     const { available } = internalConfig
     let { targetHeaterCoolerState, heatingThresholdTemperature, coolingThresholdTemperature } = state
 
+    if(config.preventResendHex && previousValue == targetHeaterCoolerState) return;
+
     this.log(`Changing target state from ${previousValue} to ${targetHeaterCoolerState}`)
     switch (targetHeaterCoolerState) {
       case Characteristic.TargetHeaterCoolerState.COOL:
@@ -380,9 +382,12 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
   async setTemperature(hexData, previousValue) {
     const { name, log, state } = this
     const { targetHeaterCoolerState, coolingThresholdTemperature, heatingThresholdTemperature } = state
-    log(`${name} setTemperature: Changing temperature from ${previousValue} to ${targetHeaterCoolerState === Characteristic.TargetHeaterCoolerState.COOL ?
-      coolingThresholdTemperature : heatingThresholdTemperature}`)
-    hexData = this.decodeHexFromConfig(CharacteristicName.CoolingThresholdTemperature)
+
+    let targetTemperature = targetHeaterCoolerState === Characteristic.TargetHeaterCoolerState.COOL ? coolingThresholdTemperature : heatingThresholdTemperature;
+    if(config.preventResendHex && previousValue == targetTemperature) return;
+
+    log(`${name} setTemperature: Changing temperature from ${previousValue} to ${targetTemperature}`)
+    hexData = this.decodeHexFromConfig(targetHeaterCoolerState === Characteristic.TargetHeaterCoolerState.COOL ? CharacteristicName.CoolingThresholdTemperature : CharacteristicName.HeatingThresholdTemperature)
 
     await this.performSend(hexData)
   }
@@ -452,6 +457,8 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
     const { state, data } = this
     const { swingMode } = state
 
+    if(config.preventResendHex && previousValue == state.swingMode) return;
+
     if (data.swingOn && data.swingOff) {
       hexData = swingMode === Characteristic.SwingMode.SWING_ENABLED ? data.swingOn : data.swingOff
     }
@@ -488,6 +495,9 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
       // care of turning off the fan
       return
     }
+
+    if(config.preventResendHex && previousValue == state.rotationSpeed) return;
+
     hexData = this.decodeHexFromConfig(CharacteristicName.ROTATION_SPEED)
     if (hexData === "0") {
       this.log(`Fan speed hex codes not found, resetting back to previous value`)
