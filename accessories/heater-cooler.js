@@ -87,7 +87,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
       config.preventResendHex = !config.allowResend;
     }
     
-    config.turnOnWhenOff = config.turnOnWhenOff || false;
+    config.turnOnWhenOff = config.turnOnWhenOff === undefined ? true : config.turnOnWhenOff;
 
     state.active = state.active || Characteristic.Active.INACTIVE
     state.currentHeaterCoolerState = state.currentHeaterCoolerState || Characteristic.CurrentHeaterCoolerState.INACTIVE
