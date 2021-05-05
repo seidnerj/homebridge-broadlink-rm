@@ -86,6 +86,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
     } else if (config.allowResend !== undefined) {
       config.preventResendHex = !config.allowResend;
     }
+    config.allowResend = !config.preventResendHex;
     
     config.turnOnWhenOff = config.turnOnWhenOff === undefined ? true : config.turnOnWhenOff;
 
@@ -178,8 +179,6 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
     const { internalConfig } = config
     const { available } = internalConfig
     let { targetHeaterCoolerState, heatingThresholdTemperature, coolingThresholdTemperature } = state
-
-    if(config.preventResendHex && previousValue == targetHeaterCoolerState) return;
 
     this.log(`Changing target state from ${previousValue} to ${targetHeaterCoolerState}`)
     switch (targetHeaterCoolerState) {
@@ -384,7 +383,6 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
     const { targetHeaterCoolerState, coolingThresholdTemperature, heatingThresholdTemperature } = state
 
     let targetTemperature = targetHeaterCoolerState === Characteristic.TargetHeaterCoolerState.COOL ? coolingThresholdTemperature : heatingThresholdTemperature;
-    if(config.preventResendHex && previousValue == targetTemperature) return;
 
     log(`${name} setTemperature: Changing temperature from ${previousValue} to ${targetTemperature}`)
     hexData = this.decodeHexFromConfig(targetHeaterCoolerState === Characteristic.TargetHeaterCoolerState.COOL ? CharacteristicName.CoolingThresholdTemperature : CharacteristicName.HeatingThresholdTemperature)
@@ -457,8 +455,6 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
     const { state, data, config } = this
     const { swingMode } = state
 
-    if(config.preventResendHex && previousValue == state.swingMode) return;
-
     if (data.swingOn && data.swingOff) {
       hexData = swingMode === Characteristic.SwingMode.SWING_ENABLED ? data.swingOn : data.swingOff
     }
@@ -495,8 +491,6 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
       // care of turning off the fan
       return
     }
-
-    if(config.preventResendHex && previousValue == state.rotationSpeed) return;
 
     hexData = this.decodeHexFromConfig(CharacteristicName.ROTATION_SPEED)
     if (hexData === "0") {
