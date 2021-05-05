@@ -380,7 +380,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
    * @param {number} previousValue - previous temperature value
    */
   async setTemperature(hexData, previousValue) {
-    const { name, log, state } = this
+    const { name, log, state, config } = this
     const { targetHeaterCoolerState, coolingThresholdTemperature, heatingThresholdTemperature } = state
 
     let targetTemperature = targetHeaterCoolerState === Characteristic.TargetHeaterCoolerState.COOL ? coolingThresholdTemperature : heatingThresholdTemperature;
@@ -454,7 +454,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
    * @param {int} previousValue 
    */
   async setSwingMode(hexData, previousValue) {
-    const { state, data } = this
+    const { state, data, config } = this
     const { swingMode } = state
 
     if(config.preventResendHex && previousValue == state.swingMode) return;
@@ -485,7 +485,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
    * @param {int} previousValue - previous rotation speed of device
    */
   async setRotationSpeed(hexData, previousValue) {
-    const { state } = this
+    const { state, config } = this
     const { rotationSpeed } = state
     // TODO: Check other locations for fanSpeed
     if (rotationSpeed === 0) {
