@@ -32,6 +32,7 @@ class BroadlinkRMAccessory extends HomebridgeAccessory {
   performSetValueAction ({ host, data, log, name, debug }) {
     sendData({ host, hexData: data, log, name, debug });
   }
+  
   reset () {
     // Clear Multi-hex timeouts
     if (this.intervalTimeoutPromise) {

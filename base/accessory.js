@@ -40,7 +40,9 @@ class HomebridgeAccessory {
     this.subscribeToMQTT();
   }
 
-  setDefaults () { }
+  setDefaults () { 
+    this.config.allowResend = this.config.allowResend === undefined ? true : false;
+  }
 
   restoreStateOrder () { }
 
