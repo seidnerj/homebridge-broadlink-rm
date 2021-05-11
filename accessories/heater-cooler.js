@@ -1176,6 +1176,14 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
       bind: this
     });
 
+    if (!config.noHumidity){
+      this.serviceManager.addGetCharacteristic({
+      name: 'currentHumidity',
+      type: Characteristic.CurrentRelativeHumidity,
+      method: this.getCurrentHumidity,
+      bind: this
+      })
+    };
 
     // Setting up Required Characteristic Properties
     /**
