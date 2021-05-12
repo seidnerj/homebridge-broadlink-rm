@@ -35,14 +35,14 @@ class BroadlinkRMAccessory extends HomebridgeAccessory {
       case 'critical':
         this.logLevel = 5;
         break;
-      default:
-        //case 'error':
+      case 'error':
         this.logLevel = 4;
         break;
       case 'warning':
         this.logLevel = 3;
         break;
-      case 'info':
+      default:
+      //case 'info':
         this.logLevel = 2;
         break;
       case 'debug':

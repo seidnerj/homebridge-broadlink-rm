@@ -23,7 +23,7 @@ class HomebridgeAccessory {
     let { disableLogs, host, name, data, persistState, resendDataAfterReload, resendDataAfterReloadDelay } = config;
 
     this.log = (!disableLogs && log) ? log : () => {};
-    if (this.logLevel === undefined) this.logLevel = 3; //Default to warning
+    if (this.logLevel === undefined) this.logLevel = 2; //Default to info
     this.config = config;
 
     this.host = host;

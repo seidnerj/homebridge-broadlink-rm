@@ -155,7 +155,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
         break
       default:
     }
-    this.log(`Updated currentHeaterCoolerState to ${state.currentHeaterCoolerState}`)
+    if (logLevel <=2) this.log(`Updated currentHeaterCoolerState to ${state.currentHeaterCoolerState}`)
   }
 
   /**
@@ -180,7 +180,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
     const { available } = internalConfig
     let { targetHeaterCoolerState, heatingThresholdTemperature, coolingThresholdTemperature } = state
 
-    this.log(`Changing target state from ${previousValue} to ${targetHeaterCoolerState}`)
+    if (logLevel <=2) this.log(`Changing target state from ${previousValue} to ${targetHeaterCoolerState}`)
     switch (targetHeaterCoolerState) {
       case Characteristic.TargetHeaterCoolerState.COOL:
         if (available.cool.temperatureCodes) {
@@ -199,7 +199,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
         hexData = this.decodeHexFromConfig(CharacteristicName.TARGET_HEATER_COOLER_STATE)
         break
       default:
-        this.log(`BUG: ${this.name} setTargetHeaterCoolerState invoked with unsupported target mode ${targetHeaterCoolerState}`)
+        if (logLevel <=4) this.log(`BUG: ${this.name} setTargetHeaterCoolerState invoked with unsupported target mode ${targetHeaterCoolerState}`)
     }
 
     await this.performSend(hexData)
@@ -226,7 +226,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
       case Characteristic.TargetHeaterCoolerState.COOL:
         temperature = coolingThresholdTemperature
         if (!available.coolMode) {
-          log(`BUG: ${name} decodeHexFromConfig invoked with unsupported target mode: cool.`)
+          if (logLevel <=4) log(`BUG: ${name} decodeHexFromConfig invoked with unsupported target mode: cool.`)
           return "0'" // sending dummy hex data to prevent homebridge from tripping
         }
         if (toUpdateCharacteristic === CharacteristicName.ACTIVE
@@ -242,7 +242,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
       case Characteristic.TargetHeaterCoolerState.HEAT:
         temperature = heatingThresholdTemperature
         if (!available.heatMode) {
-          log(`BUG: ${name} decodeHexFromConfig invoked with unsupported target mode: heat.`)
+          if (logLevel <=4) log(`BUG: ${name} decodeHexFromConfig invoked with unsupported target mode: heat.`)
           return "0'" // sending dummy hex data to prevent homebridge from tripping
         }
         if (toUpdateCharacteristic === CharacteristicName.ACTIVE
@@ -255,7 +255,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
         return this.decodeTemperatureHex(temperature, heat, toUpdateCharacteristic)
         break
       default:
-        log(`BUG: decodeHexFromConfig has invalid value for targetHeaterCoolerState: ${targetHeaterCoolerState}.`)
+        if (logLevel <=4) log(`BUG: decodeHexFromConfig has invalid value for targetHeaterCoolerState: ${targetHeaterCoolerState}.`)
         break
     }
 
@@ -292,7 +292,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
           if (keys.includes(keyFromState)) {
             return this.decodeHierarchichalHex(hexDataObject[keyFromState], checkCharacteristics, null)
           }
-          log(`Could not find rotationSpeed${state.rotationSpeed} hex codes`)
+          if (logLevel <=3) log(`Could not find rotationSpeed${state.rotationSpeed} hex codes`)
           return "0"
         }
         // do not change state of fanspeed mode
@@ -312,7 +312,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
           if (keys.includes(keyFromState)) {
             return this.decodeHierarchichalHex(hexDataObject[keyFromState], checkCharacteristics, null)
           }
-          log(`Could not find swingMode hex codes for swingMode ${keyFromState}`)
+          if (logLevel <=3) log(`Could not find swingMode hex codes for swingMode ${keyFromState}`)
           return "0"
         }
         // do not change state of swing mode
@@ -326,10 +326,10 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
         break
       case undefined:
         // should not happen, this is a fail safe to prevent infinite recursion.
-        log(`BUG: ${name} decodeHierarchichalHex encountered a bug, please raise an issue`)
+        if (logLevel <=4) log(`BUG: ${name} decodeHierarchichalHex encountered a bug, please raise an issue`)
         return hexDataObject
     }
-    log(`Hex codes not found for ${characteristic}`)
+    if (logLevel <=4) log(`Hex codes not found for ${characteristic}`)
     // if we reach here, this characteristic is not defined for the accessory so continue searching for the next one
     return this.decodeHierarchichalHex(hexDataObject, checkCharacteristics, toUpdateCharacteristic)
   }
@@ -352,7 +352,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
       temperature = this.temperatureCtoF(temperature)
     }
 
-    this.log(`Looking up temperature hex codes for ${temperature}`)
+    if (logLevel <=2) this.log(`Looking up temperature hex codes for ${temperature}`)
 
     let CONFIG_CHARACTERISTICS = [
       //CharacteristicName.SLEEP,
@@ -364,9 +364,9 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
     let temperatureHexDataObject = temperatureCodes[`${temperature}`]
     if (temperatureHexDataObject) {
       hexCode = this.decodeHierarchichalHex(temperatureHexDataObject, CONFIG_CHARACTERISTICS, toUpdateCharacteristic)
-      this.log(`\tSending hex codes for temperature ${temperature}`)
+      if (logLevel <=2) this.log(`\tSending hex codes for temperature ${temperature}`)
     } else {
-      this.log(`\tDid not find temperature code for ${temperature}. Please update data.${this.state.targetHeaterCoolerState === 1 ?
+      if (logLevel <=4) this.log(`\tDid not find temperature code for ${temperature}. Please update data.${this.state.targetHeaterCoolerState === 1 ?
         "heat" : "cool"}.temperatureCodes in config.json`)
     }
 
@@ -384,7 +384,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
 
     let targetTemperature = targetHeaterCoolerState === Characteristic.TargetHeaterCoolerState.COOL ? coolingThresholdTemperature : heatingThresholdTemperature;
 
-    log(`${name} setTemperature: Changing temperature from ${previousValue} to ${targetTemperature}`)
+    if (logLevel <=2) log(`${name} setTemperature: Changing temperature from ${previousValue} to ${targetTemperature}`)
     hexData = this.decodeHexFromConfig(targetHeaterCoolerState === Characteristic.TargetHeaterCoolerState.COOL ? CharacteristicName.CoolingThresholdTemperature : CharacteristicName.HeatingThresholdTemperature)
 
     await this.performSend(hexData)
@@ -408,7 +408,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
     
     if(turnOnWhenOff === true && state.active === Characteristic.Active.ACTIVE && previousValue === Characteristic.Active.INACTIVE){
       //Add ON hex to be sent first
-      this.log(`\tAdding ON code first`);
+      if (logLevel <=2) this.log(`\tAdding ON code first`);
       //Add pause to the ON Code
       let onCode = targetHeaterCoolerState === Characteristic.TargetHeaterCoolerState.COOL ? data.cool.on : data.heat.on;
       let newCode = [];
@@ -465,7 +465,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
       hexData = this.decodeHexFromConfig(CharacteristicName.SWING_MODE)
     }
     if (hexData === "0") {
-      this.log(`Swing hex codes not found, resetting state to previous value`)
+      if (logLevel <=3) this.log(`Swing hex codes not found, resetting state to previous value`)
       state.swingMode = previousValue
       this.serviceManager.service
         .getCharacteristic(Characteristic.SwingMode)
@@ -494,7 +494,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
 
     hexData = this.decodeHexFromConfig(CharacteristicName.ROTATION_SPEED)
     if (hexData === "0") {
-      this.log(`Fan speed hex codes not found, resetting back to previous value`)
+      if (logLevel <=3) this.log(`Fan speed hex codes not found, resetting back to previous value`)
       state.rotationSpeed = previousValue
       this.serviceManager.service
         .getCharacteristic(Characteristic.RotationSpeed)
@@ -515,7 +515,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
    * @param {func} callback - callback function passed in by homebridge API to be called at the end of the method
    */
   async monitorTemperature () {
-    const { config, host, log, name, state } = this;
+    const { config, host, log, logLevel, name, state } = this;
     const { temperatureFilePath, defaultNowTemperature, w1DeviceID } = config;
 
     if (defaultNowTemperature !== undefined) return;
@@ -534,7 +534,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
       return;
     }
 
-    log(`${name} monitorTemperature`);
+    if(logLevel <=3) log(`${name} monitorTemperature`);
 
     device.on('temperature', this.onTemperature.bind(this));
     device.checkTemperature();
@@ -625,7 +625,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
 
     if (!device || device.state === 'inactive') {
       if (device && device.state === 'inactive') {
-        log(`${name} addTemperatureCallbackToQueue (device no longer active, using existing temperature)`);
+        if (logLevel <=3) log(`${name} addTemperatureCallbackToQueue (device no longer active, using existing temperature)`);
       }
 
       this.processQueuedTemperatureCallbacks(state.currentTemperature || 0);
@@ -638,7 +638,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
   }
 
   updateTemperatureFromFile () {
-    const { config, logLevel, host, log, name, state } = this;
+    const { config, logLevel, host, log, logLevel, name, state } = this;
     const { temperatureFilePath, noHumidity, batteryAlerts } = config;
     let humidity = null;
     let temperature = null;
@@ -647,11 +647,11 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
 
     fs.readFile(temperatureFilePath, 'utf8', (err, data) => {
       if (err) {
-         log(`\x1b[31m[ERROR] \x1b[0m${name} updateTemperatureFromFile\n\n${err.message}`);
+        if (logLevel <=4) log(`\x1b[31m[ERROR] \x1b[0m${name} updateTemperatureFromFile\n\n${err.message}`);
       }
 
       if (data === undefined || data.trim().length === 0) {
-        log(`\x1b[33m[WARNING]\x1b[0m ${name} updateTemperatureFromFile error reading file: ${temperatureFilePath}, using previous Temperature`);
+        if (logLevel <=3) log(`\x1b[33m[WARNING]\x1b[0m ${name} updateTemperatureFromFile error reading file: ${temperatureFilePath}, using previous Temperature`);
         if (!noHumidity) humidity = (state.currentHumidity || 0);
         temperature = (state.currentTemperature || 0);
       }
@@ -688,14 +688,14 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
 
     fs.readFile(fName, 'utf8', (err, data) => {
       if (err) {
-        log(`\x1b[31m[ERROR] \x1b[0m${name} updateTemperatureFromW1\n\n${err.message}`);
+        if (logLevel <=4) log(`\x1b[31m[ERROR] \x1b[0m${name} updateTemperatureFromW1\n\n${err.message}`);
       }
 
       if(data.includes("t=")){
         var matches = data.match(/t=([0-9]+)/);
         temperature = parseInt(matches[1]) / 1000;
       }else{
-        log(`\x1b[33m[WARNING]\x1b[0m ${name} updateTemperatureFromW1 error reading file: ${fName}, using previous Temperature`);
+        if (logLevel <=4) log(`\x1b[33m[WARNING]\x1b[0m ${name} updateTemperatureFromW1 error reading file: ${fName}, using previous Temperature`);
         temperature = (state.currentTemperature || 0);
       }
 
@@ -752,7 +752,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
     let { autoHeatTemperature, autoCoolTemperature, minimumAutoOnOffDuration } = config;
 
     if (this.shouldIgnoreAutoOnOff) {
-      this.log(`${name} checkTemperatureForAutoOn (ignore within ${minimumAutoOnOffDuration}s of previous auto-on/off due to "minimumAutoOnOffDuration")`);
+      if (logLevel <=2) this.log(`${name} checkTemperatureForAutoOn (ignore within ${minimumAutoOnOffDuration}s of previous auto-on/off due to "minimumAutoOnOffDuration")`);
 
       return;
     }
@@ -760,28 +760,28 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
     if (!autoHeatTemperature && !autoCoolTemperature) return;
 
     if (!this.isAutoSwitchOn()) {
-      this.log(`${name} checkTemperatureForAutoOnOff (autoSwitch is off)`);
+      if (logLevel <=2) this.log(`${name} checkTemperatureForAutoOnOff (autoSwitch is off)`);
       return;
     }
 
-    this.log(`${name} checkTemperatureForAutoOnOff`);
+    if (logLevel <=2) this.log(`${name} checkTemperatureForAutoOnOff`);
 
     if (autoHeatTemperature && temperature < autoHeatTemperature) {
       this.state.isRunningAutomatically = true;
 
-      this.log(`${name} checkTemperatureForAutoOnOff (${temperature} < ${autoHeatTemperature}: auto heat)`);
+      if (logLevel <=2) this.log(`${name} checkTemperatureForAutoOnOff (${temperature} < ${autoHeatTemperature}: auto heat)`);
       serviceManager.setCharacteristic(Characteristic.TargetHeatingCoolingState, Characteristic.TargetHeatingCoolingState.HEAT);
     } else if (autoCoolTemperature && temperature > autoCoolTemperature) {
       this.state.isRunningAutomatically = true;
 
-      this.log(`${name} checkTemperatureForAutoOnOff (${temperature} > ${autoCoolTemperature}: auto cool)`);
+      if (logLevel <=2) this.log(`${name} checkTemperatureForAutoOnOff (${temperature} > ${autoCoolTemperature}: auto cool)`);
       serviceManager.setCharacteristic(Characteristic.TargetHeatingCoolingState, Characteristic.TargetHeatingCoolingState.COOL);
     } else {
-      this.log(`${name} checkTemperatureForAutoOnOff (temperature is ok)`);
+      if (logLevel <=1) this.log(`${name} checkTemperatureForAutoOnOff (temperature is ok)`);
 
       if (this.state.isRunningAutomatically) {
         this.isAutomatedOff = true;
-        this.log(`${name} checkTemperatureForAutoOnOff (auto off)`);
+        if (logLevel <=2) this.log(`${name} checkTemperatureForAutoOnOff (auto off)`);
         serviceManager.setCharacteristic(Characteristic.TargetHeatingCoolingState, Characteristic.TargetHeatingCoolingState.OFF);
       } else {
         return;
@@ -807,7 +807,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
     const { state, logLevel, log, name } = this;
 
     if (identifier !== 'unknown' && identifier !== 'temperature' && identifier !== 'humidity' && identifier !== 'battery' && identifier !== 'combined') {
-      log(`\x1b[31m[ERROR] \x1b[0m${name} onMQTTMessage (mqtt message received with unexpected identifier: ${identifier}, ${message.toString()})`);
+      if (logLevel <=4) log(`\x1b[31m[ERROR] \x1b[0m${name} onMQTTMessage (mqtt message received with unexpected identifier: ${identifier}, ${message.toString()})`);
 
       return;
     }
@@ -881,7 +881,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
       }
     }else{
       if (value === undefined || (typeof value === 'string' && value.trim().length === 0)) {
-        log(`\x1b[31m[ERROR] \x1b[0m${name} onMQTTMessage (mqtt value not found)`);
+        if (logLevel <=3) log(`\x1b[31m[ERROR] \x1b[0m${name} onMQTTMessage (mqtt value not found)`);
         return;
       }
 
@@ -1001,7 +1001,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
       this.validateOptionalCharacteristics(heat.temperatureCodes, available.heat)
     }
 
-    this.log(`INFO ${name} configured with optional characteristics:
+    if (logLevel <=2) this.log(`INFO ${name} configured with optional characteristics:
     Temperature control: ${available.cool.temperatureCodes} ${available.heat.temperatureCodes}
     Rotation speed: ${available.cool.rotationSpeed} ${available.heat.rotationSpeed}
     Swing mode: ${available.cool.swingMode} ${available.heat.swingMode}
@@ -1117,7 +1117,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
     this.configureTemperatures()
     this.configureOptionalCharacteristics()
 
-    log(`${name} initialized with modes Cool: ${available.coolMode ? '\u2705' : '\u274c'}, Heat: ${available.heatMode ? '\u2705' : '\u274c'},\
+    if (logLevel <=2) log(`${name} initialized with modes Cool: ${available.coolMode ? '\u2705' : '\u274c'}, Heat: ${available.heatMode ? '\u2705' : '\u274c'},\
     config temperatures as: ${this.config.temperatureUnits === "f" ? '\u00b0F' : '\u00b0C'}\
     Using following default configuration:
     Power on mode: ${config.defaultMode}

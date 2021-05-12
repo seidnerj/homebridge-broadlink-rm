@@ -109,7 +109,7 @@ const BroadlinkRMPlatform = class extends HomebridgePlatform {
     const { hosts } = config;
 
     if (!hosts) {
-      log(`\x1b[35m[INFO]\x1b[0m Automatically discovering Broadlink RM devices.`)
+      if (logLevel <=2) log(`\x1b[35m[INFO]\x1b[0m Automatically discovering Broadlink RM devices.`)
       discoverDevices(true, log, logLevel, config.deviceDiscoveryTimeout);
 
       return;
@@ -117,7 +117,7 @@ const BroadlinkRMPlatform = class extends HomebridgePlatform {
 
     discoverDevices(false, log, logLevel);
 
-    log(`\x1b[35m[INFO]\x1b[0m Automatic Broadlink RM device discovery has been disabled as the "hosts" option has been set.`)
+    if (logLevel <=2) log(`\x1b[35m[INFO]\x1b[0m Automatic Broadlink RM device discovery has been disabled as the "hosts" option has been set.`)
 
     assert.isArray(hosts, `\x1b[31m[CONFIG ERROR] \x1b[33mhosts\x1b[0m should be an array of objects.`)
 
@@ -140,7 +140,7 @@ const BroadlinkRMPlatform = class extends HomebridgePlatform {
   showMessage () {
     const { config, log } = this;
 
-    if (config && (config.hideWelcomeMessage || config.isUnitTest)) {
+    if (config && (config.hideWelcomeMessage || config.isUnitTest || this.logLevel >=4)) {
       log(`\x1b[35m[INFO]\x1b[0m Running Homebridge Broadlink RM Plugin version \x1b[32m${npmPackage.version}\x1b[0m`)
 
       return
