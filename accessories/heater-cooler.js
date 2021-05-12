@@ -975,7 +975,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
    * and sleep mode
    */
   configureOptionalCharacteristics() {
-    const { name, config, data } = this
+    const { name, config, data, logLevel } = this
     const { internalConfig } = config
     const { available } = internalConfig || {}
     const { heat, cool } = data
@@ -1097,7 +1097,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
    * Setup default config values which are used to initializing the service manager
    */
   configDefaultsHelper() {
-    const { config, name, log } = this
+    const { config, name, log, logLevel } = this
 
     // this is a safeguard and should never happen unless the base constructor invokes
     // setupServiceManager before validating config file
