@@ -269,7 +269,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
    * @returns {any} hexData - object, array or string values to be sent to IR device
    */
   decodeHierarchichalHex(hexDataObject, checkCharacteristics, toUpdateCharacteristic) {
-    const { state, log,, logLevel name } = this
+    const { state, log, logLevel, name } = this
     if (hexDataObject === undefined || hexDataObject == null) { return "hexDataObject" } // should never happen, unless bug
     if (typeof hexDataObject !== 'object') { return hexDataObject }
     if (Array.isArray(hexDataObject)) { return hexDataObject }
