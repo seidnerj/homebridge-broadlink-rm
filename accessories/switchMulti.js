@@ -35,7 +35,7 @@ class SwitchMultiAccessory extends SwitchAccessory {
   }
 
   async setSwitchState (hexData) {
-    const { config, host, log, name, state, debug } = this;
+    const { config, host, log, name, state, logLevel } = this;
     let { interval } = config;
 
     if (!hexData) {
@@ -49,7 +49,7 @@ class SwitchMultiAccessory extends SwitchAccessory {
       for (let index = 0; index < hexData.length; index++) {
         const currentHexData = hexData[index]
 
-        sendData({ host, hexData: currentHexData, log, name, debug });
+        sendData({ host, hexData: currentHexData, log, name, logLevel });
 
         if (index < currentHexData.length - 1) {
           this.intervalTimeoutPromise = delayForDuration(interval);

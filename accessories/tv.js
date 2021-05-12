@@ -109,7 +109,7 @@ class TVAccessory extends BroadlinkRMAccessory {
   }
 
   async setSwitchState(hexData) {
-    const { data, host, log, name, debug } = this;
+    const { data, host, log, name, logLevel } = this;
 
     this.stateChangeInProgress = true;
     this.reset();

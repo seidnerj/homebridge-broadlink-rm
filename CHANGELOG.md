@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Heater-Cooler states now all support allowResend for when values are not changing.
+- Heater-Cooler now supports humidity values and noHumidity configuration.
+- Accessorys now support logLevel configuration (0=none, 1=info, 2=errors, 3=warnings, 4=debug, 5=verbose)
 ### Changed
 - Updated CHANGELOG.md to follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - turnOnWhenOff now defaults to true for Heater-Cooler accessories.

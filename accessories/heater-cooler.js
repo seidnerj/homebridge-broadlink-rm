@@ -544,7 +544,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
   }
 
   onTemperature (temperature,humidity) {
-    const { config, host, log, debug, name, state } = this;
+    const { config, host, log, logLevel, name, state } = this;
     const { minTemperature, maxTemperature, temperatureAdjustment, humidityAdjustment, noHumidity } = config;
 
     // onTemperature is getting called twice. No known cause currently.
@@ -553,7 +553,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
 
     temperature += temperatureAdjustment;
     state.currentTemperature = temperature;
-    if(debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onTemperature (${temperature})`);
+    if(logLevel <=1) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onTemperature (${temperature})`);
 
     if(humidity) {
       if(noHumidity){
@@ -561,7 +561,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
       }else{
         humidity += humidityAdjustment;
         state.currentHumidity = humidity;
-        if(debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onHumidity (` + humidity + `)`);
+        if(logLevel <=1) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onHumidity (` + humidity + `)`);
       }
     }
     
@@ -569,7 +569,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
     //Ignore readings of exactly zero - the default no value value.
     if(config.noHistory !== true && this.state.currentTemperature != 0.00) {
       this.lastUpdatedAt = Date.now();
-      if(debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} Logging data to history: temp: ${this.state.currentTemperature}, humidity: ${this.state.currentHumidity}`);
+      if(logLevel <=1) log(`\x1b[34m[DEBUG]\x1b[0m ${name} Logging data to history: temp: ${this.state.currentTemperature}, humidity: ${this.state.currentHumidity}`);
       if(noHumidity){
         this.historyService.addEntry({ time: Math.round(new Date().valueOf() / 1000), temp: this.state.currentTemperature });
       }else{
@@ -581,13 +581,13 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
   }
 
   addTemperatureCallbackToQueue (callback) {
-    const { config, host, debug, log, name, state } = this;
+    const { config, host, logLevel, log, name, state } = this;
     const { mqttURL, temperatureFilePath, w1DeviceID, noHumidity } = config;
 
     // Clear the previous callback
     if (Object.keys(this.temperatureCallbackQueue).length > 1) {
       if (state.currentTemperature) {
-        if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} addTemperatureCallbackToQueue (clearing previous callback, using existing temperature)`);
+        if (logLevel <=1) log(`\x1b[34m[DEBUG]\x1b[0m ${name} addTemperatureCallbackToQueue (clearing previous callback, using existing temperature)`);
         this.processQueuedTemperatureCallbacks(state.currentTemperature);
       }
     }
@@ -634,16 +634,16 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
     }
 
     device.checkTemperature();
-    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} addTemperatureCallbackToQueue (requested temperature from device, waiting)`);
+    if (logLevel <=1) log(`\x1b[34m[DEBUG]\x1b[0m ${name} addTemperatureCallbackToQueue (requested temperature from device, waiting)`);
   }
 
   updateTemperatureFromFile () {
-    const { config, debug, host, log, name, state } = this;
+    const { config, logLevel, host, log, name, state } = this;
     const { temperatureFilePath, noHumidity, batteryAlerts } = config;
     let humidity = null;
     let temperature = null;
 
-    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateTemperatureFromFile reading file: ${temperatureFilePath}`);
+    if (logLevel <=1) log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateTemperatureFromFile reading file: ${temperatureFilePath}`);
 
     fs.readFile(temperatureFilePath, 'utf8', (err, data) => {
       if (err) {
@@ -670,21 +670,21 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
         });
       }
 
-      if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateTemperatureFromFile (parsed temperature: ${temperature} humidity: ${humidity})`);
+      if (logLevel <=1) log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateTemperatureFromFile (parsed temperature: ${temperature} humidity: ${humidity})`);
 
       this.onTemperature(temperature, humidity);
     });
   }
 
   updateTemperatureFromW1 () {
-    const { config, debug, host, log, name, state } = this;
+    const { config, logLevel, host, log, name, state } = this;
     const { w1DeviceID } = config;
 
     var W1PATH = "/sys/bus/w1/devices";
     var fName = W1PATH + "/" + w1DeviceID + "/w1_slave";
     var temperature;
 
-    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateTemperatureFromW1 reading file: ${fName}`);
+    if (logLevel <=1) log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateTemperatureFromW1 reading file: ${fName}`);
 
     fs.readFile(fName, 'utf8', (err, data) => {
       if (err) {
@@ -699,7 +699,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
         temperature = (state.currentTemperature || 0);
       }
 
-      if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateTemperatureFromW1 (parsed temperature: ${temperature})`);
+      if (logLevel <=1) log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateTemperatureFromW1 (parsed temperature: ${temperature})`);
       this.onTemperature(temperature);
     });
   }
@@ -728,12 +728,12 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
   }
 
   getCurrentTemperature (callback) {
-    const { config, host, debug, log, name, state } = this;
+    const { config, host, logLevel, log, name, state } = this;
     const { defaultNowTemperature } = config;
 
     // Some devices don't include a thermometer and so we can use `defaultNowTemperature` instead
     if (defaultNowTemperature !== undefined) {
-      if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} getCurrentTemperature (using defaultNowTemperature ${defaultNowTemperature} from config)`);
+      if (logLevel <=1) log(`\x1b[34m[DEBUG]\x1b[0m ${name} getCurrentTemperature (using defaultNowTemperature ${defaultNowTemperature} from config)`);
       return callback(null, defaultNowTemperature);
     }
 
@@ -741,7 +741,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
   }
 
   getCurrentHumidity (callback) {
-    const { config, host, debug, log, name, state } = this;
+    const { config, host, logLevel, log, name, state } = this;
     const { defaultNowTemperature } = config;
 
     return callback(null, state.currentHumidity);
@@ -804,7 +804,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
 
   // MQTT
   onMQTTMessage (identifier, message) {
-    const { state, debug, log, name } = this;
+    const { state, logLevel, log, name } = this;
 
     if (identifier !== 'unknown' && identifier !== 'temperature' && identifier !== 'humidity' && identifier !== 'battery' && identifier !== 'combined') {
       log(`\x1b[31m[ERROR] \x1b[0m${name} onMQTTMessage (mqtt message received with unexpected identifier: ${identifier}, ${message.toString()})`);
@@ -817,7 +817,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
     let temperatureValue, humidityValue, batteryValue;
     let objectFound = false;
     let value = this.mqttValuesTemp[identifier];
-    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onMQTTMessage (raw value: ${value})`);
+    if (logLevel <=1) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onMQTTMessage (raw value: ${value})`);
     try {
       //Attempt to parse JSON - if result is JSON
       const temperatureJSON = JSON.parse(value);
@@ -885,7 +885,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
         return;
       }
 
-      if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onMQTTMessage (parsed value: ${value})`);
+      if (logLevel <=1) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onMQTTMessage (parsed value: ${value})`);
       value = parseFloat(value);
 
       if (identifier == 'battery'){
@@ -947,7 +947,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
     const isValidTemperature = (stringValue) => isFinite(Number(stringValue)) // Arrow function to check if supplied string is a int or float parseable number
 
     const dataObjectKeys = Object.keys(dataObject)
-    if (this.config.debugLevel >= 2) this.log(`Checking keys ${dataObjectKeys}`)
+    if (this.config.logLevel <=1) this.log(`Checking keys ${dataObjectKeys}`)
     if (!configObject.temperatureCodes && dataObjectKeys.every(isValidTemperature)) {
       configObject.temperatureCodes = true
     }
@@ -963,7 +963,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
 
 
     for (const [key, value] of Object.entries(dataObject)) {
-      if (this.config.debugLevel >= 2) this.log(`Going into key -> ${key}`)
+      if (this.config.logLevel <=1) this.log(`Going into key -> ${key}`)
       if (typeof value === 'object' && !Array.isArray(value)) {
         this.validateOptionalCharacteristics(value, configObject)
       }

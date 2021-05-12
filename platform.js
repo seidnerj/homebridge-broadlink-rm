@@ -41,8 +41,7 @@ const BroadlinkRMPlatform = class extends HomebridgePlatform {
   }
 
   addAccessories (accessories) {
-    const { config, log } = this;
-    const { debug } = config;
+    const { config, log, logLevel } = this;
 
     this.discoverBroadlinkDevices();
     this.showMessage();
@@ -80,12 +79,12 @@ const BroadlinkRMPlatform = class extends HomebridgePlatform {
         if(accessory.subType.toLowerCase() === 'receiver'){homeKitAccessory.subType = homebridgeRef.hap.Accessory.Categories.AUDIO_RECEIVER;}
         if(accessory.subType.toLowerCase() === 'stick'){homeKitAccessory.subType = homebridgeRef.hap.Accessory.Categories.TV_STREAMING_STICK;}
 
-        if (debug) log(`\x1b[34m[DEBUG]\x1b[0m Adding Accessory ${accessory.type} (${accessory.subType})`);
+        if (logLevel <=1) log(`\x1b[34m[DEBUG]\x1b[0m Adding Accessory ${accessory.type} (${accessory.subType})`);
         tvs.push(homeKitAccessory);
         return;
       }
 
-      if (debug) log(`\x1b[34m[DEBUG]\x1b[0m Adding Accessory ${accessory.type} (${accessory.subType})`);
+      if (logLevel <=1) log(`\x1b[34m[DEBUG]\x1b[0m Adding Accessory ${accessory.type} (${accessory.subType})`);
       accessories.push(homeKitAccessory);
     });
 
@@ -106,17 +105,17 @@ const BroadlinkRMPlatform = class extends HomebridgePlatform {
   }
 
   discoverBroadlinkDevices () {
-    const { config, log } = this;
-    const { debug, hosts } = config;
+    const { config, log, logLevel } = this;
+    const { hosts } = config;
 
     if (!hosts) {
       log(`\x1b[35m[INFO]\x1b[0m Automatically discovering Broadlink RM devices.`)
-      discoverDevices(true, log, debug, config.deviceDiscoveryTimeout);
+      discoverDevices(true, log, logLevel, config.deviceDiscoveryTimeout);
 
       return;
     }
 
-    discoverDevices(false, log, debug);
+    discoverDevices(false, log, logLevel);
 
     log(`\x1b[35m[INFO]\x1b[0m Automatic Broadlink RM device discovery has been disabled as the "hosts" option has been set.`)
 

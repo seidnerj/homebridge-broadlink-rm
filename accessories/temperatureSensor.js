@@ -42,17 +42,17 @@ class TemperatureSensorAccessory extends AirconAccessory {
   }
 
   getBatteryAlert (callback) {
-    const { config, name, state, log, debug } = this;
+    const { config, name, state, log, logLevel } = this;
 
     const batteryAlert = state.batteryLevel <= 20? Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW : Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL;
-    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} Battery Alert:`,batteryAlert);
+    if (logLevel <=1) log(`\x1b[34m[DEBUG]\x1b[0m ${name} Battery Alert:`,batteryAlert);
 
     callback(null, batteryAlert);
   }
   
   getBatteryLevel (callback) {
-    const { config, name, state, log, debug } = this;
-    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} Battery Level:`,state.batteryLevel);
+    const { config, name, state, log, logLevel } = this;
+    if (logLevel <=1) log(`\x1b[34m[DEBUG]\x1b[0m ${name} Battery Level:`,state.batteryLevel);
     callback(null, parseFloat(state.batteryLevel));
   }
   

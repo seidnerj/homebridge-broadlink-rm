@@ -74,14 +74,14 @@ class SwitchMultiAccessory extends SwitchAccessory {
   }
 
   async performRepeatSend (hexConfig) {
-    const { host, log, name, debug } = this;
+    const { host, log, name, logLevel } = this;
     let { data, interval, sendCount } = hexConfig;
 
     interval = interval || 1;
 
     // Itterate through each hex config in the array
     for (let index = 0; index < sendCount; index++) {
-      sendData({ host, hexData: data, log, name, debug });
+      sendData({ host, hexData: data, log, name, logLevel });
 
       if (index < sendCount - 1) {
         this.intervalTimeoutPromise = delayForDuration(interval);

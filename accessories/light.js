@@ -27,7 +27,7 @@ class LightAccessory extends SwitchAccessory {
   }
 
   async setSwitchState (hexData, previousValue) {
-    const { config, data, host, log, name, state, debug, serviceManager } = this;
+    const { config, data, host, log, name, state, logLevel, serviceManager } = this;
     let { defaultBrightness, useLastKnownBrightness } = config;
 
     this.reset();
@@ -59,7 +59,7 @@ class LightAccessory extends SwitchAccessory {
 
   async setHue () {
     await catchDelayCancelError(async () => {
-      const { config, data, host, log, name, state, debug, serviceManager} = this;
+      const { config, data, host, log, name, state, logLevel, serviceManager} = this;
       const { onDelay } = config;
       const { off, on } = data;
 
@@ -92,7 +92,7 @@ class LightAccessory extends SwitchAccessory {
 
   async setBrightness () {
     await catchDelayCancelError(async () => {
-      const { config, data, host, log, name, state, debug, serviceManager } = this;
+      const { config, data, host, log, name, state, logLevel, serviceManager } = this;
       const { off, on } = data;
       let { onDelay } = config;
 

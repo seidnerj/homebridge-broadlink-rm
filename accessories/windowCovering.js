@@ -47,7 +47,7 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
   // User requested a specific position or asked the window-covering to be open or closed
   async setTargetPosition (hexData, previousValue) {
     await catchDelayCancelError(async () => {
-      const { config, host, debug, data, log, name, state, serviceManager } = this;
+      const { config, host, logLevel, data, log, name, state, serviceManager } = this;
       const { initialDelay } = config;
       const { open, close, stop } = data;
       
@@ -81,7 +81,7 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
 
   async openOrClose ({ hexData, previousValue }) {
     await catchDelayCancelError(async () => {
-      let { config, data, host, name, log, state, debug, serviceManager } = this;
+      let { config, data, host, name, log, state, logLevel, serviceManager } = this;
       let { totalDurationOpen, totalDurationClose } = config;
       const { stop } = data;
 
@@ -113,7 +113,7 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
   }
 
   async stopWindowCovering () {
-    const { config, data, host, log, name, state, debug, serviceManager } = this;
+    const { config, data, host, log, name, state, logLevel, serviceManager } = this;
     const { sendStopAt0, sendStopAt100 } = config;
     const { stop } = data;
   
@@ -130,7 +130,7 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
   }
 
   async checkOpenOrCloseCompletely () {
-    const { data, debug, host, log, name, serviceManager, state } = this;
+    const { data, logLevel, host, log, name, serviceManager, state } = this;
     const { openCompletely, closeCompletely } = data;
 
     // Completely Close

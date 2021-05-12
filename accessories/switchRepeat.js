@@ -37,7 +37,7 @@ class SwitchRepeatAccessory extends SwitchAccessory {
         return;
       }
 
-      const { config, host, log, name, state, debug } = this;
+      const { config, host, log, name, state, logLevel } = this;
       let { interval, onSendCount, offSendCount, sendCount  } = config;
 
       if (state.switchState && onSendCount) sendCount = onSendCount;
@@ -45,7 +45,7 @@ class SwitchRepeatAccessory extends SwitchAccessory {
     
       // Itterate through each hex config in the array
       for (let index = 0; index < sendCount; index++) {
-        sendData({ host, hexData, log, name, debug });
+        sendData({ host, hexData, log, name, logLevel });
 
         if (index < sendCount - 1) {
           this.intervalTimeoutPromise = delayForDuration(interval);

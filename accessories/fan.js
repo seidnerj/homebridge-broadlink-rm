@@ -114,7 +114,7 @@ class FanAccessory extends SwitchAccessory {
   }
 
   async setFanSpeed (hexData) {
-    const { config, data, host, log, state, name, debug} = this;
+    const { config, data, host, log, state, name, logLevel} = this;
 
     this.reset();
 

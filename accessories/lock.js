@@ -37,7 +37,7 @@ class LockAccessory extends BroadlinkRMAccessory {
   }
 
   async setLockTargetState (hexData, currentState) {
-    const { host, log, name, debug } = this;
+    const { host, log, name, logLevel } = this;
 
     this.reset();
     
@@ -54,7 +54,7 @@ class LockAccessory extends BroadlinkRMAccessory {
   }
 
   async lock () {
-    const { config, data, host, log, name, state, debug, serviceManager } = this;
+    const { config, data, host, log, name, state, logLevel, serviceManager } = this;
     let { lockDuration } = config;
 
     log(`${name} setLockCurrentState: locking for ${lockDuration}s`);
@@ -67,7 +67,7 @@ class LockAccessory extends BroadlinkRMAccessory {
   }
 
   async unlock (hexData) {
-    const { config, data, host, log, name, state, debug, serviceManager } = this;
+    const { config, data, host, log, name, state, logLevel, serviceManager } = this;
     let { autoLockDelay, unlockDuration } = config;
 
     log(`${name} setLockCurrentState: unlocking for ${unlockDuration}s`);

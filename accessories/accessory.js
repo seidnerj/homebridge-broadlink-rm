@@ -23,10 +23,37 @@ class BroadlinkRMAccessory extends HomebridgeAccessory {
     super(log, config, serviceManagerType);
     if (config.debug) this.debug = true
 
-
     this.manufacturer = 'Broadlink';
     this.model = 'RM Mini or Pro';
     this.serialNumber = uuid.v4();
+
+    //Set LogLevel
+    switch(this.config.logLevel){
+      case 'none':
+        this.logLevel = 6;
+        break;
+      case 'critical':
+        this.logLevel = 5;
+        break;
+      default:
+        //case 'error':
+        this.logLevel = 4;
+        break;
+      case 'warning':
+        this.logLevel = 3;
+        break;
+      case 'info':
+        this.logLevel = 2;
+        break;
+      case 'debug':
+        this.logLevel = 1;
+        break;
+      case 'trace':
+        this.logLevel = 0;
+        break;
+    }
+    if(this.config.debug) {this.logLevel = Math.min(1, this.logLevel);}
+    if(this.config.disableLogs) {this.logLevel = 6;}  
   }
 
   performSetValueAction ({ host, data, log, name, debug }) {

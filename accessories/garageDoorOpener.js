@@ -31,7 +31,7 @@ class GarageDoorOpenerAccessory extends BroadlinkRMAccessory {
   }
 
   async setDoorTargetState (hexData, previousValue) {
-    const { host, log, name, debug, state, serviceManager } = this;
+    const { host, log, name, logLevel, state, serviceManager } = this;
 
     this.reset();
 
@@ -56,7 +56,7 @@ class GarageDoorOpenerAccessory extends BroadlinkRMAccessory {
   }
 
   async open (hexData) {
-    const { config, data, host, log, name, state, debug, serviceManager } = this;
+    const { config, data, host, log, name, state, logLevel, serviceManager } = this;
     let { autoCloseDelay, openDuration, openCloseDuration } = config;
 
     // Defaults
@@ -80,7 +80,7 @@ class GarageDoorOpenerAccessory extends BroadlinkRMAccessory {
   }
 
   async close () {
-    const { config, data, host, log, name, state, debug, serviceManager } = this;
+    const { config, data, host, log, name, state, logLevel, serviceManager } = this;
     let { closeDuration, openCloseDuration } = config;
 
     // Defaults

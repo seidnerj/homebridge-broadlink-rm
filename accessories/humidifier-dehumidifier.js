@@ -57,9 +57,9 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
   }
   
   async setCurrentState (hexData, previousValue) {
-      const { debug, data, config, log, name, state, serviceManager } = this;
+      const { logLevel, data, config, log, name, state, serviceManager } = this;
     
-      if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} setCurrentState: requested update from ${previousValue} to ${state.currentState}`);
+      if (logLevel <=1) log(`\x1b[34m[DEBUG]\x1b[0m ${name} setCurrentState: requested update from ${previousValue} to ${state.currentState}`);
 
       // Ignore if no change to the targetPosition
       if (state.currentState === previousValue || !state.switchState) return;
@@ -141,7 +141,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
 	}
 	
   async updateDeviceState () {
-    const { serviceManager, debug, config, name, log, state } = this;
+    const { serviceManager, logLevel, config, name, log, state } = this;
     
     //Do nothing if turned off
     if (!state.switchState) {
@@ -173,7 +173,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     if (state.currentState === desiredState && !this.previouslyOff) return;
     
     let previousState = state.currentState;
-    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateDeviceState: currently ${state.currentState}, changing to ${desiredState}`);
+    if (logLevel <=1) log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateDeviceState: currently ${state.currentState}, changing to ${desiredState}`);
 
     state.currentState = desiredState;
     this.setCurrentState (null, previousState);
@@ -182,7 +182,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
 
   // Device Temperature Methods
   async monitorHumidity () {
-    const { debug, config, host, log, name, state } = this;
+    const { logLevel, config, host, log, name, state } = this;
     const device = getDevice({ host, log });
 	  
     // Try again in a second if we don't have a device yet
@@ -192,7 +192,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       return;
     }
 
-    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} monitorHumidity`);
+    if (logLevel <=1) log(`\x1b[34m[DEBUG]\x1b[0m ${name} monitorHumidity`);
 
     //Broadlink module emits 'temperature for both sensors.
     device.on('temperature', this.onHumidity.bind(this));
@@ -203,7 +203,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
   }
 
   onHumidity (temperature,humidity) {
-    const { config, host, debug, log, name, state } = this;
+    const { config, host, logLevel, log, name, state } = this;
     const { humidityAdjustment } = config;
 
     // onHumidity is getting called twice. No known cause currently.
@@ -212,13 +212,13 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
 
     humidity += humidityAdjustment;
     state.currentHumidity = humidity;
-    if(debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onHumidity (` + humidity + `)`);
+    if(logLevel <=1) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onHumidity (` + humidity + `)`);
 	 
 	  //Fakegato history update 
     //Ignore readings of exactly zero - the default no value value.
     if(config.noHistory !== true && this.state.currentHumidity != 0) {
       this.lastUpdatedAt = Date.now();
-      if(debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} Logging data to history: humidity: ${this.state.currentHumidity}`);
+      if(logLevel <=1) log(`\x1b[34m[DEBUG]\x1b[0m ${name} Logging data to history: humidity: ${this.state.currentHumidity}`);
       this.historyService.addEntry({ time: Math.round(new Date().valueOf() / 1000), humidity: this.state.currentHumidity });
     }
     
@@ -227,12 +227,12 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
   }
 
   addHumidityCallbackToQueue (callback) {
-    const { config, host, debug, log, name, state } = this;
+    const { config, host, logLevel, log, name, state } = this;
     
     // Clear the previous callback
     if (Object.keys(this.humidityCallbackQueue).length > 1) {
       if (state.currentHumidity) {
-        if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} addHumidityCallbackToQueue (clearing previous callback, using existing humidity)`);
+        if (logLevel <=1) log(`\x1b[34m[DEBUG]\x1b[0m ${name} addHumidityCallbackToQueue (clearing previous callback, using existing humidity)`);
         this.processQueuedHumidityCallbacks(state.currentHumidity);
       }
     }
@@ -284,16 +284,16 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     }
 
     device.checkHumidity();
-    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} addHumidityCallbackToQueue (requested humidity from device, waiting)`);
+    if (logLevel <=1) log(`\x1b[34m[DEBUG]\x1b[0m ${name} addHumidityCallbackToQueue (requested humidity from device, waiting)`);
   }
   
   updateHumidityFromFile () {
-    const { config, debug, host, log, name, state } = this;
+    const { config, logLevel, host, log, name, state } = this;
     const { humidityFilePath, batteryAlerts } = config;
     let humidity = null;
     let temperature = null;
 
-    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateHumidityFromFile reading file: ${humidity}`);
+    if (logLevel <=1) log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateHumidityFromFile reading file: ${humidity}`);
 
     fs.readFile(humidityFilePath, 'utf8', (err, data) => {
       if (err) {
@@ -319,7 +319,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
         });
       }
 
-      if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateHumidityFromFile (parsed humidity: ${humidity})`);
+      if (logLevel >= 4) log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateHumidityFromFile (parsed humidity: ${humidity})`);
 
       this.onHumidity(temperature, humidity);
     });
@@ -327,7 +327,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
   
   // MQTT
   onMQTTMessage (identifier, message) {
-    const { state, debug, log, name } = this;
+    const { state, logLevel, log, name } = this;
 
     if (identifier !== 'unknown' && identifier !== 'humidity' && identifier !== 'battery') {
       log(`\x1b[31m[ERROR] \x1b[0m${name} onMQTTMessage (mqtt message received with unexpected identifier: ${identifier}, ${message.toString()})`);
@@ -339,7 +339,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     let humidityValue, batteryValue;
     let objectFound = false;
     let value = this.mqttValuesTemp[identifier];
-    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onMQTTMessage (raw value: ${value})`);
+    if (logLevel <=1) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onMQTTMessage (raw value: ${value})`);
 
     try {
       //Attempt to parse JSON - if result is JSON
@@ -395,7 +395,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
         return;
       }
 
-      if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onMQTTMessage (parsed value: ${value})`);
+      if (logLevel <=1) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onMQTTMessage (parsed value: ${value})`);
       value = parseFloat(value);
     
       if (identifier == 'battery'){
@@ -427,7 +427,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
   }
 
   getCurrentHumidity (callback) {
-    const { config, host, debug, log, name, state, serviceManager } = this;
+    const { config, host, logLevel, log, name, state, serviceManager } = this;
     const { noHumidity } = config;
 
 	  this.addHumidityCallbackToQueue(callback);
