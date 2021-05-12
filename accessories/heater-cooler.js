@@ -379,7 +379,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
    * @param {number} previousValue - previous temperature value
    */
   async setTemperature(hexData, previousValue) {
-    const { name, log, state, config } = this
+    const { name, log, logLevel, state, config } = this
     const { targetHeaterCoolerState, coolingThresholdTemperature, heatingThresholdTemperature } = state
 
     let targetTemperature = targetHeaterCoolerState === Characteristic.TargetHeaterCoolerState.COOL ? coolingThresholdTemperature : heatingThresholdTemperature;
@@ -398,7 +398,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
    * @param {int} previousValue 
    */
   async setActive(hexData, previousValue) {
-    const { state, config, data } = this
+    const { state, config, data, logLevel } = this
     const { resetPropertiesOnRestart, turnOnWhenOff } = config
     const { available } = config.internalConfig
     const { targetHeaterCoolerState } = state
@@ -452,7 +452,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
    * @param {int} previousValue 
    */
   async setSwingMode(hexData, previousValue) {
-    const { state, data, config } = this
+    const { state, data, config, logLevel, log } = this
     const { swingMode } = state
 
     if (data.swingOn && data.swingOff) {
@@ -465,7 +465,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
       hexData = this.decodeHexFromConfig(CharacteristicName.SWING_MODE)
     }
     if (hexData === "0") {
-      if (logLevel <=3) this.log(`Swing hex codes not found, resetting state to previous value`)
+      if (logLevel <=3) log(`Swing hex codes not found, resetting state to previous value`)
       state.swingMode = previousValue
       this.serviceManager.service
         .getCharacteristic(Characteristic.SwingMode)
@@ -481,7 +481,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
    * @param {int} previousValue - previous rotation speed of device
    */
   async setRotationSpeed(hexData, previousValue) {
-    const { state, config } = this
+    const { state, config, log, logLevel } = this
     const { rotationSpeed } = state
     // TODO: Check other locations for fanSpeed
     if (rotationSpeed === 0) {
@@ -494,7 +494,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
 
     hexData = this.decodeHexFromConfig(CharacteristicName.ROTATION_SPEED)
     if (hexData === "0") {
-      if (logLevel <=3) this.log(`Fan speed hex codes not found, resetting back to previous value`)
+      if (logLevel <=3) log(`Fan speed hex codes not found, resetting back to previous value`)
       state.rotationSpeed = previousValue
       this.serviceManager.service
         .getCharacteristic(Characteristic.RotationSpeed)
