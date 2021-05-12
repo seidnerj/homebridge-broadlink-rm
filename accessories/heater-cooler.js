@@ -129,7 +129,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
    * updating cached state based on whether the device is set to cool or heat.
    */
   updateServiceCurrentHeaterCoolerState() {
-    const { serviceManager, state } = this
+    const { serviceManager, state, log, logLevel } = this
     const { targetHeaterCoolerState } = state
 
     if (!state.active) {
@@ -155,7 +155,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
         break
       default:
     }
-    if (logLevel <=2) this.log(`Updated currentHeaterCoolerState to ${state.currentHeaterCoolerState}`)
+    if (logLevel <=2) log(`Updated currentHeaterCoolerState to ${state.currentHeaterCoolerState}`)
   }
 
   /**
@@ -175,12 +175,12 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
    * @param {int} previousValue Previous value for targetHeaterCoolerState  
    */
   async setTargetHeaterCoolerState(hexData, previousValue) {
-    const { config, data, state } = this
+    const { config, data, state, log, logLevel } = this
     const { internalConfig } = config
     const { available } = internalConfig
     let { targetHeaterCoolerState, heatingThresholdTemperature, coolingThresholdTemperature } = state
 
-    if (logLevel <=2) this.log(`Changing target state from ${previousValue} to ${targetHeaterCoolerState}`)
+    if (logLevel <=2) log(`Changing target state from ${previousValue} to ${targetHeaterCoolerState}`)
     switch (targetHeaterCoolerState) {
       case Characteristic.TargetHeaterCoolerState.COOL:
         if (available.cool.temperatureCodes) {
@@ -199,7 +199,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
         hexData = this.decodeHexFromConfig(CharacteristicName.TARGET_HEATER_COOLER_STATE)
         break
       default:
-        if (logLevel <=4) this.log(`BUG: ${this.name} setTargetHeaterCoolerState invoked with unsupported target mode ${targetHeaterCoolerState}`)
+        if (logLevel <=4) log(`BUG: ${this.name} setTargetHeaterCoolerState invoked with unsupported target mode ${targetHeaterCoolerState}`)
     }
 
     await this.performSend(hexData)
@@ -216,7 +216,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
    * @returns {any} hexData - object, array or string values to be sent to IR device
    */
   decodeHexFromConfig(toUpdateCharacteristic) {
-    const { state, config, data, log, name } = this
+    const { state, config, data, log, logLevel, name } = this
     const { heatingThresholdTemperature, coolingThresholdTemperature, targetHeaterCoolerState } = state
     const { heat, cool } = data
     const { available } = config.internalConfig
@@ -269,7 +269,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
    * @returns {any} hexData - object, array or string values to be sent to IR device
    */
   decodeHierarchichalHex(hexDataObject, checkCharacteristics, toUpdateCharacteristic) {
-    const { state, log, name } = this
+    const { state, log,, logLevel name } = this
     if (hexDataObject === undefined || hexDataObject == null) { return "hexDataObject" } // should never happen, unless bug
     if (typeof hexDataObject !== 'object') { return hexDataObject }
     if (Array.isArray(hexDataObject)) { return hexDataObject }
@@ -343,7 +343,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
    * @returns {any} hexData - object, array or string values to be sent to IR device
    */
   decodeTemperatureHex(temperature, hexDataObject, toUpdateCharacteristic) {
-    const { config, state } = this
+    const { config, state, log, logLevel } = this
     const { temperatureCodes } = hexDataObject
     const { temperatureUnits, internalConfig } = config
     const { available } = internalConfig
@@ -352,7 +352,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
       temperature = this.temperatureCtoF(temperature)
     }
 
-    if (logLevel <=2) this.log(`Looking up temperature hex codes for ${temperature}`)
+    if (logLevel <=2) log(`Looking up temperature hex codes for ${temperature}`)
 
     let CONFIG_CHARACTERISTICS = [
       //CharacteristicName.SLEEP,
@@ -364,9 +364,9 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
     let temperatureHexDataObject = temperatureCodes[`${temperature}`]
     if (temperatureHexDataObject) {
       hexCode = this.decodeHierarchichalHex(temperatureHexDataObject, CONFIG_CHARACTERISTICS, toUpdateCharacteristic)
-      if (logLevel <=2) this.log(`\tSending hex codes for temperature ${temperature}`)
+      if (logLevel <=2) log(`\tSending hex codes for temperature ${temperature}`)
     } else {
-      if (logLevel <=4) this.log(`\tDid not find temperature code for ${temperature}. Please update data.${this.state.targetHeaterCoolerState === 1 ?
+      if (logLevel <=4) log(`\tDid not find temperature code for ${temperature}. Please update data.${this.state.targetHeaterCoolerState === 1 ?
         "heat" : "cool"}.temperatureCodes in config.json`)
     }
 
