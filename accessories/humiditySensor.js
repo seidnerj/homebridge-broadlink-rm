@@ -42,7 +42,7 @@ class HumiditySensorAccessory extends HumidifierAccessory {
       return;
     }
 
-    log(`${name} monitorHumidity`);
+    if (logLevel <=1) log(`${name} monitorHumidity`);
 
     //Broadlink module emits 'temperature for both sensors.
     device.on('temperature', this.onHumidity.bind(this));

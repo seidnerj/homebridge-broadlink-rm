@@ -100,17 +100,17 @@ class HomebridgeAccessory {
       const capitalizedPropertyName = propertyName.charAt(0).toUpperCase() + propertyName.slice(1);
 
       if (delay) {
-        if(this.logLevel <=2) log(`${name} set${capitalizedPropertyName}: ${value} (delaying by ${delay}s)`);
+        if(this.logLevel <=3) log(`${name} set${capitalizedPropertyName}: ${value} (delaying by ${delay}s)`);
 
         await delayForDuration(delay);
       }
 
-      if(this.logLevel <=1) log(`${name} set${capitalizedPropertyName}: ${value}`);
+      if(this.logLevel <=2) log(`${name} set${capitalizedPropertyName}: ${value}`);
 
       if (this.isReloadingState && !resendDataAfterReload) {
         this.state[propertyName] = value;
 
-        if(this.logLevel <=1) log(`${name} set${capitalizedPropertyName}: already ${value} (no data sent - A)`);
+        if(this.logLevel <=3) log(`${name} set${capitalizedPropertyName}: already ${value} (no data sent - A)`);
 
         callback(null);
         return;
@@ -118,7 +118,7 @@ class HomebridgeAccessory {
 
       if (!ignorePreviousValue && this.state[propertyName] == value && !this.isReloadingState) {
         if (!allowResend) {
-          if(this.logLevel <=1) log(`${name} set${capitalizedPropertyName}: already ${value} (no data sent - B)`);
+          if(this.logLevel <=3) log(`${name} set${capitalizedPropertyName}: already ${value} (no data sent - B)`);
 
           callback(null);
           return;
