@@ -131,7 +131,7 @@ const start = (host, callback, turnOffCallback, log, disableTimeout) => {
     device.cancelLearn()
 
     setTimeout(() => {
-      log('\x1b[35m[INFO]\x1b[0m Scan RF (stopped - 20s timeout)');
+      log('\x1b[35m[INFO]\x1b[0m Scan RF (stopped - 60s timeout)');
       closeClient();
 
       turnOffCallback();
