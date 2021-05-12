@@ -56,8 +56,8 @@ class BroadlinkRMAccessory extends HomebridgeAccessory {
     if(this.config.disableLogs) {this.logLevel = 6;}  
   }
 
-  performSetValueAction ({ host, data, log, name, debug }) {
-    sendData({ host, hexData: data, log, name, debug });
+  performSetValueAction ({ host, data, log, name, logLevel }) {
+    sendData({ host, hexData: data, log, name, logLevel });
   }
   
   reset () {
@@ -74,10 +74,10 @@ class BroadlinkRMAccessory extends HomebridgeAccessory {
   }
 
   async performSend (data, actionCallback) {
-    const { debug, config, host, log, name } = this;
+    const { logLevel, config, host, log, name } = this;
 
     if (typeof data === 'string') {
-      sendData({ host, hexData: data, log, name, debug });
+      sendData({ host, hexData: data, log, name, logLevel });
 
       return;
     }
@@ -98,7 +98,7 @@ class BroadlinkRMAccessory extends HomebridgeAccessory {
   }
 
   async performRepeatSend (parentData, actionCallback) {
-    const { host, log, name, debug } = this;
+    const { host, log, name, logLevel } = this;
     let { data, interval, sendCount } = parentData;
 
     sendCount = sendCount || 1
@@ -106,7 +106,7 @@ class BroadlinkRMAccessory extends HomebridgeAccessory {
 
     // Itterate through each hex config in the array
     for (let index = 0; index < sendCount; index++) {
-      sendData({ host, hexData: data, log, name, debug });
+      sendData({ host, hexData: data, log, name, logLevel });
 
       if (interval && index < sendCount - 1) {
         this.intervalTimeoutPromise = delayForDuration(interval);
