@@ -638,7 +638,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
   }
 
   updateTemperatureFromFile () {
-    const { config, logLevel, host, log, logLevel, name, state } = this;
+    const { config, host, log, logLevel, name, state } = this;
     const { temperatureFilePath, noHumidity, batteryAlerts } = config;
     let humidity = null;
     let temperature = null;
