@@ -126,7 +126,7 @@ const start = (host, callback, turnOffCallback, log, disableTimeout) => {
 
   if (disableTimeout) return;
 
-  // Timeout the client after 20 seconds
+  // Timeout the client after 60 seconds
   timeout = setTimeout(() => {
     device.cancelLearn()
 
@@ -136,7 +136,7 @@ const start = (host, callback, turnOffCallback, log, disableTimeout) => {
 
       turnOffCallback();
     }, 1000);
-  }, 20 * 1000); //20s
+  }, 60 * 1000); //60s
 }
 
 const getData = (device) => {
