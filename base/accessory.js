@@ -165,7 +165,7 @@ class HomebridgeAccessory {
       value = this.state[propertyName];
     }
 
-    if(this.logLevel <=2) log(`${name} get${capitalizedPropertyName}: ${value}`);
+    if(this.logLevel <=1) log(`${name} get${capitalizedPropertyName}: ${value}`);
     callback(null, value);
   }
 
