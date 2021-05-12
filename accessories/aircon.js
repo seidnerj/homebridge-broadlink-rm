@@ -338,7 +338,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
   }
 
   async checkTurnOnWhenOff () {
-    const { config, data, logLevel, host, log, logLevel, name, state } = this;
+    const { config, data, host, log, logLevel, name, state } = this;
     const { on } = data;
 
     if (state.currentHeatingCoolingState === Characteristic.TargetHeatingCoolingState.OFF && config.turnOnWhenOff) {
