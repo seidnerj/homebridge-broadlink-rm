@@ -157,7 +157,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     if (!autoSwitchName) return;
 
-    log(`${name} Linking autoSwitch "${autoSwitchName}"`)
+    if (logLevel <=2) log(`${name} Linking autoSwitch "${autoSwitchName}"`)
 
     const autoSwitchAccessories = accessories.filter(accessory => accessory.name === autoSwitchName);
 
@@ -191,7 +191,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
   }
 
   async setTargetHeatingCoolingState (hexData, previousValue) {
-    const { HeatingCoolingConfigKeys, HeatingCoolingStates, config, data, host, log, name, serviceManager, state, debug } = this;
+    const { HeatingCoolingConfigKeys, HeatingCoolingStates, config, data, host, log, logLevel, name, serviceManager, state, debug } = this;
     const { preventResendHex, defaultCoolTemperature, defaultHeatTemperature, replaceAutoMode } = config;
 
     const targetHeatingCoolingState = HeatingCoolingConfigKeys[state.targetHeatingCoolingState];
@@ -209,7 +209,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
       if (currentHeatingCoolingState === 'cool' && data.offDryMode !== undefined) {
         // Dry off mode when previously cooling
-        log(`${name} Previous state ${currentHeatingCoolingState}, setting off with dry mode`);
+        if (logLevel <=2) log(`${name} Previous state ${currentHeatingCoolingState}, setting off with dry mode`);
         await this.performSend(data.offDryMode);
       } else {
         await this.performSend(data.off);
@@ -228,7 +228,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     // Perform the auto -> cool/heat conversion if `replaceAutoMode` is specified
     if (replaceAutoMode && targetHeatingCoolingState === 'auto') {
-      log(`${name} setTargetHeatingCoolingState (converting from auto to ${replaceAutoMode})`);
+      if (logLevel <=2) log(`${name} setTargetHeatingCoolingState (converting from auto to ${replaceAutoMode})`);
       this.updateServiceTargetHeatingCoolingState(HeatingCoolingStates[replaceAutoMode]);
 
       return;
@@ -258,7 +258,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
         await this.performSend(hexData);
       }
 
-      this.log(`${name} sentMode (${mode})`);
+      if (logLevel <=1) this.log(`${name} sentMode (${mode})`);
 
       //Force Temperature send
       delayForDuration(0.25).then(() => {
@@ -280,7 +280,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     // Ignore Temperature if off, staying off - and set to ignore. OR temperature not provided
     if ((!state.targetHeatingCoolingState && ignoreTemperatureWhenOff) || !temperature) {
-      log(`${name} Ignoring sendTemperature due to "ignoreTemperatureWhenOff": true or no temperature set.`);
+      if (logLevel <=2) log(`${name} Ignoring sendTemperature due to "ignoreTemperatureWhenOff": true or no temperature set.`);
       return;
     }
 
@@ -298,7 +298,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     if((previousTemperature !== finalTemperature) || (state.firstTemperatureUpdate && !preventResendHex)){
       //Set the temperature
       await this.performSend(hexData.data);
-      this.log(`${name} sentTemperature (${state.targetTemperature})`);
+      if (logLevel <=2) this.log(`${name} sentTemperature (${state.targetTemperature})`);
       state.firstTemperatureUpdate = false;
     }
   }
@@ -312,11 +312,11 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     if (!hexData) {
         // Mode based code not found, try mode-less
-        this.log(`${name} No ${mode} HEX code found for ${temperature}`);
+        if (logLevel <=3) this.log(`${name} No ${mode} HEX code found for ${temperature}`);
         hexData = data[`temperature${temperature}`];
     } else {
         if (hexData['pseudo-mode']) {
-            this.log(`\x1b[36m[INFO] \x1b[0m${name} Configuration found for ${mode}${temperature} with pseudo-mode. Pseudo-mode will replace the configured mode.`);
+          if (logLevel <=2) this.log(`\x1b[36m[INFO] \x1b[0m${name} Configuration found for ${mode}${temperature} with pseudo-mode. Pseudo-mode will replace the configured mode.`);
         }
     }
 
@@ -330,7 +330,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
         or provide the default temperature:
         \x1b[33m { "temperature${defaultTemperature}": { "data": "HEXCODE", "pseudo-mode" : "heat/cool" } }\x1b[0m`);
 
-      this.log(`${name} Update to default temperature (${defaultTemperature})`);
+      if (logLevel <=2) this.log(`${name} Update to default temperature (${defaultTemperature})`);
       finalTemperature = defaultTemperature;
     }
 
@@ -338,16 +338,16 @@ class AirConAccessory extends BroadlinkRMAccessory {
   }
 
   async checkTurnOnWhenOff () {
-    const { config, data, logLevel, host, log, name, state } = this;
+    const { config, data, logLevel, host, log, logLevel, name, state } = this;
     const { on } = data;
 
     if (state.currentHeatingCoolingState === Characteristic.TargetHeatingCoolingState.OFF && config.turnOnWhenOff) {
-      log(`${name} sending "on" hex before sending temperature`);
+      if (logLevel <=2) log(`${name} sending "on" hex before sending temperature`);
 
       if (on) {
         await this.performSend(on);
       } else {
-        log(`\x1b[31m[CONFIG ERROR] \x1b[0m ${name} No On Hex configured, but turnOnWhenOff enabled`);
+        if (logLevel <=4) log(`\x1b[31m[CONFIG ERROR] \x1b[0m ${name} No On Hex configured, but turnOnWhenOff enabled`);
       }
 
       return true;
@@ -359,7 +359,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
   // Device Temperature Methods
 
   async monitorTemperature () {
-    const { config, host, log, name, state } = this;
+    const { config, host, log, logLevel, name, state } = this;
     const { temperatureFilePath, pseudoDeviceTemperature, w1DeviceID } = config;
 
     if (pseudoDeviceTemperature !== undefined) return;
@@ -378,7 +378,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
       return;
     }
 
-    log(`${name} monitorTemperature`);
+    if (logLevel <=1) log(`${name} monitorTemperature`);
 
     device.on('temperature', this.onTemperature.bind(this));
     device.checkTemperature();
@@ -469,7 +469,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     if (!device || device.state === 'inactive') {
       if (device && device.state === 'inactive') {
-        log(`${name} addTemperatureCallbackToQueue (device no longer active, using existing temperature)`);
+        if (logLevel <=3) log(`${name} addTemperatureCallbackToQueue (device no longer active, using existing temperature)`);
       }
 
       this.processQueuedTemperatureCallbacks(state.currentTemperature || 0);
@@ -491,11 +491,11 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     fs.readFile(temperatureFilePath, 'utf8', (err, data) => {
       if (err) {
-         log(`\x1b[31m[ERROR] \x1b[0m${name} updateTemperatureFromFile\n\n${err.message}`);
+        if (logLevel <=4) log(`\x1b[31m[ERROR] \x1b[0m${name} updateTemperatureFromFile\n\n${err.message}`);
       }
 
       if (data === undefined || data.trim().length === 0) {
-        log(`\x1b[33m[WARNING]\x1b[0m ${name} updateTemperatureFromFile error reading file: ${temperatureFilePath}, using previous Temperature`);
+        if (logLevel <=3) log(`\x1b[33m[WARNING]\x1b[0m ${name} updateTemperatureFromFile error reading file: ${temperatureFilePath}, using previous Temperature`);
         if (!noHumidity) humidity = (state.currentHumidity || 0);
         temperature = (state.currentTemperature || 0);
       }
@@ -539,7 +539,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
         var matches = data.match(/t=([0-9]+)/);
         temperature = parseInt(matches[1]) / 1000;
       }else{
-        log(`\x1b[33m[WARNING]\x1b[0m ${name} updateTemperatureFromW1 error reading file: ${fName}, using previous Temperature`);
+        if (logLevel <=3) log(`\x1b[33m[WARNING]\x1b[0m ${name} updateTemperatureFromW1 error reading file: ${fName}, using previous Temperature`);
         temperature = (state.currentTemperature || 0);
       }
 
@@ -592,11 +592,11 @@ class AirConAccessory extends BroadlinkRMAccessory {
   }
 
   async checkTemperatureForAutoOnOff (temperature) {
-    const { config, host, log, name, serviceManager, state } = this;
+    const { config, host, log, logLevel, name, serviceManager, state } = this;
     let { autoHeatTemperature, autoCoolTemperature, minimumAutoOnOffDuration } = config;
 
     if (this.shouldIgnoreAutoOnOff) {
-      this.log(`${name} checkTemperatureForAutoOn (ignore within ${minimumAutoOnOffDuration}s of previous auto-on/off due to "minimumAutoOnOffDuration")`);
+      if (logLevel <=2) log(`${name} checkTemperatureForAutoOn (ignore within ${minimumAutoOnOffDuration}s of previous auto-on/off due to "minimumAutoOnOffDuration")`);
 
       return;
     }
@@ -604,28 +604,28 @@ class AirConAccessory extends BroadlinkRMAccessory {
     if (!autoHeatTemperature && !autoCoolTemperature) return;
 
     if (!this.isAutoSwitchOn()) {
-      this.log(`${name} checkTemperatureForAutoOnOff (autoSwitch is off)`);
+      if (logLevel <=2) log(`${name} checkTemperatureForAutoOnOff (autoSwitch is off)`);
       return;
     }
 
-    this.log(`${name} checkTemperatureForAutoOnOff`);
+    if (logLevel <=1) log(`${name} checkTemperatureForAutoOnOff`);
 
     if (autoHeatTemperature && temperature < autoHeatTemperature) {
       this.state.isRunningAutomatically = true;
 
-      this.log(`${name} checkTemperatureForAutoOnOff (${temperature} < ${autoHeatTemperature}: auto heat)`);
+      if (logLevel <=2) log(`${name} checkTemperatureForAutoOnOff (${temperature} < ${autoHeatTemperature}: auto heat)`);
       serviceManager.setCharacteristic(Characteristic.TargetHeatingCoolingState, Characteristic.TargetHeatingCoolingState.HEAT);
     } else if (autoCoolTemperature && temperature > autoCoolTemperature) {
       this.state.isRunningAutomatically = true;
 
-      this.log(`${name} checkTemperatureForAutoOnOff (${temperature} > ${autoCoolTemperature}: auto cool)`);
+      if (logLevel <=2) log(`${name} checkTemperatureForAutoOnOff (${temperature} > ${autoCoolTemperature}: auto cool)`);
       serviceManager.setCharacteristic(Characteristic.TargetHeatingCoolingState, Characteristic.TargetHeatingCoolingState.COOL);
     } else {
-      this.log(`${name} checkTemperatureForAutoOnOff (temperature is ok)`);
+      if (logLevel <=1) log(`${name} checkTemperatureForAutoOnOff (temperature is ok)`);
 
       if (this.state.isRunningAutomatically) {
         this.isAutomatedOff = true;
-        this.log(`${name} checkTemperatureForAutoOnOff (auto off)`);
+        if (logLevel <=2) log(`${name} checkTemperatureForAutoOnOff (auto off)`);
         serviceManager.setCharacteristic(Characteristic.TargetHeatingCoolingState, Characteristic.TargetHeatingCoolingState.OFF);
       } else {
         return;
