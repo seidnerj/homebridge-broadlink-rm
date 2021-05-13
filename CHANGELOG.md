@@ -9,11 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Heater-Cooler states now all support allowResend for when values are not changing.
 - Heater-Cooler now supports humidity values and noHumidity configuration.
 - Accessorys now support logLevel configuration (none=6, critical=5, error=4, warning=3, info=2, debug=1, trace=0)
+- The Platform now also supports logLevel configuration
 - Learn RF now finds 0xb2 codes
 ### Changed
 - Updated CHANGELOG.md to follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - turnOnWhenOff now defaults to true for Heater-Cooler accessories.
 - All accessories now explicitly have allowResend set to true by default.
+- Learn Accessories will temporarily enable platform level debug during a learn
 ### Fixed
 - Learn RF now times out after 60 seconds to allow all frequencies to be scanned. 
 
