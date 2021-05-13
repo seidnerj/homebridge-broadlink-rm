@@ -28,8 +28,7 @@ class HomebridgePlatform {
       case 'warning':
         this.logLevel = 3;
         break;
-      default:
-      //case 'info':
+      case 'info':
         this.logLevel = 2;
         break;
       case 'debug':
@@ -37,6 +36,11 @@ class HomebridgePlatform {
         break;
       case 'trace':
         this.logLevel = 0;
+        break;
+      default:
+        //default to 'info':
+        if(this.config.logLevel !== undefined) log(`\x1b[31m[CONFIG ERROR] \x1b[33mlogLevel\x1b[0m should be one of: trace, debug, info, warning, error, critical, or none.`);
+        this.logLevel = 2;
         break;
     }
     if(this.config.debug) {this.logLevel = Math.min(1, this.logLevel);}
