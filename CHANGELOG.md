@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated CHANGELOG.md to follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - turnOnWhenOff now defaults to true for Heater-Cooler accessories.
 - All accessories now explicitly have allowResend set to true by default.
+### Fixed
 - Learn RF now times out after 60 seconds to allow all frequencies to be scanned. 
 
 ## [4.4.3] - 2021-05-04
