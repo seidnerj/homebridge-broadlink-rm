@@ -4,7 +4,7 @@ let closeClient = null;
 let timeout = null;
 let getDataTimeout = null;
 
-const stop = (log, logLevel) => {
+const stop = (log, device, logLevel) => {
   // Reset existing learn requests
   if (!closeClient) return;
 
@@ -12,7 +12,7 @@ const stop = (log, logLevel) => {
   closeClient = null;
 
   log(`\x1b[35m[INFO]\x1b[0m Learn Code (stopped)`);
-  if(this.initalDebug !== undefined && currentDevice) currentDevice.debug = this.initalDebug;
+  if(this.initalDebug !== undefined && device) device.debug = this.initalDebug;
 }
 
 const start = (host, callback, turnOffCallback, log, disableTimeout, logLevel) => {
