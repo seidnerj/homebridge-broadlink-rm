@@ -29,9 +29,9 @@ class LearnIRAccessory extends BroadlinkRMAccessory {
 
     if (scanRF || scanFrequency) {
       if (on) {
-        learnRFData.start(this.host, callback, turnOffCallback, this.log, disableAutomaticOff);
+        learnRFData.start(this.host, callback, turnOffCallback, this.log, disableAutomaticOff, this.logLevel);
       } else {
-        learnRFData.stop(this.log);
+        learnRFData.stop(this.log, this.logLevel);
 
         callback();
       }
@@ -40,9 +40,9 @@ class LearnIRAccessory extends BroadlinkRMAccessory {
     }
 
     if (on) {
-      learnData.start(this.host, callback, turnOffCallback, this.log, disableAutomaticOff);
+      learnData.start(this.host, callback, turnOffCallback, this.log, disableAutomaticOff, this.logLevel);
     } else {
-      learnData.stop(this.log);
+      learnData.stop(this.log, this.logLevel);
 
       callback();
     }

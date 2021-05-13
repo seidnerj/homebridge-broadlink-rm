@@ -4,7 +4,7 @@ let closeClient = null;
 let timeout = null;
 let getDataTimeout = null;
 
-const stop = (log) => {
+const stop = (log, logLevel) => {
   // Reset existing learn requests
   if (!closeClient) return;
 
@@ -12,16 +12,20 @@ const stop = (log) => {
   closeClient = null;
 
   log(`\x1b[35m[INFO]\x1b[0m Learn Code (stopped)`);
+  if(this.initalDebug !== undefined && currentDevice) currentDevice.debug = this.initalDebug;
 }
 
-const start = (host, callback, turnOffCallback, log, disableTimeout) => {
+const start = (host, callback, turnOffCallback, log, disableTimeout, logLevel) => {
   stop()
 
   // Get the Broadlink device
   const device = getDevice({ host, log, learnOnly: true });
   if (!device) {
     return log(`\x1b[31m[ERROR]\x1b[0m Learn Code (Couldn't learn code, device not found)`);
-  }
+  }  
+
+  this.initalDebug = device.debug;
+  if (logLevel <=1) device.debug = true;
 
   if (!device.enterLearning) return log(`\x1b[31m[ERROR]\x1b[0m Learn Code (IR learning not supported for device at ${host})`);
 
