@@ -65,7 +65,7 @@ let discoverDevicesInterval;
 const discoverDevices = (automatic = true, log, logLevel, deviceDiscoveryTimeout = 60) => {
   broadlink.log = log;
   broadlink.debug = logLevel <=1;
-  broadlink.logLevel = logLevel;
+  //broadlink.logLevel = logLevel;
 
   if (automatic) {
     this.discoverDevicesInterval = setInterval(() => {
