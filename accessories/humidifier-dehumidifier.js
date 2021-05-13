@@ -284,7 +284,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     }
 
     device.checkHumidity();
-    if (logLevel <=1) log(`\x1b[34m[DEBUG]\x1b[0m ${name} addHumidityCallbackToQueue (requested humidity from device, waiting)`);
+    if (logLevel <1) log(`\x1b[34m[DEBUG]\x1b[0m ${name} addHumidityCallbackToQueue (requested humidity from device, waiting)`);
   }
   
   updateHumidityFromFile () {
