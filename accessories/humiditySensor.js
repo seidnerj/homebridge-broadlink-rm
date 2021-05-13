@@ -31,7 +31,7 @@ class HumiditySensorAccessory extends HumidifierAccessory {
 
   // Device Temperature Methods
   async monitorHumidity () {
-    const { config, host, log, name, state } = this;
+    const { config, host, log, logLevel, name, state } = this;
 
     const device = getDevice({ host, log });
 
@@ -42,7 +42,7 @@ class HumiditySensorAccessory extends HumidifierAccessory {
       return;
     }
 
-    log(`${name} monitorHumidity`);
+    if (logLevel <=1) log(`${name} monitorHumidity`);
 
     //Broadlink module emits 'temperature for both sensors.
     device.on('temperature', this.onHumidity.bind(this));

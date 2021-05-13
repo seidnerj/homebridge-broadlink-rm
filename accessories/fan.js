@@ -64,9 +64,7 @@ class FanAccessory extends SwitchAccessory {
       let { disableAutomaticOff, enableAutoOff, onDuration } = config;
 
       if (state.switchState && enableAutoOff) {
-        log(
-          `${name} setSwitchState: (automatically turn off in ${onDuration} seconds)`
-        );
+        if (logLevel <=2) log(`${name} setSwitchState: (automatically turn off in ${onDuration} seconds)`);
 
         this.autoOffTimeoutPromise = delayForDuration(onDuration);
         await this.autoOffTimeoutPromise;
@@ -82,9 +80,7 @@ class FanAccessory extends SwitchAccessory {
       let { disableAutomaticOn, enableAutoOn, offDuration } = config;
 
       if (!state.switchState && enableAutoOn) {
-        log(
-          `${name} setSwitchState: (automatically turn on in ${offDuration} seconds)`
-        );
+        if (logLevel <=2) log(`${name} setSwitchState: (automatically turn on in ${offDuration} seconds)`);
 
         this.autoOnTimeoutPromise = delayForDuration(offDuration);
         await this.autoOnTimeoutPromise;
@@ -143,7 +139,7 @@ class FanAccessory extends SwitchAccessory {
 
     // Find speed closest to the one requested
     const closest = foundSpeeds.reduce((prev, curr) => Math.abs(curr - state.fanSpeed) < Math.abs(prev - state.fanSpeed) ? curr : prev);
-    log(`${name} setFanSpeed: (closest: ${closest})`);
+    if (logLevel <=2) log(`${name} setFanSpeed: (closest: ${closest})`);
 
     if (this.lastFanSpeed === closest) {
       return;

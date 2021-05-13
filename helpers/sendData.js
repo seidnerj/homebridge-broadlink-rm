@@ -31,5 +31,5 @@ module.exports = ({ host, hexData, log, name, logLevel }) => {
   const hexDataBuffer = new Buffer(hexData, 'hex');
   device.sendData(hexDataBuffer, logLevel, hexData);
 
-  log(`${name} sendHex (${device.host.address}; ${device.host.macAddress}) ${hexData}`);
+  if (logLevel <=2) log(`${name} sendHex (${device.host.address}; ${device.host.macAddress}) ${hexData}`);
 }
