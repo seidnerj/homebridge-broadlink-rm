@@ -452,7 +452,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
    * @param {int} previousValue 
    */
   async setSwingMode(hexData, previousValue) {
-    const { state, data, config, logLevel, log, logLevel, name } = this
+    const { state, data, config, log, logLevel, name } = this
     const { swingMode } = state
 
     if (logLevel <=2) log(`${name} setSwingMode: Changing swing from ${previousValue} to ${Characteristic.SwingMode.SWING_ENABLED}`)
