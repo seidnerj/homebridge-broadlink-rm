@@ -452,9 +452,10 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
    * @param {int} previousValue 
    */
   async setSwingMode(hexData, previousValue) {
-    const { state, data, config, logLevel, log } = this
+    const { state, data, config, logLevel, log, logLevel, name } = this
     const { swingMode } = state
 
+    if (logLevel <=2) log(`${name} setSwingMode: Changing swing from ${previousValue} to ${Characteristic.SwingMode.SWING_ENABLED}`)
     if (data.swingOn && data.swingOff) {
       hexData = swingMode === Characteristic.SwingMode.SWING_ENABLED ? data.swingOn : data.swingOff
     }
@@ -483,6 +484,9 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
   async setRotationSpeed(hexData, previousValue) {
     const { state, config, log, logLevel } = this
     const { rotationSpeed } = state
+
+    if (logLevel <=2) log(`${name} setRotationSpeed: Changing RotationSpeed from ${previousValue} to ${state.rotationSpeed}`)
+
     // TODO: Check other locations for fanSpeed
     if (rotationSpeed === 0) {
       // reset rotationSpeed back to default
