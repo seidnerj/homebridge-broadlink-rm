@@ -11,6 +11,12 @@ If you like this plugin and want to show your support then please star the Githu
 
 Thank you!
 
+## Installation
+
+This plugin can be added via the Web interface, or if you perfer the terminal:
+   npm install -g homebridge-broadlink-rm-pro
+For more information, refer to the [documentation](https://broadlink.kiwicam.nz/#installation).
+
 ## Documentation
 
 **Documentation can be found [here](https://broadlink.kiwicam.nz).** If you have any trouble after reading through the information please raise an issue and we'll help out as best we can.
