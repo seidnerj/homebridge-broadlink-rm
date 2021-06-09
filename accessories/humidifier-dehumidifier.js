@@ -67,10 +67,13 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       switch(state.currentState){
         case Characteristic.CurrentHumidifierDehumidifierState.DEHUMIDIFYING:
           hexData = data.targetStateDehumidifier;
+          break;
         case Characteristic.CurrentHumidifierDehumidifierState.HUMIDIFYING:
           hexData = data.targetStateHumidifier;
+          break;
         case Characteristic.CurrentHumidifierDehumidifierState.IDLE:
           hexData = data.fanOnly;
+          break;
       }
     
       if (logLevel <=2) log(`${name} setCurrentState: currently ${previousValue}, changing to ${state.currentState}`);
