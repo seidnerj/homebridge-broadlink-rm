@@ -42,7 +42,13 @@ class HomebridgeAccessory {
   }
 
   setDefaults () { 
-    this.config.allowResend = this.config.allowResend === undefined ? true : false; 
+    if(config.allowResend === undefined){
+      if(config.preventResendHex === undefined){
+        config.allowResend = true;
+      } else {
+        config.allowResend = !config.preventResendHex;
+      }
+    }
   }
 
   restoreStateOrder () { }
