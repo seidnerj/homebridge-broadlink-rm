@@ -482,7 +482,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
    * @param {int} previousValue - previous rotation speed of device
    */
   async setRotationSpeed(hexData, previousValue) {
-    const { state, config, log, logLevel } = this
+    const { state, config, log, logLevel, name } = this
     const { rotationSpeed } = state
 
     if (logLevel <=2) log(`${name} setRotationSpeed: Changing RotationSpeed from ${previousValue} to ${state.rotationSpeed}`)
