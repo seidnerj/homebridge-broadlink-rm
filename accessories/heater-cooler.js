@@ -1233,9 +1233,9 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
     this.serviceManager
       .getCharacteristic(Characteristic.CurrentTemperature)
       .setProps({
-        minValue: 10,
-        maxValue: 40,
-        minStep: 0.1
+        minValue: -270,
+        maxValue: 100,
+        minStep: 0.1,
       })
 
     // Setting up optional Characteristics handlers
