@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+ - Improved default allowResend logic when using preventResendHex
+### Fixed
+ - Fixed characteristic 'Current Temperature': characteristic was supplied illegal value when a heater-cooler reads below 10
+ - Fixed name not defined error when using oscillate in Heater Cooler
 
 ## [4.4.4] - 2021-06-09
 ### Added
