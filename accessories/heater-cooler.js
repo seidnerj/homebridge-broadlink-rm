@@ -432,17 +432,14 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
     // Update homebridge and home app state to reflect the cached state of all the available
     // characteristics. This ensures that UI for osciallte, fan speed, etc in the app are in
     // sync with device settings
-    if (requestedValue === Characteristic.Active.INACTIVE) {
-      this.updateServiceCurrentHeaterCoolerState(Characteristic.CurrentHeaterCoolerState.INACTIVE)
-    } else {
-      if (available.swingMode) {
-        this.serviceManager.getCharacteristic(Characteristic.SwingMode)
-          .updateValue(state.swingMode)
-      }
-      if (available.rotationSpeed) {
-        this.serviceManager.getCharacteristic(Characteristic.RotationSpeed)
-          .updateValue(state.rotationSpeed)
-      }
+    this.updateServiceCurrentHeaterCoolerState();
+    if (available.swingMode) {
+      this.serviceManager.getCharacteristic(Characteristic.SwingMode)
+        .updateValue(state.swingMode)
+    }
+    if (available.rotationSpeed) {
+      this.serviceManager.getCharacteristic(Characteristic.RotationSpeed)
+        .updateValue(state.rotationSpeed)
     }
   }
 

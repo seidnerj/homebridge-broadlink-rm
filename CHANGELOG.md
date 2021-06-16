@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
  - Improved default allowResend logic when using preventResendHex
+ - Heater-Cooler now shows as Heating or Cooling depending on mode selected
 ### Fixed
  - Fixed characteristic 'Current Temperature': characteristic was supplied illegal value when a heater-cooler reads below 10
  - Fixed name not defined error when using oscillate in Heater Cooler
