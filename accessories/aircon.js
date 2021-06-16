@@ -152,7 +152,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
   // Allows this accessory to know about switch accessories that can determine whether
   // auto-on/off should be permitted.
   updateAccessories (accessories) {
-    const { config, name, log } = this;
+    const { config, name, log, logLevel } = this;
     const { autoSwitchName } = config;
 
     if (!autoSwitchName) return;
@@ -171,7 +171,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
   }
 
   setTargetTemperature (previousValue) {
-    const { config, log, name, serviceManager, state } = this;
+    const { config, log, logLevel, name, serviceManager, state } = this;
     const { preventResendHex, minTemperature, maxTemperature } = config;
 
     if (state.targetTemperature === previousValue && preventResendHex && !this.previouslyOff) return;
