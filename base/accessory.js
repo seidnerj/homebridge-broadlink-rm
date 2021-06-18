@@ -56,7 +56,7 @@ class HomebridgeAccessory {
   correctReloadedState () { }
 
   checkConfig (config) {
-    const { name, log } = this;
+    const { name, log, logLevel } = this;
     if (typeof config !== 'object') return;
 
     Object.keys(config).forEach((key) => {
@@ -155,7 +155,7 @@ class HomebridgeAccessory {
 
   async getCharacteristicValue (props, callback) {
     const { propertyName } = props;
-    const { log, name } = this;
+    const { log, name, logLevel } = this;
     let value;
 
     const capitalizedPropertyName = propertyName.charAt(0).toUpperCase() + propertyName.slice(1);
@@ -176,7 +176,7 @@ class HomebridgeAccessory {
   }
 
   loadState () {
-    const { config, log, name, serviceManager } = this;
+    const { config, log, logLevel, name, serviceManager } = this;
     let { host, resendDataAfterReload, resendDataAfterReloadDelay, persistState } = config;
 
     // Set defaults
@@ -259,7 +259,7 @@ class HomebridgeAccessory {
 
   // MQTT Support
   subscribeToMQTT () {
-    const { config, log, name } = this;
+    const { config, log, logLevel, name } = this;
     let { mqttTopic, mqttURL, mqttUsername, mqttPassword } = config;
 
     if (!mqttTopic || !mqttURL) return;
@@ -367,7 +367,7 @@ class HomebridgeAccessory {
   }
 
   mqttValueForIdentifier (identifier) {
-    const { log, name } = this;
+    const { log, logLevel, name } = this;
 
     let value = this.mqttValues[identifier];
 
