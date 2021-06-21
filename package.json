@@ -1,6 +1,6 @@
 {
   "name": "homebridge-broadlink-rm-pro",
-  "version": "4.4.5-beta.2",
+  "version": "4.4.5-beta.3",
   "description": "Broadlink RM plugin (including the mini and pro) for homebridge with AC Pro and TV features",
   "license": "ISC",
   "scripts": {
@@ -33,7 +33,7 @@
     "ping": "^0.3.0",
     "uuid": "^8.3.2",
     "compare-versions": "^3.6.0",
-    "mqtt": "^4.2.6",
+    "mqtt": "^4.2.8",
     "node-persist": ">=2.1.0 <3.0.0",
     "semver": "^7.3.4",
     "node-arp": "^1.0.6",
