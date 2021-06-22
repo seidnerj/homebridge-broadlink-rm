@@ -432,17 +432,14 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
     // Update homebridge and home app state to reflect the cached state of all the available
     // characteristics. This ensures that UI for osciallte, fan speed, etc in the app are in
     // sync with device settings
-    if (requestedValue === Characteristic.Active.INACTIVE) {
-      this.updateServiceCurrentHeaterCoolerState(Characteristic.CurrentHeaterCoolerState.INACTIVE)
-    } else {
-      if (available.swingMode) {
-        this.serviceManager.getCharacteristic(Characteristic.SwingMode)
-          .updateValue(state.swingMode)
-      }
-      if (available.rotationSpeed) {
-        this.serviceManager.getCharacteristic(Characteristic.RotationSpeed)
-          .updateValue(state.rotationSpeed)
-      }
+    this.updateServiceCurrentHeaterCoolerState();
+    if (available.swingMode) {
+      this.serviceManager.getCharacteristic(Characteristic.SwingMode)
+        .updateValue(state.swingMode)
+    }
+    if (available.rotationSpeed) {
+      this.serviceManager.getCharacteristic(Characteristic.RotationSpeed)
+        .updateValue(state.rotationSpeed)
     }
   }
 
@@ -482,7 +479,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
    * @param {int} previousValue - previous rotation speed of device
    */
   async setRotationSpeed(hexData, previousValue) {
-    const { state, config, log, logLevel } = this
+    const { state, config, log, logLevel, name } = this
     const { rotationSpeed } = state
 
     if (logLevel <=2) log(`${name} setRotationSpeed: Changing RotationSpeed from ${previousValue} to ${state.rotationSpeed}`)
@@ -1233,9 +1230,9 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
     this.serviceManager
       .getCharacteristic(Characteristic.CurrentTemperature)
       .setProps({
-        minValue: 10,
-        maxValue: 40,
-        minStep: 0.1
+        minValue: -270,
+        maxValue: 100,
+        minStep: 0.1,
       })
 
     // Setting up optional Characteristics handlers

@@ -80,6 +80,9 @@ class BroadlinkRMAccessory extends HomebridgeAccessory {
   async performSend (data, actionCallback) {
     const { logLevel, config, host, log, name } = this;
 
+    //Error catch
+    if(data === undefined){return}
+
     if (typeof data === 'string') {
       sendData({ host, hexData: data, log, name, logLevel });
 

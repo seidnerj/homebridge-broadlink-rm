@@ -27,7 +27,7 @@ class TemperatureSensorAccessory extends AirconAccessory {
     config.humidityAdjustment = config.humidityAdjustment || 0;
 
     // ignore Humidity if set to not use it, or using Temperature source that doesn't support it
-    if(config.noHumidity){
+    if(config.noHumidity || config.w1Device || config.pseudoDeviceTemperature){
       state.currentHumidity = null;
       config.noHumidity = true;
     } else {
