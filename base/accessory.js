@@ -125,7 +125,7 @@ class HomebridgeAccessory {
         return;
       }
 
-      log(`${name} set${capitalizedPropertyName}: allowResendOnOff = ${allowResendOnOff} and propertyName = ${propertyName}`);
+      if (this.logLevel <= 2) {log(`${name} set${capitalizedPropertyName}: allowResendOnOff = ${allowResendOnOff} and propertyName = ${propertyName}`);}
       if (!ignorePreviousValue && this.state[propertyName] == value && !this.isReloadingState) {
         if (!allowResend && !(allowResendOnOff && propertyName == 'switchState') && !(allowResendOnOff && propertyName == 'active') ) {
           if (this.logLevel <= 3) {log(`${name} set${capitalizedPropertyName}: already ${value} (no data sent - B)`);}
