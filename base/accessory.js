@@ -49,9 +49,6 @@ class HomebridgeAccessory {
         this.config.allowResend = !this.config.preventResendHex;
       }
     }
-    if (this.config.allowResendOnOff === undefined) {
-      this.config.allowResendOnOff = true;
-    }
   }
 
   restoreStateOrder() { }
@@ -103,7 +100,7 @@ class HomebridgeAccessory {
     const { config, host, log, name, logLevel } = this;
 
     try {
-      const { delay, resendDataAfterReload, allowResend, allowResendOnOff } = config;
+      const { delay, resendDataAfterReload, allowResend } = config;
       const { service, propertyName, onData, offData, setValuePromise, ignorePreviousValue } = props;
 
       const capitalizedPropertyName = propertyName.charAt(0).toUpperCase() + propertyName.slice(1);
@@ -125,9 +122,8 @@ class HomebridgeAccessory {
         return;
       }
 
-      log(`${name} set${capitalizedPropertyName}: allowResendOnOff = ${allowResendOnOff} and propertyName = ${propertyName}`);
       if (!ignorePreviousValue && this.state[propertyName] == value && !this.isReloadingState) {
-        if (!allowResend && !(allowResendOnOff && propertyName == 'switchState') && !(allowResendOnOff && propertyName == 'active') ) {
+        if (!allowResend) {
           if (this.logLevel <= 3) {log(`${name} set${capitalizedPropertyName}: already ${value} (no data sent - B)`);}
 
           callback(null);
@@ -271,7 +267,7 @@ class HomebridgeAccessory {
     this.mqttValues = {};
     this.mqttValuesTemp = {};
 
-    // Perform some validation of the mqttTopic option in the config.
+    // Perform some validation of the mqttTopic option in the config. 
     if (typeof mqttTopic !== 'string' && !Array.isArray(mqttTopic)) {
       if (this.logLevel <= 4) {log(`\x1b[31m[CONFIG ERROR]\x1b[0m ${name} \x1b[33mmqttTopic\x1b[0m value is incorrect. Please check out the documentation for more details.`)}
 
