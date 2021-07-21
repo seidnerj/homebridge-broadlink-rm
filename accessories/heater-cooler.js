@@ -107,6 +107,7 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
     } else {
       config.temperatureUpdateFrequency = config.temperatureUpdateFrequency || 10;
     }
+    config.useCachedTemperature = config.useCachedTemperature || false;
 
     const { internalConfig } = config
     const { available } = internalConfig
@@ -738,7 +739,11 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
       return callback(null, defaultNowTemperature);
     }
 
-    this.addTemperatureCallbackToQueue(callback);
+    if (config.useCachedTemperature) {
+      return callback(null, state.currentTemperature);
+    } else {
+      this.addTemperatureCallbackToQueue(callback);
+    }
   }
 
   getCurrentHumidity(callback) {

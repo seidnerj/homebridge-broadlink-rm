@@ -21,6 +21,7 @@ class HumiditySensorAccessory extends HumidifierAccessory {
     // Set config default values
     config.humidityUpdateFrequency = config.humidityUpdateFrequency || 10;
     config.humidityAdjustment = config.humidityAdjustment || 0;
+    config.useCachedTemperature = config.useCachedTemperature || false;
 
     state.firstHumidityUpdate = true;
   }

@@ -90,6 +90,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     } else {
       config.noHumidity = false;
     }
+    config.useCachedTemperature = config.useCachedTemperature || false;
 
     // Used to determine when we should use the defaultHeatTemperature or the
     // defaultHeatTemperature
@@ -581,7 +582,11 @@ class AirConAccessory extends BroadlinkRMAccessory {
       return callback(null, pseudoDeviceTemperature);
     }
 
-    this.addTemperatureCallbackToQueue(callback);
+    if (config.useCachedTemperature) {
+      return callback(null, state.currentTemperature);
+    } else {
+      this.addTemperatureCallbackToQueue(callback);
+    }
   }
 
   getCurrentHumidity (callback) {

@@ -25,6 +25,7 @@ class TemperatureSensorAccessory extends AirconAccessory {
     config.units = config.units ? config.units.toLowerCase() : 'c';
     config.temperatureAdjustment = config.temperatureAdjustment || 0;
     config.humidityAdjustment = config.humidityAdjustment || 0;
+    config.useCachedTemperature = config.useCachedTemperature || false;
 
     // ignore Humidity if set to not use it, or using Temperature source that doesn't support it
     if(config.noHumidity || config.w1Device || config.pseudoDeviceTemperature){
