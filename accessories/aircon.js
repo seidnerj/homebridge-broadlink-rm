@@ -90,7 +90,11 @@ class AirConAccessory extends BroadlinkRMAccessory {
     } else {
       config.noHumidity = false;
     }
-    config.useCachedTemperature = config.useCachedTemperature || false;
+    if(config.mqttURL && config.useCachedTemperature === undefined){
+      config.useCachedTemperature = true;
+    }else{
+      config.useCachedTemperature = config.useCachedTemperature || false;
+    }
 
     // Used to determine when we should use the defaultHeatTemperature or the
     // defaultHeatTemperature

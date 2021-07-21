@@ -107,7 +107,11 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
     } else {
       config.temperatureUpdateFrequency = config.temperatureUpdateFrequency || 10;
     }
-    config.useCachedTemperature = config.useCachedTemperature || false;
+    if(config.mqttURL && config.useCachedTemperature === undefined){
+      config.useCachedTemperature = true;
+    }else{
+      config.useCachedTemperature = config.useCachedTemperature || false;
+    }
 
     const { internalConfig } = config
     const { available } = internalConfig

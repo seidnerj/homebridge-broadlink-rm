@@ -39,9 +39,13 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     config.humidityUpdateFrequency = config.humidityUpdateFrequency || 10;
     config.humidityAdjustment = config.humidityAdjustment || 0;
     config.noHumidity = config.noHumidity || false;
-    config.useCachedTemperature = config.useCachedTemperature || false;
     config.threshold = config.threshold || 5;
     data.fanOnly = data.fanOnly ? data.fanOnly : data.off;
+    if(config.mqttURL && config.useCachedTemperature === undefined){
+      config.useCachedTemperature = true;
+    }else{
+      config.useCachedTemperature = config.useCachedTemperature || false;
+    }
 
     state.firstHumidityUpdate = true;
   }
