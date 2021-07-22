@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - General code tidy-up/standardisation.
 ### Fixed
  - Improved the temperature update process when using MQTT to make the UI more responsive
+ - Fixed 'One of your plugins incorrectly registered an external accessory using the platform name ([object Object]) and not the plugin identifier' message which caused TVs to fail in HOOBS
 
 ## [4.4.5] - 2021-06-23
 ### Changed
