@@ -90,11 +90,6 @@ class AirConAccessory extends BroadlinkRMAccessory {
     } else {
       config.noHumidity = false;
     }
-    if(config.mqttURL && config.useCachedTemperature === undefined){
-      config.useCachedTemperature = true;
-    }else{
-      config.useCachedTemperature = config.useCachedTemperature || false;
-    }
 
     // Used to determine when we should use the defaultHeatTemperature or the
     // defaultHeatTemperature
@@ -586,11 +581,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
       return callback(null, pseudoDeviceTemperature);
     }
 
-    if (config.useCachedTemperature) {
-      return callback(null, state.currentTemperature);
-    } else {
-      this.addTemperatureCallbackToQueue(callback);
-    }
+    this.addTemperatureCallbackToQueue(callback);
   }
 
   getCurrentHumidity (callback) {
@@ -747,7 +738,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
       } 
       this.mqttValues[identifier] = value;
     }
-    this.updateTemperatureUI();
+    this.onTemperature(this.mqttValues.temperature,this.mqttValues.humidity);
   }
 
   // Service Manager Setup
