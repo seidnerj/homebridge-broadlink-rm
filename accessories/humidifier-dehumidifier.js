@@ -41,11 +41,6 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     config.noHumidity = config.noHumidity || false;
     config.threshold = config.threshold || 5;
     data.fanOnly = data.fanOnly ? data.fanOnly : data.off;
-    if(config.mqttURL && config.useCachedTemperature === undefined){
-      config.useCachedTemperature = true;
-    }else{
-      config.useCachedTemperature = config.useCachedTemperature || false;
-    }
 
     state.firstHumidityUpdate = true;
   }
@@ -438,11 +433,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     const { config, host, logLevel, log, name, state, serviceManager } = this;
     const { noHumidity } = config;
 
-	  if (config.useCachedTemperature) {
-      return callback(null, state.currentHumidity);
-    } else {
-      this.addHumidityCallbackToQueue(callback);
-    }
+    this.addHumidityCallbackToQueue(callback);
   }
  
   setupServiceManager () {
