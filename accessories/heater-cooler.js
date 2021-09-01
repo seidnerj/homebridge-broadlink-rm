@@ -716,8 +716,6 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
     })
 
     this.temperatureCallbackQueue = {};
-
-    this.checkTemperatureForAutoOnOff(temperature);
   }
 
   updateTemperatureUI() {
@@ -746,54 +744,6 @@ class HeaterCoolerAccessory extends BroadlinkRMAccessory {
     const { defaultNowTemperature } = config;
 
     return callback(null, state.currentHumidity);
-  }
-
-  async checkTemperatureForAutoOnOff(temperature) {
-    const { config, host, log, logLevel, name, serviceManager, state } = this;
-    let { autoHeatTemperature, autoCoolTemperature, minimumAutoOnOffDuration } = config;
-
-    if (this.shouldIgnoreAutoOnOff) {
-      if (logLevel <= 2) {this.log(`${name} checkTemperatureForAutoOn (ignore within ${minimumAutoOnOffDuration}s of previous auto-on/off due to "minimumAutoOnOffDuration")`);}
-
-      return;
-    }
-
-    if (!autoHeatTemperature && !autoCoolTemperature) {return;}
-
-    if (!this.isAutoSwitchOn()) {
-      if (logLevel <= 2) {this.log(`${name} checkTemperatureForAutoOnOff (autoSwitch is off)`);}
-      return;
-    }
-
-    if (logLevel <= 2) {this.log(`${name} checkTemperatureForAutoOnOff`);}
-
-    if (autoHeatTemperature && temperature < autoHeatTemperature) {
-      this.state.isRunningAutomatically = true;
-
-      if (logLevel <= 2) {this.log(`${name} checkTemperatureForAutoOnOff (${temperature} < ${autoHeatTemperature}: auto heat)`);}
-      serviceManager.setCharacteristic(Characteristic.TargetHeatingCoolingState, Characteristic.TargetHeatingCoolingState.HEAT);
-    } else if (autoCoolTemperature && temperature > autoCoolTemperature) {
-      this.state.isRunningAutomatically = true;
-
-      if (logLevel <= 2) {this.log(`${name} checkTemperatureForAutoOnOff (${temperature} > ${autoCoolTemperature}: auto cool)`);}
-      serviceManager.setCharacteristic(Characteristic.TargetHeatingCoolingState, Characteristic.TargetHeatingCoolingState.COOL);
-    } else {
-      if (logLevel <= 1) {this.log(`${name} checkTemperatureForAutoOnOff (temperature is ok)`);}
-
-      if (this.state.isRunningAutomatically) {
-        this.isAutomatedOff = true;
-        if (logLevel <= 2) {this.log(`${name} checkTemperatureForAutoOnOff (auto off)`);}
-        serviceManager.setCharacteristic(Characteristic.TargetHeatingCoolingState, Characteristic.TargetHeatingCoolingState.OFF);
-      } else {
-        return;
-      }
-    }
-
-    this.shouldIgnoreAutoOnOff = true;
-    this.shouldIgnoreAutoOnOffPromise = delayForDuration(minimumAutoOnOffDuration);
-    await this.shouldIgnoreAutoOnOffPromise;
-
-    this.shouldIgnoreAutoOnOff = false;
   }
 
   getTemperatureDisplayUnits(callback) {
