@@ -5,11 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-
+### Added
+ -Adds 0x6184 device support
 
 ## [4.4.6] - 2021-08-03
 ### Added
- - -Adds support for 0x6508 devices
+ - Adds support for 0x6508 devices
 ### Changed
  - General code tidy-up/standardisation.
 ### Fixed
