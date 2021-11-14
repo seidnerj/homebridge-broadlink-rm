@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
  - Adds 0x6184 device support
+ - Added support for 'white' light. Thanks to @JuniorGenius
 ### Fixed
  - Removed unsupported AutoOnOff code from heater-cooler accessory which was causing exceptions.
 
