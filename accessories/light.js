@@ -83,7 +83,7 @@ class LightAccessory extends SwitchAccessory {
       // Find hue closest to the one requested
       const foundValues = this.dataKeys('hue');
       const closest = foundValues.reduce((prev, curr) => Math.abs(curr - state.hue) < Math.abs(prev - state.hue) ? curr : prev);
-      hexData = "";
+      var hexData = "";
       // If saturation is less than 10, choose white
       if (state.saturation < 10 && data[`white`]) {
         hexData = data[`white`];
