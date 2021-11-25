@@ -10,7 +10,7 @@ const pingTimeout = 5;
 const startKeepAlive = (device, log) => {
   if(!device.host.port) {return;}
   setInterval(() => {
-    //log('\x1b[33m[DEBUG]\x1b[0m Sending keepalive to', device.host.address,':',device.host.port)
+    log('\x1b[33m[DEBUG]\x1b[0m Sending keepalive to', device.host.address,':',device.host.port)
     const socket = dgram.createSocket({ type:'udp4', reuseAddr:true }); 
     let packet = Buffer.alloc(0x30, 0);
     packet[0x26] = 0x1;
