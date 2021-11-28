@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Fixed
  - Updated dependencies to resolve security vulnerabilities
+ - Keepalive logs now only log under debug
 
 ## [4.4.7] - 2021-11-26
 ### Added
