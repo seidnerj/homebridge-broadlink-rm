@@ -75,9 +75,9 @@ const BroadlinkRMPlatform = class extends HomebridgePlatform {
       const homeKitAccessory = new classTypes[accessory.type](log, accessory);
 
       if (classTypes[accessory.type] === classTypes.tv) {
-        if(accessory.subType.toLowerCase() === 'stb'){homeKitAccessory.subType = homebridgeRef.hap.Accessory.Categories.TV_SET_TOP_BOX;}
-        if(accessory.subType.toLowerCase() === 'receiver'){homeKitAccessory.subType = homebridgeRef.hap.Accessory.Categories.AUDIO_RECEIVER;}
-        if(accessory.subType.toLowerCase() === 'stick'){homeKitAccessory.subType = homebridgeRef.hap.Accessory.Categories.TV_STREAMING_STICK;}
+        if(accessory.subType.toLowerCase() === 'stb'){homeKitAccessory.subType = homebridgeRef.hap.Categories.TV_SET_TOP_BOX;}
+        if(accessory.subType.toLowerCase() === 'receiver'){homeKitAccessory.subType = homebridgeRef.hap.Categories.AUDIO_RECEIVER;}
+        if(accessory.subType.toLowerCase() === 'stick'){homeKitAccessory.subType = homebridgeRef.hap.Categories.TV_STREAMING_STICK;}
 
         if (logLevel <=1) {log(`\x1b[34m[DEBUG]\x1b[0m Adding Accessory ${accessory.type} (${accessory.subType})`);}
         tvs.push(homeKitAccessory);
@@ -90,7 +90,7 @@ const BroadlinkRMPlatform = class extends HomebridgePlatform {
 
     if (tvs.length > 0) {
       if (tvs.length > 0) {
-        const TV = homebridgeRef.hap.Accessory.Categories.TELEVISION;
+        const TV = homebridgeRef.hap.Categories.TELEVISION;
         homebridgeRef.publishExternalAccessories('homebridge-broadlink-rm', tvs.map(tv => createAccessory(tv, tv.name, TV, homebridgeRef, tv.subType)));
 
         log('');
@@ -132,8 +132,23 @@ const BroadlinkRMPlatform = class extends HomebridgePlatform {
       let deviceType = 0x2221;
       deviceType = isRFSupported ? (deviceType | 0x2) : deviceType;
       deviceType = isRM4 ? (deviceType | 0x4) : deviceType;
+      // RM4 Pro firmware validates the deviceType bytes in incoming request
+      // packets and only accepts its real type 0x520b — the synthetic 0x2227
+      // ("Manual RM4 Pro Device") is in the lib's lookup table for client-side
+      // routing but is rejected by the device itself. Without this swap, even
+      // packets with correct MAC bytes get dropped server-side and auth
+      // never completes. Diagnosed 2026-05-05.
+      if (deviceType === 0x2227) deviceType = 0x520b;
       
-      broadlink.addDevice({ address, port: 80 }, mac.toLowerCase(), deviceType);
+      // The Device class indexes `this.mac[5..0]` to write the MAC into the
+      // request packet header (sendPacket, bytes 0x2a..0x2f), expecting a
+      // Buffer. Passing the MAC as a string makes those indices return
+      // single chars whose Number coercion produces NaN→0 (and stray digits
+      // for `0-9` chars), so the MAC bytes in every outgoing packet are
+      // garbage. RM3 devices ignore those bytes; RM4 Pro firmware validates
+      // them and silently drops the request — auth never completes.
+      const macBuffer = Buffer.from(mac.replace(/:/g, ''), 'hex');
+      broadlink.addDevice({ address, port: 80 }, macBuffer, deviceType);
     })
   }
 
