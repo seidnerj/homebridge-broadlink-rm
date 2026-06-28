@@ -7,6 +7,7 @@ const Mutex = require('await-semaphore').Mutex;
 const pingFrequency = 5000;
 const keepAliveFrequency = 90000;
 const pingTimeout = 5;
+const authenticationRetryFrequency = 5000;
 
 const startKeepAlive = (device, log) => {
   if(!device.host.port) {return;}
@@ -44,7 +45,15 @@ const startPing = (device, log) => {
 
           device.retryCount += 1;
         } else if (active && device.state !== 'active') {
-          if (device.state === 'inactive') {log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) has been re-discovered.`);}
+          if (device.state === 'inactive') {
+            log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) has been re-discovered.`);
+
+            // The device became reachable again after being unreachable. If it
+            // rebooted (e.g. power blip) its authenticated session (id/key) is now
+            // stale, so sends would silently fail even though it pings fine.
+            // Re-authenticate to re-establish the session.
+            if (typeof device.authenticate === 'function') {device.authenticate();}
+          }
 
           device.state = 'active';
           device.retryCount = 0;
@@ -90,6 +99,14 @@ const discoverDevices = (automatic = true, log, logLevel, deviceDiscoveryTimeout
     }
     device.host.macAddress = macAddress;
 
+    // deviceReady can fire more than once for the same device: authentication is
+    // retried until it succeeds (see retryAuthenticationUntilReady) and is also
+    // re-run when a device recovers from being unreachable. Only register and
+    // start the ping/keepalive timers once, otherwise each success spawns
+    // duplicate intervals.
+    if (device.pollingStarted) {return;}
+    device.pollingStarted = true;
+
     log(`\x1b[35m[INFO]\x1b[0m Discovered ${device.model} (${device.type.toString(16)}) at ${device.host.address} (${device.host.macAddress})`);
     addDevice(device);
 
@@ -105,6 +122,46 @@ const addDevice = (device) => {
 
   discoveredDevices[device.host.address] = device;
   discoveredDevices[device.host.macAddress] = device;
+}
+
+// Manual hosts (configured via the "hosts" option) are authenticated once by the
+// broadlink library when added. Authentication is a single UDP handshake with no
+// retry, so if that packet is lost (device booting, network blip at startup, dropped
+// UDP) the device never emits `deviceReady`, never enters `discoveredDevices`, and
+// every send fails with "no device found" until Homebridge is fully restarted.
+//
+// This keeps re-issuing authenticate() until the device registers, so the plugin
+// recovers on its own. It stops as soon as the device is ready (deviceReady adds it
+// to discoveredDevices). Safe to call repeatedly: the deviceReady handler is
+// idempotent and the library dedupes the device.
+// `frequency` is a tuning knob defaulting to the module-wide retry interval; it is
+// only overridden by tests that need a fast interval.
+const retryAuthenticationUntilReady = (device, log, logLevel, frequency = authenticationRetryFrequency) => {
+  // The library stores 'Not Supported' (a string) / null for devices it can't use;
+  // only real Device objects expose authenticate().
+  if (!device || typeof device !== 'object' || typeof device.authenticate !== 'function') {return;}
+
+  const isReady = () => Boolean(discoveredDevices[device.host.address] || discoveredDevices[device.host.macAddress]);
+
+  if (isReady()) {return;}
+
+  const interval = setInterval(() => {
+    if (isReady()) {
+      clearInterval(interval);
+
+      return;
+    }
+
+    if (logLevel <= 1) {log(`\x1b[33m[DEBUG]\x1b[0m Re-attempting authentication for Broadlink RM device at ${device.host.address}`);}
+
+    try {
+      device.authenticate();
+    } catch (err) {
+      if (logLevel <= 3) {log(`Error re-authenticating Broadlink RM device at ${device.host.address}: ${err}`);}
+    }
+  }, frequency);
+
+  return interval;
 }
 
 const getDevice = ({ host, log, learnOnly }) => {
@@ -152,4 +209,4 @@ const getDevice = ({ host, log, learnOnly }) => {
   return device;
 }
 
-module.exports = { getDevice, discoverDevices, addDevice };
+module.exports = { getDevice, discoverDevices, addDevice, retryAuthenticationUntilReady };

@@ -5,7 +5,7 @@ const npmPackage = require('./package.json');
 const Accessory = require('./accessories');
 const checkForUpdates = require('./helpers/checkForUpdates');
 const broadlink = require('./helpers/broadlink');
-const { discoverDevices } = require('./helpers/getDevice');
+const { discoverDevices, retryAuthenticationUntilReady } = require('./helpers/getDevice');
 const { createAccessory } = require('./helpers/accessoryCreator');
 
 const classTypes = {
@@ -149,6 +149,12 @@ const BroadlinkRMPlatform = class extends HomebridgePlatform {
       // them and silently drops the request — auth never completes.
       const macBuffer = Buffer.from(mac.replace(/:/g, ''), 'hex');
       broadlink.addDevice({ address, port: 80 }, macBuffer, deviceType);
+
+      // addDevice authenticates the device exactly once with no retry. If that
+      // single handshake is lost the device never becomes usable until Homebridge
+      // is restarted, so keep retrying until it registers (self-recovery).
+      const manualDevice = broadlink.devices[macBuffer.toString('hex')];
+      retryAuthenticationUntilReady(manualDevice, log, logLevel);
     })
   }
 
