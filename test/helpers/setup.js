@@ -15,8 +15,10 @@ const log = (message, more) => {
   }
 };
 
-const setup = (config) => {
-  const platform = new BroadlinkRMPlatform(log, config);
+const homebridgeDirectory = require('os').tmpdir();
+
+const setup = (config = {}) => {
+  const platform = new BroadlinkRMPlatform(log, { homebridgeDirectory, ...config });
 
   const device = new FakeDevice()
   addDevice(device)

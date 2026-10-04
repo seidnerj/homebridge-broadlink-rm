@@ -66,6 +66,13 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
 
       if (logLevel <= 1) {log(`${name} setTargetPosition: (set new position)`)}
 
+      // Already at the requested end position as far as we know, but the covering may have been moved
+      // outside HomeKit (e.g. a physical remote), so run a full open/close instead of just sending stop
+      if (state.targetPosition === state.currentPosition && (state.targetPosition === 0 || state.targetPosition === 100)) {
+        state.currentPosition = 100 - state.targetPosition;
+        if (logLevel <= 2) {log(`${name} setTargetPosition: already at ${state.targetPosition}%, re-sending full ${state.targetPosition ? 'open' : 'close'}`)}
+      }
+
       // Determine if we're opening or closing
       const difference = state.targetPosition - state.currentPosition;
 
