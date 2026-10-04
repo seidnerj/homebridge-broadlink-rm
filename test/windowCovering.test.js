@@ -69,7 +69,7 @@ describe('windowCoveringAccessory', () => {
     const totalDurationClose = 8;
 
     const openDurationPerPercent = windowCoveringAccessory.determineOpenCloseDurationPerPercent({
-      opening: true,
+      positionState: Characteristic.PositionState.INCREASING,
       totalDurationOpen,
       totalDurationClose
     });
@@ -77,7 +77,7 @@ describe('windowCoveringAccessory', () => {
     expect(openDurationPerPercent).to.equal(totalDurationOpen / 100);
 
     const closeDurationPerPercent = windowCoveringAccessory.determineOpenCloseDurationPerPercent({
-      opening: false,
+      positionState: Characteristic.PositionState.DECREASING,
       totalDurationOpen,
       totalDurationClose
     });
@@ -100,7 +100,7 @@ describe('windowCoveringAccessory', () => {
     const windowCoveringAccessory = new WindowCovering(null, config, 'FakeServiceManager')
 
     const durationPerPercent = windowCoveringAccessory.determineOpenCloseDurationPerPercent({
-      opening: true,
+      positionState: Characteristic.PositionState.INCREASING,
       totalDurationOpen: config.totalDurationOpen,
       totalDurationClose: config.totalDurationClose 
     });
@@ -108,9 +108,9 @@ describe('windowCoveringAccessory', () => {
     // Set Blinds to 50%
     windowCoveringAccessory.serviceManager.setCharacteristic(Characteristic.TargetPosition, 50)
 
-    // Wait for initialDelay
+    // Wait for initialDelay (movement starts with an immediate 1% step)
     await delayForDuration(windowCoveringAccessory.config.initialDelay);
-    expect(windowCoveringAccessory.state.currentPosition).to.equal(0);
+    expect(windowCoveringAccessory.state.currentPosition).to.equal(1);
 
     // Check value at 50%
     await delayForDuration(50 * durationPerPercent);
@@ -142,7 +142,7 @@ describe('windowCoveringAccessory', () => {
     const windowCoveringAccessory = new WindowCovering(null, config, 'FakeServiceManager')
 
     const durationPerPercent = windowCoveringAccessory.determineOpenCloseDurationPerPercent({
-      opening: true,
+      positionState: Characteristic.PositionState.INCREASING,
       totalDurationOpen: config.totalDurationOpen,
       totalDurationClose: config.totalDurationClose 
     });
@@ -150,9 +150,9 @@ describe('windowCoveringAccessory', () => {
     // Set blinds to 20%
     windowCoveringAccessory.serviceManager.setCharacteristic(Characteristic.TargetPosition, 20);
 
-    // Wait for initialDelay
+    // Wait for initialDelay (movement starts with an immediate 1% step)
     await delayForDuration(windowCoveringAccessory.config.initialDelay);
-    expect(windowCoveringAccessory.state.currentPosition).to.equal(0);
+    expect(windowCoveringAccessory.state.currentPosition).to.equal(1);
 
     // Check value at 20%
     await delayForDuration(20 * durationPerPercent);
@@ -162,9 +162,9 @@ describe('windowCoveringAccessory', () => {
     // Set blinds to 50%
     windowCoveringAccessory.serviceManager.setCharacteristic(Characteristic.TargetPosition, 50);
 
-    // Wait for initialDelay
+    // Wait for initialDelay (movement starts with an immediate 1% step)
     await delayForDuration(windowCoveringAccessory.config.initialDelay);
-    expect(windowCoveringAccessory.state.currentPosition).to.equal(20);
+    expect(windowCoveringAccessory.state.currentPosition).to.equal(21);
 
     // Check value at 50%
     await delayForDuration(50 * durationPerPercent);
@@ -196,13 +196,13 @@ describe('windowCoveringAccessory', () => {
     const windowCoveringAccessory = new WindowCovering(null, config, 'FakeServiceManager');
 
     const openDurationPerPercent = windowCoveringAccessory.determineOpenCloseDurationPerPercent({
-      opening: true,
+      positionState: Characteristic.PositionState.INCREASING,
       totalDurationOpen: config.totalDurationOpen,
       totalDurationClose: config.totalDurationClose 
     });
 
     const closeDurationPerPercent = windowCoveringAccessory.determineOpenCloseDurationPerPercent({
-      opening: false,
+      positionState: Characteristic.PositionState.DECREASING,
       totalDurationOpen: config.totalDurationOpen,
       totalDurationClose: config.totalDurationClose 
     });
@@ -210,9 +210,9 @@ describe('windowCoveringAccessory', () => {
     // Set blinds to 90%
     windowCoveringAccessory.serviceManager.setCharacteristic(Characteristic.TargetPosition, 90);
 
-    // Wait for initialDelay
+    // Wait for initialDelay (movement starts with an immediate 1% step)
     await delayForDuration(windowCoveringAccessory.config.initialDelay);
-    expect(windowCoveringAccessory.state.currentPosition).to.equal(0);
+    expect(windowCoveringAccessory.state.currentPosition).to.equal(1);
 
     // Check value at 90%
     await delayForDuration(90 * openDurationPerPercent);
@@ -222,9 +222,9 @@ describe('windowCoveringAccessory', () => {
     // Set blinds to 60%
     windowCoveringAccessory.serviceManager.setCharacteristic(Characteristic.TargetPosition, 60);
 
-    // Wait for initialDelay
+    // Wait for initialDelay (movement starts with an immediate 1% step)
     await delayForDuration(windowCoveringAccessory.config.initialDelay);
-    expect(windowCoveringAccessory.state.currentPosition).to.equal(90);
+    expect(windowCoveringAccessory.state.currentPosition).to.equal(89);
 
     // Check value at 60%
     await delayForDuration(30 * closeDurationPerPercent);
@@ -256,7 +256,7 @@ describe('windowCoveringAccessory', () => {
     const windowCoveringAccessory = new WindowCovering(null, config, 'FakeServiceManager')
   
     const durationPerPercent = windowCoveringAccessory.determineOpenCloseDurationPerPercent({
-      opening: true,
+      positionState: Characteristic.PositionState.INCREASING,
       totalDurationOpen: config.totalDurationOpen,
       totalDurationClose: config.totalDurationClose 
     });
@@ -292,7 +292,7 @@ describe('windowCoveringAccessory', () => {
     const windowCoveringAccessory = new WindowCovering(null, config, 'FakeServiceManager')
 
     const durationPerPercent = windowCoveringAccessory.determineOpenCloseDurationPerPercent({
-      opening: true,
+      positionState: Characteristic.PositionState.INCREASING,
       totalDurationOpen: config.totalDurationOpen,
       totalDurationClose: config.totalDurationClose 
     });
@@ -300,7 +300,7 @@ describe('windowCoveringAccessory', () => {
     // Set Blinds to 100%
     windowCoveringAccessory.serviceManager.setCharacteristic(Characteristic.TargetPosition, 100)
 
-    // Wait for initialDelay
+    // Wait for initialDelay (movement starts with an immediate 1% step)
     await delayForDuration(windowCoveringAccessory.config.initialDelay);
     expect(windowCoveringAccessory.state.currentPosition).to.equal(100);
 
@@ -333,7 +333,7 @@ describe('windowCoveringAccessory', () => {
     const windowCoveringAccessory = new WindowCovering(null, config, 'FakeServiceManager')
 
     const durationPerPercent = windowCoveringAccessory.determineOpenCloseDurationPerPercent({
-      opening: true,
+      positionState: Characteristic.PositionState.INCREASING,
       totalDurationOpen: config.totalDurationOpen,
       totalDurationClose: config.totalDurationClose
     });
@@ -341,7 +341,7 @@ describe('windowCoveringAccessory', () => {
     // Set Blinds to 100%
     windowCoveringAccessory.serviceManager.setCharacteristic(Characteristic.TargetPosition, 100)
 
-    // Wait for initialDelay
+    // Wait for initialDelay (movement starts with an immediate 1% step)
     await delayForDuration(windowCoveringAccessory.config.initialDelay);
     expect(windowCoveringAccessory.state.currentPosition).to.equal(100);
 
@@ -358,7 +358,7 @@ describe('windowCoveringAccessory', () => {
     // Set Blinds to 0%
     windowCoveringAccessory.serviceManager.setCharacteristic(Characteristic.TargetPosition, 0)
 
-    // Wait for initialDelay
+    // Wait for initialDelay (movement starts with an immediate 1% step)
     await delayForDuration(windowCoveringAccessory.config.initialDelay);
     expect(windowCoveringAccessory.state.currentPosition).to.equal(0);
 
