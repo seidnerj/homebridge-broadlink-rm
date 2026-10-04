@@ -138,7 +138,7 @@ const BroadlinkRMPlatform = class extends HomebridgePlatform {
       // routing but is rejected by the device itself. Without this swap, even
       // packets with correct MAC bytes get dropped server-side and auth
       // never completes. Diagnosed 2026-05-05.
-      if (deviceType === 0x2227) deviceType = 0x520b;
+      if (deviceType === 0x2227) {deviceType = 0x520b;}
       
       // The Device class indexes `this.mac[5..0]` to write the MAC into the
       // request packet header (sendPacket, bytes 0x2a..0x2f), expecting a
