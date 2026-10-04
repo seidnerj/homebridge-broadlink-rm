@@ -113,6 +113,7 @@ class LightAccessory extends SwitchAccessory {
           log(`${name} setHue: (wait ${onDelay}s then send data)`);
           this.onDelayTimeoutPromise = delayForDuration(onDelay);
           await this.onDelayTimeoutPromise;
+          this.onDelayTimeoutPromise = undefined;
         }
       }
 
@@ -144,6 +145,9 @@ class LightAccessory extends SwitchAccessory {
           state.switchState = true;
         }
 
+        // The same brightness is still being applied (waiting for onDelay); resetting here would cancel it
+        if (this.onDelayTimeoutPromise) {return;}
+
         await this.checkAutoOnOff();
 
         return;
@@ -165,6 +169,7 @@ class LightAccessory extends SwitchAccessory {
             log(`${name} setHue: (wait ${onDelay}s then send data)`);
             this.onDelayTimeoutPromise = delayForDuration(onDelay);
             await this.onDelayTimeoutPromise;
+            this.onDelayTimeoutPromise = undefined;
           }
         }
 
