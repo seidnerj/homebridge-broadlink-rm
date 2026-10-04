@@ -34,7 +34,7 @@ describe('switchMultiAccessory', () => {
     expect(switchAccessory.state.switchState).to.equal(true);
 
     // Wait for the first code to be sent
-    await delayForDuration(0.1)
+    await delayForDuration(0.05)
 
     // Check that only one code has been sent
     let sentHexCodeCount = device.getSentHexCodeCount();
@@ -82,7 +82,7 @@ describe('switchMultiAccessory', () => {
     expect(switchAccessory.state.switchState).to.equal(false);
 
     // Wait for the first off code to be sent
-    await delayForDuration(0.1)
+    await delayForDuration(0.05)
 
     // Check that only one code has been sent
     let sentHexCodeCount = device.getSentHexCodeCount();
