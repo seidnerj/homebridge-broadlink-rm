@@ -31,8 +31,10 @@ describe('switchAccessory', () => {
     
     const switchAccessory = new Switch(null, config, 'FakeServiceManager')
     switchAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
-    
+
     expect(switchAccessory.state.switchState).to.equal(true);
+
+    await delayForDuration(0.1)
 
     // Check hex code was sent
     const hasSentCode = device.hasSentCode('ON');
@@ -59,10 +61,14 @@ describe('switchAccessory', () => {
     // Turn On Switch
     switchAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
     expect(switchAccessory.state.switchState).to.equal(true);
-    
+
+    await delayForDuration(0.1)
+
     // Turn Off Switch
     switchAccessory.serviceManager.setCharacteristic(Characteristic.On, false)
     expect(switchAccessory.state.switchState).to.equal(false);
+
+    await delayForDuration(0.1)
 
     // Check hex code was sent
     const hasSentCodes = device.hasSentCodes([ 'ON', 'OFF' ]);
@@ -305,6 +311,8 @@ describe('switchAccessory', () => {
     switchAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
     expect(switchAccessory.state.switchState).to.equal(true);
 
+    await delayForDuration(0.1)
+
     device.resetSentHexCodes()
 
     // Should be on still with a new instance
@@ -348,6 +356,8 @@ describe('switchAccessory', () => {
     // Should be on still with a new instance
     switchAccessory = new Switch(null, config, 'FakeServiceManager')
     expect(switchAccessory.state.switchState).to.equal(true);
+
+    await delayForDuration(0.1)
 
     device.resetSentHexCodes()
 

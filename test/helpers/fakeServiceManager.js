@@ -63,12 +63,21 @@ class FakeCharacteristic {
 
   set (value) {
     this.log('Set Fake Value Received')
+    this.value = value
 
     return this.setMethod(value, (err, value) => {
       if (err) {return this.log(err.message)}
 
       this.log('Fake Set Callback Received: ', value)
     })
+  }
+
+  // Real HAP characteristics expose updateValue(); ServiceManager.updateCharacteristic
+  // and refreshCharacteristicUI call it. Record the value so subsequent reads are consistent.
+  updateValue (value) {
+    this.value = value
+
+    return this
   }
 
   on (getSet, method) {

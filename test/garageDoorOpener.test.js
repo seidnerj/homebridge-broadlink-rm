@@ -65,6 +65,8 @@ describe('doorAccessory', () => {
 
     let sentHexCodeCount
 
+    await delayForDuration(0.1)
+
     // Check hex code was sent
     const hasSentCloseCode = device.hasSentCode('CLOSE_HEX')
     expect(hasSentCloseCode).to.equal(true);
@@ -89,7 +91,9 @@ describe('doorAccessory', () => {
 
     // Opening
     doorAccessory.serviceManager.setCharacteristic(Characteristic.TargetDoorState, Characteristic.TargetDoorState.OPEN)
-    
+
+    await delayForDuration(0.1)
+
     // Check hex sent
     const hasSentOpenCode = device.hasSentCode('OPEN_HEX')
     expect(hasSentOpenCode).to.equal(true);

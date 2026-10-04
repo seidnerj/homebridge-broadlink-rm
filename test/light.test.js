@@ -46,6 +46,8 @@ describe('lightAccessory', () => {
     lightAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
     expect(lightAccessory.state.switchState).to.equal(true);
 
+    await delayForDuration(0.1)
+
     // Check hex code was sent
     const hasSentCode = device.hasSentCode('ON');
     expect(hasSentCode).to.equal(true);
@@ -88,6 +90,8 @@ describe('lightAccessory', () => {
     lightAccessory.serviceManager.setCharacteristic(Characteristic.On, false)
     expect(lightAccessory.state.switchState).to.equal(false);
 
+    await delayForDuration(0.1)
+
     // Check hex code was sent
     const hasSentCodes = device.hasSentCodes(['OFF', 'ON', 'BRIGHTNESS40' ]);
     expect(hasSentCodes).to.equal(true);
@@ -114,6 +118,8 @@ describe('lightAccessory', () => {
     lightAccessory.serviceManager.setCharacteristic(Characteristic.Brightness, 20)
     expect(lightAccessory.state.brightness).to.equal(20);
 
+    await delayForDuration(0.1)
+
     // Check hex code was sent
     const hasSentCode = device.hasSentCodes([ 'ON' ]);
     expect(hasSentCode).to.equal(true);
@@ -132,6 +138,8 @@ describe('lightAccessory', () => {
     // Turn Off Light
     lightAccessory.serviceManager.setCharacteristic(Characteristic.On, false)
     expect(lightAccessory.state.switchState).to.equal(false);
+
+    await delayForDuration(0.1)
 
     // Check hex code was sent
     hasSentCodes = device.hasSentCodes(['OFF', 'ON', 'BRIGHTNESS20' ]);
@@ -172,6 +180,8 @@ describe('lightAccessory', () => {
     lightAccessory.serviceManager.setCharacteristic(Characteristic.Brightness, 20)
     expect(lightAccessory.state.brightness).to.equal(20);
 
+    await delayForDuration(0.1)
+
     // Check hex code was sent
     const hasSentCode = device.hasSentCodes([ 'ON' ]);
     expect(hasSentCode).to.equal(true);
@@ -186,10 +196,12 @@ describe('lightAccessory', () => {
     // Check that only one code has been sent
     let sentHexCodeCount = device.getSentHexCodeCount();
     expect(sentHexCodeCount).to.equal(2);
-    
+
     // Turn Off Light
     lightAccessory.serviceManager.setCharacteristic(Characteristic.On, false)
     expect(lightAccessory.state.switchState).to.equal(false);
+
+    await delayForDuration(0.1)
 
     // Check hex code was sent
     hasSentCodes = device.hasSentCodes(['OFF', 'ON', 'BRIGHTNESS20' ]);
@@ -298,8 +310,10 @@ describe('lightAccessory', () => {
 
     const lightAccessory = new Light(null, config, 'FakeServiceManager')
     lightAccessory.serviceManager.setCharacteristic(Characteristic.Brightness, 20)
-    
+
     expect(lightAccessory.state.brightness).to.equal(20);
+
+    await delayForDuration(0.1)
 
     // Check hex code was sent
     const hasSentCode = device.hasSentCodes([ 'ON' ]);
@@ -328,8 +342,10 @@ describe('lightAccessory', () => {
 
     const lightAccessory = new Light(null, config, 'FakeServiceManager')
     lightAccessory.serviceManager.setCharacteristic(Characteristic.Brightness, 32)
-    
+
     expect(lightAccessory.state.brightness).to.equal(32);
+
+    await delayForDuration(0.1)
 
     // Check hex code was sent
     const hasSentCode = device.hasSentCodes([ 'ON' ]);
@@ -360,8 +376,10 @@ describe('lightAccessory', () => {
 
     const lightAccessory = new Light(null, config, 'FakeServiceManager')
     lightAccessory.serviceManager.setCharacteristic(Characteristic.Brightness, 36)
-    
+
     expect(lightAccessory.state.brightness).to.equal(36);
+
+    await delayForDuration(0.1)
 
     // Check hex code was sent
     const hasSentCode = device.hasSentCodes([ 'ON' ]);
@@ -394,8 +412,10 @@ describe('lightAccessory', () => {
 
     const lightAccessory = new Light(null, config, 'FakeServiceManager')
     lightAccessory.serviceManager.setCharacteristic(Characteristic.Hue, 20)
-    
+
     expect(lightAccessory.state.hue).to.equal(20);
+
+    await delayForDuration(0.1)
 
     // Check hex code was sent
     const hasSentCode = device.hasSentCodes([ 'ON' ]);
@@ -424,8 +444,10 @@ describe('lightAccessory', () => {
 
     const lightAccessory = new Light(null, config, 'FakeServiceManager')
     lightAccessory.serviceManager.setCharacteristic(Characteristic.Hue, 32)
-    
+
     expect(lightAccessory.state.hue).to.equal(32);
+
+    await delayForDuration(0.1)
 
     // Check hex code was sent
     const hasSentCode = device.hasSentCodes([ 'ON' ]);
@@ -454,8 +476,10 @@ describe('lightAccessory', () => {
 
     const lightAccessory = new Light(null, config, 'FakeServiceManager')
     lightAccessory.serviceManager.setCharacteristic(Characteristic.Hue, 36)
-    
+
     expect(lightAccessory.state.hue).to.equal(36);
+
+    await delayForDuration(0.1)
 
     // Check hex code was sent
     const hasSentCode = device.hasSentCodes([ 'ON' ]);
@@ -486,8 +510,10 @@ describe('lightAccessory', () => {
 
     const lightAccessory = new Light(null, config, 'FakeServiceManager')
     lightAccessory.serviceManager.setCharacteristic(Characteristic.Brightness, 20)
-    
+
     expect(lightAccessory.state.brightness).to.equal(20);
+
+    await delayForDuration(0.1)
 
     // Check hex code was sent
     let hasSentCode = device.hasSentCodes([ 'ON' ]);

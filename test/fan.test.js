@@ -42,11 +42,11 @@ describe('fanAccessory', () => {
     }
     
     const fanAccessory = new Fan(null, config, 'FakeServiceManager')
-    fanAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
-    
-    expect(fanAccessory.state.switchState).to.equal(true);
+    fanAccessory.serviceManager.setCharacteristic(Characteristic.Active, true)
 
     await delayForDuration(.2);
+
+    expect(fanAccessory.state.switchState).to.equal(true);
 
     // Check hex code was sent
     const hasSentCode = device.hasSentCode('ON');
@@ -70,11 +70,13 @@ describe('fanAccessory', () => {
     const fanAccessory = new Fan(null, config, 'FakeServiceManager')
 
     // Turn On Fan
-    fanAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
+    fanAccessory.serviceManager.setCharacteristic(Characteristic.Active, true)
+    await delayForDuration(.2);
     expect(fanAccessory.state.switchState).to.equal(true);
-    
+
     // Turn Off Fan
-    fanAccessory.serviceManager.setCharacteristic(Characteristic.On, false)
+    fanAccessory.serviceManager.setCharacteristic(Characteristic.Active, false)
+    await delayForDuration(.2);
     expect(fanAccessory.state.switchState).to.equal(false);
 
     // Check hex code was sent
@@ -98,7 +100,9 @@ describe('fanAccessory', () => {
     
     const fanAccessory = new Fan(null, config, 'FakeServiceManager')
     fanAccessory.serviceManager.setCharacteristic(Characteristic.RotationSpeed, 20)
-    
+
+    await delayForDuration(.2);
+
     expect(fanAccessory.state.fanSpeed).to.equal(20);
 
     // Check hex code was sent
@@ -124,7 +128,9 @@ describe('fanAccessory', () => {
     
     const fanAccessory = new Fan(null, config, 'FakeServiceManager')
     fanAccessory.serviceManager.setCharacteristic(Characteristic.RotationSpeed, 32)
-    
+
+    await delayForDuration(.2);
+
     expect(fanAccessory.state.fanSpeed).to.equal(32);
 
     // Check hex code was sent
@@ -148,7 +154,9 @@ describe('fanAccessory', () => {
     
     const fanAccessory = new Fan(null, config, 'FakeServiceManager')
     fanAccessory.serviceManager.setCharacteristic(Characteristic.RotationSpeed, 36)
-    
+
+    await delayForDuration(.2);
+
     expect(fanAccessory.state.fanSpeed).to.equal(36);
 
     // Check hex code was sent
@@ -174,7 +182,9 @@ describe('fanAccessory', () => {
     
     const fanAccessory = new Fan(null, config, 'FakeServiceManager')
     fanAccessory.serviceManager.setCharacteristic(Characteristic.SwingMode, 1)
-    
+
+    await delayForDuration(.2);
+
     expect(fanAccessory.state.swingMode).to.equal(1);
 
     // Check hex code was sent
@@ -200,10 +210,12 @@ describe('fanAccessory', () => {
 
     // Turn On Swing Mode
     fanAccessory.serviceManager.setCharacteristic(Characteristic.SwingMode, 1)
+    await delayForDuration(.2);
     expect(fanAccessory.state.swingMode).to.equal(1);
-    
+
     // Turn Off Swing Mode
     fanAccessory.serviceManager.setCharacteristic(Characteristic.SwingMode, 0)
+    await delayForDuration(.2);
     expect(fanAccessory.state.swingMode).to.equal(0);
 
     // Check hex code was sent
@@ -250,7 +262,9 @@ describe('fanAccessory', () => {
     
     const fanAccessory = new Fan(null, config, 'FakeServiceManager');
     fanAccessory.serviceManager.setCharacteristic(Characteristic.RotationDirection, 0);
-    
+
+    await delayForDuration(.2);
+
     expect(fanAccessory.state.rotationDirection).to.equal(0);
 
     // Check hex code was sent
@@ -276,14 +290,16 @@ describe('fanAccessory', () => {
 
     // Turn On Swing Mode
     fanAccessory.serviceManager.setCharacteristic(Characteristic.RotationDirection, 0)
+    await delayForDuration(.2);
     expect(fanAccessory.state.rotationDirection).to.equal(0);
 
     // Check hex code was sent
     let hasSentCode = device.hasSentCode('CLOCKWISE');
     expect(hasSentCode).to.equal(true);
-    
+
     // Turn Off Swing Mode
     fanAccessory.serviceManager.setCharacteristic(Characteristic.RotationDirection, 1)
+    await delayForDuration(.2);
     expect(fanAccessory.state.rotationDirection).to.equal(1);
 
     // Check hex code was sent
@@ -333,17 +349,17 @@ describe('fanAccessory', () => {
 
     // Turn On Fan
     fanAccessory = new Fan(null, config, 'FakeServiceManager')
-    fanAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
-    expect(fanAccessory.state.switchState).to.equal(true);
-
+    fanAccessory.serviceManager.setCharacteristic(Characteristic.Active, true)
     await delayForDuration(.1);
+    expect(fanAccessory.state.switchState).to.equal(true);
 
     // Should still be on when loading within a new instance
     fanAccessory = new Fan(null, config, 'FakeServiceManager')
     expect(fanAccessory.state.switchState).to.equal(true);
-    
+
     // Turn Off Fan
-    fanAccessory.serviceManager.setCharacteristic(Characteristic.On, false)
+    fanAccessory.serviceManager.setCharacteristic(Characteristic.Active, false)
+    await delayForDuration(.1);
     expect(fanAccessory.state.switchState).to.equal(false);
 
     // Should still be off when loading within a new instance
@@ -364,7 +380,8 @@ describe('fanAccessory', () => {
 
     // Turn On Fan
     fanAccessory = new Fan(null, config, 'FakeServiceManager')
-    fanAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
+    fanAccessory.serviceManager.setCharacteristic(Characteristic.Active, true)
+    await delayForDuration(.1);
     expect(fanAccessory.state.switchState).to.equal(true);
 
     // Should be off again with a new instance
@@ -389,7 +406,8 @@ describe('fanAccessory', () => {
 
     // Turn On Fan
     fanAccessory = new Fan(null, config, 'FakeServiceManager')
-    fanAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
+    fanAccessory.serviceManager.setCharacteristic(Characteristic.Active, true)
+    await delayForDuration(0.1);
     expect(fanAccessory.state.switchState).to.equal(true);
 
     // Wait for resendDataAfterReloadDelay
@@ -431,7 +449,8 @@ describe('fanAccessory', () => {
 
     // Turn On Fan
     fanAccessory = new Fan(null, config, 'FakeServiceManager')
-    fanAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
+    fanAccessory.serviceManager.setCharacteristic(Characteristic.Active, true)
+    await delayForDuration(0.1);
     expect(fanAccessory.state.switchState).to.equal(true);
 
     // Wait for resendDataAfterReloadDelay

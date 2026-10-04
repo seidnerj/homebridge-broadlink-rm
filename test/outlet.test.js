@@ -30,8 +30,10 @@ describe('outletAccessory', () => {
     
     const outletAccessory = new Outlet(null, config, 'FakeServiceManager')
     outletAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
-    
+
     expect(outletAccessory.state.switchState).to.equal(true);
+
+    await delayForDuration(0.1)
 
     // Check hex code was sent
     const hasSentCode = device.hasSentCode('ON');
@@ -66,6 +68,8 @@ describe('outletAccessory', () => {
     // Turn Off Outlet
     outletAccessory.serviceManager.setCharacteristic(Characteristic.On, false)
     expect(outletAccessory.state.switchState).to.equal(false);
+
+    await delayForDuration(0.1)
 
     // Check hex code was sent
     const hasSentCode = device.hasSentCode('OFF');
@@ -335,6 +339,8 @@ describe('outletAccessory', () => {
     outletAccessory = new Outlet(null, config, 'FakeServiceManager')
     outletAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
     expect(outletAccessory.state.switchState).to.equal(true);
+
+    await delayForDuration(0.1)
 
     device.resetSentHexCodes();
 
