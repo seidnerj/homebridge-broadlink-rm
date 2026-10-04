@@ -374,4 +374,40 @@ describe('windowCoveringAccessory', () => {
 
   }).timeout(6000);
 
+
+  // Re-send close/open when already at the end position (e.g. moved by a physical remote)
+  const resendAtEndPosition = async (position, expectedCode) => {
+    const { device } = setup();
+
+    const config = {
+      data: { open: 'OPEN', close: 'CLOSE', stop: 'STOP' },
+      initialDelay: 0,
+      totalDurationOpen: 0.2,
+      totalDurationClose: 0.2,
+      sendStopAt100: false,
+      sendStopAt0: false,
+      allowResend: true,
+      persistState: false,
+      host: device.host.address
+    }
+
+    const windowCoveringAccessory = new WindowCovering(null, config, 'FakeServiceManager')
+    windowCoveringAccessory.state.currentPosition = position;
+    windowCoveringAccessory.state.targetPosition = position;
+
+    windowCoveringAccessory.serviceManager.setCharacteristic(Characteristic.TargetPosition, position)
+
+    await delayForDuration(0.5);
+
+    expect(device.sentHexCodes).to.deep.equal([ expectedCode ]);
+    expect(windowCoveringAccessory.state.currentPosition).to.equal(position);
+  }
+
+  it('0% -> 0% with allowResend re-sends close', async () => {
+    await resendAtEndPosition(0, 'CLOSE');
+  }).timeout(3000);
+
+  it('100% -> 100% with allowResend re-sends open', async () => {
+    await resendAtEndPosition(100, 'OPEN');
+  }).timeout(3000);
 })
