@@ -4,13 +4,11 @@ const hexCheck = ({ device, codes, count }) => {
   codes = codes || [];
 
   // Check hex codes were sent
-  const hasSentCodes = device.hasSentCodes(codes);
-  expect(hasSentCodes).to.equal(true);
+  expect(device.sentHexCodes).to.include.members(codes);
 
   if (count !== undefined) {
     // Check the number of sent codes
-    const sentHexCodeCount = device.getSentHexCodeCount();
-    expect(sentHexCodeCount).to.equal(count);
+    expect(device.sentHexCodes, `sent: ${device.sentHexCodes}`).to.have.lengthOf(count);
   }
 }
 

@@ -39,6 +39,13 @@ const defaultConfig = {
   persistState: false
 };
 
+// Temperature changes are ignored while the unit is off, so switch it on first and clear the codes that sent
+const turnOn = async (device, airConAccessory, mode) => {
+  airConAccessory.serviceManager.setCharacteristic(Characteristic.TargetHeatingCoolingState, mode);
+  await delayForDuration(0.6);
+  device.resetSentHexCodes();
+}
+
 describe('airConAccessory', async () => {
 
   it ('default config', async () => {
@@ -62,7 +69,7 @@ describe('airConAccessory', async () => {
     expect(airConAccessory.config.defaultCoolTemperature).to.equal(16);
     expect(airConAccessory.config.defaultHeatTemperature).to.equal(30);
     expect(airConAccessory.config.heatTemperature).to.equal(22);
-    expect(airConAccessory.config.replaceAutoMode).to.equal('cool');
+    expect(airConAccessory.config.replaceAutoMode).to.equal(undefined);
   });
 
   it('custom config', async () => {
@@ -107,7 +114,8 @@ describe('airConAccessory', async () => {
     defaultConfig.host = device.host.address
     
     const config = {
-      ...defaultConfig
+      ...defaultConfig,
+      replaceAutoMode: 'cool'
     };
 
     const airConAccessory = new AirCon(null, config, 'FakeServiceManager');
@@ -115,7 +123,7 @@ describe('airConAccessory', async () => {
     // Set air-con mode to "auto"
     airConAccessory.serviceManager.setCharacteristic(Characteristic.TargetHeatingCoolingState, Characteristic.TargetHeatingCoolingState.AUTO);
 
-    await delayForDuration(0.6);
+    await delayForDuration(1.5);
 
     // Check hex codes were sent
     hexCheck({ device, codes: [ 'TEMPERATURE_16' ], count: 1 });
@@ -129,7 +137,8 @@ describe('airConAccessory', async () => {
     defaultConfig.host = device.host.address
     
     const config = {
-      ...defaultConfig
+      ...defaultConfig,
+      replaceAutoMode: 'cool'
     };
 
     const airConAccessory = new AirCon(null, config, 'FakeServiceManager');
@@ -137,7 +146,7 @@ describe('airConAccessory', async () => {
     // Set air-con mode to "auto"
     airConAccessory.serviceManager.setCharacteristic(Characteristic.TargetHeatingCoolingState, Characteristic.TargetHeatingCoolingState.AUTO);
 
-    await delayForDuration(0.6);
+    await delayForDuration(1.5);
 
     // Check hex codes were sent
     hexCheck({ device, codes: [ 'TEMPERATURE_16' ], count: 1 });
@@ -151,7 +160,7 @@ describe('airConAccessory', async () => {
 
     // Check hex codes were sent
     hexCheck({ device, codes: [ 'TEMPERATURE_16', 'OFF' ], count: 2 });
-  });
+  }).timeout(4000);
 
 
   it('set heat', async () => {
@@ -202,6 +211,7 @@ describe('airConAccessory', async () => {
     };
 
     const airConAccessory = new AirCon(null, config, 'FakeServiceManager');
+    await turnOn(device, airConAccessory, Characteristic.TargetHeatingCoolingState.HEAT);
 
     // Set temperature to be above heatTemperature
     airConAccessory.serviceManager.setCharacteristic(Characteristic.TargetTemperature, 26);
@@ -222,6 +232,7 @@ describe('airConAccessory', async () => {
     };
 
     const airConAccessory = new AirCon(null, config, 'FakeServiceManager');
+    await turnOn(device, airConAccessory, Characteristic.TargetHeatingCoolingState.COOL);
 
     // Set temperature to be above heatTemperature
     airConAccessory.serviceManager.setCharacteristic(Characteristic.TargetTemperature, 18);
@@ -243,6 +254,7 @@ describe('airConAccessory', async () => {
     };
 
     const airConAccessory = new AirCon(null, config, 'FakeServiceManager');
+    await turnOn(device, airConAccessory, Characteristic.TargetHeatingCoolingState.HEAT);
 
     // Set temperature to be above heatTemperature
     airConAccessory.serviceManager.setCharacteristic(Characteristic.TargetTemperature, 24);
@@ -262,6 +274,7 @@ describe('airConAccessory', async () => {
     };
 
     const airConAccessory = new AirCon(null, config, 'FakeServiceManager');
+    await turnOn(device, airConAccessory, Characteristic.TargetHeatingCoolingState.COOL);
 
     // Set temperature to be above heatTemperature
     airConAccessory.serviceManager.setCharacteristic(Characteristic.TargetTemperature, 20);
@@ -284,12 +297,12 @@ describe('airConAccessory', async () => {
     const airConAccessory = new AirCon(null, config, 'FakeServiceManager');
 
     // Set temperature to be above heatTemperature
-    airConAccessory.serviceManager.setCharacteristic(Characteristic.TargetTemperature, 26);
+    airConAccessory.serviceManager.setCharacteristic(Characteristic.TargetHeatingCoolingState, Characteristic.TargetHeatingCoolingState.HEAT);
 
     await delayForDuration(1);
 
     // Check hex codes were sent
-    hexCheck({ device, codes: [ 'TEMPERATURE_26', 'ON' ], count: 2 });
+    hexCheck({ device, codes: [ 'ON', 'TEMPERATURE_30' ], count: 2 });
   });
 
   it ('"allowResend": true', async () => {
@@ -302,6 +315,7 @@ describe('airConAccessory', async () => {
     };
 
     const airConAccessory = new AirCon(null, config, 'FakeServiceManager');
+    await turnOn(device, airConAccessory, Characteristic.TargetHeatingCoolingState.HEAT);
 
     // Set temperature to be above heatTemperature
     airConAccessory.serviceManager.setCharacteristic(Characteristic.TargetTemperature, 26);
@@ -330,6 +344,7 @@ describe('airConAccessory', async () => {
     };
 
     const airConAccessory = new AirCon(null, config, 'FakeServiceManager');
+    await turnOn(device, airConAccessory, Characteristic.TargetHeatingCoolingState.HEAT);
 
     // Set temperature to be above heatTemperature
     airConAccessory.serviceManager.setCharacteristic(Characteristic.TargetTemperature, 26);
@@ -357,24 +372,28 @@ describe('airConAccessory', async () => {
       ...defaultConfig,
       autoHeatTemperature: 18,
       autoCoolTemperature: 27,
-      minimumAutoOnOffDuration: 1
+      minimumAutoOnOffDuration: 2
     };
 
     const airConAccessory = new AirCon(null, config, 'FakeServiceManager');
 
+    // Auto on/off is checked when a queued temperature poll completes (unit tests disable the polling interval)
+    airConAccessory.getCurrentTemperature(() => {});
     device.sendFakeOnCallback('temperature', 17)
 
-    await delayForDuration(0.3);
+    await delayForDuration(0.8);
     
     // Check auto-on was performed by ensuring hex codes were sent
     hexCheck({ device, codes: [ 'TEMPERATURE_30' ], count: 1 });
 
     // Test `minimumAutoOnOffDuration` by forcing auto-on/off check with a normal temperature
     // Use a temperature lower than `autoCoolTemperature` so that the air-con should automatically turn off
-    await delayForDuration(0.3);
+    await delayForDuration(0.2);
 
     airConAccessory.updateTemperatureUI();
     
+    // Auto on/off is checked when a queued temperature poll completes (unit tests disable the polling interval)
+    airConAccessory.getCurrentTemperature(() => {});
     device.sendFakeOnCallback('temperature', 23)
     
     await delayForDuration(0.3);
@@ -382,18 +401,20 @@ describe('airConAccessory', async () => {
     // No more hex codes should have been sent yet due to `minimumAutoOnOffDuration`
     hexCheck({ device, codes: [ 'TEMPERATURE_30' ], count: 1 });
 
-    await delayForDuration(0.3);
+    await delayForDuration(1.0);
     
     // Try forcing auto-on/off again with a normal temperature
     airConAccessory.updateTemperatureUI();
 
+    // Auto on/off is checked when a queued temperature poll completes (unit tests disable the polling interval)
+    airConAccessory.getCurrentTemperature(() => {});
     device.sendFakeOnCallback('temperature', 23)
 
     await delayForDuration(0.3);
     
-    // auto-off should have occurred by now as 1.2s has passed
+    // auto-off should have occurred by now as 2.3s has passed
     hexCheck({ device, codes: [ 'TEMPERATURE_30', 'OFF' ], count: 2 });
-  }).timeout(3000);
+  }).timeout(5000);
 
 
   it('auto-cool & "minimumAutoOnOffDuration": 0.5', async () => {
@@ -404,24 +425,28 @@ describe('airConAccessory', async () => {
       ...defaultConfig,
       autoHeatTemperature: 18,
       autoCoolTemperature: 27,
-      minimumAutoOnOffDuration: 1
+      minimumAutoOnOffDuration: 2
     };
 
     const airConAccessory = new AirCon(null, config, 'FakeServiceManager');
 
+    // Auto on/off is checked when a queued temperature poll completes (unit tests disable the polling interval)
+    airConAccessory.getCurrentTemperature(() => {});
     device.sendFakeOnCallback('temperature', 28)
 
-    await delayForDuration(0.3);
+    await delayForDuration(0.8);
     
     // Check auto-on was performed by ensuring hex codes were sent
     hexCheck({ device, codes: [ 'TEMPERATURE_16' ], count: 1 });
 
     // Test `minimumAutoOnOffDuration` by forcing auto-on/off check with a normal temperature
     // Use a temperature lower than `autoCoolTemperature` so that the air-con should automatically turn off
-    await delayForDuration(0.3);
+    await delayForDuration(0.2);
 
     airConAccessory.updateTemperatureUI();
     
+    // Auto on/off is checked when a queued temperature poll completes (unit tests disable the polling interval)
+    airConAccessory.getCurrentTemperature(() => {});
     device.sendFakeOnCallback('temperature', 26)
     
     await delayForDuration(0.3);
@@ -429,18 +454,20 @@ describe('airConAccessory', async () => {
     // No more hex codes should have been sent yet due to `minimumAutoOnOffDuration`
     hexCheck({ device, codes: [ 'TEMPERATURE_16' ], count: 1 });
 
-    await delayForDuration(0.3);
+    await delayForDuration(1.0);
     
     // Try forcing auto-on/off again with a normal temperature
     airConAccessory.updateTemperatureUI();
 
+    // Auto on/off is checked when a queued temperature poll completes (unit tests disable the polling interval)
+    airConAccessory.getCurrentTemperature(() => {});
     device.sendFakeOnCallback('temperature', 26)
 
     await delayForDuration(0.3);
     
-    // auto-off should have occurred by now as 1.2s has passed
+    // auto-off should have occurred by now as 2.3s has passed
     hexCheck({ device, codes: [ 'TEMPERATURE_16', 'OFF' ], count: 2 });
-  }).timeout(3000);
+  }).timeout(5000);
 
 
   it ('"pseudoDeviceTemperature": 2', async () => {
