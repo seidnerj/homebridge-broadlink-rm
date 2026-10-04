@@ -39,7 +39,7 @@ const defaultConfig = {
   persistState: false
 };
 
-// Temperature changes are ignored while the unit is off, so switch it on first and clear the codes that sent
+// Switch the unit into a mode first (so temperature lookups use that mode) and clear the codes that sent
 const turnOn = async (device, airConAccessory, mode) => {
   airConAccessory.serviceManager.setCharacteristic(Characteristic.TargetHeatingCoolingState, mode);
   await delayForDuration(0.6);
@@ -220,6 +220,43 @@ describe('airConAccessory', async () => {
 
     // Check hex codes were sent
     hexCheck({ device, codes: [ 'TEMPERATURE_26' ], count: 1 });
+  });
+
+  it('set temperature while off', async () => {
+    const { device } = setup();
+    defaultConfig.host = device.host.address
+
+    const config = {
+      ...defaultConfig
+    };
+
+    const airConAccessory = new AirCon(null, config, 'FakeServiceManager');
+
+    airConAccessory.serviceManager.setCharacteristic(Characteristic.TargetTemperature, 26);
+
+    await delayForDuration(0.3);
+
+    // The mode-less temperature code is sent and its pseudo-mode becomes the current mode
+    hexCheck({ device, codes: [ 'TEMPERATURE_26' ], count: 1 });
+    expect(airConAccessory.state.currentHeatingCoolingState).to.equal(Characteristic.CurrentHeatingCoolingState.HEAT);
+  });
+
+  it('"ignoreTemperatureWhenOff": true', async () => {
+    const { device } = setup();
+    defaultConfig.host = device.host.address
+
+    const config = {
+      ...defaultConfig,
+      ignoreTemperatureWhenOff: true
+    };
+
+    const airConAccessory = new AirCon(null, config, 'FakeServiceManager');
+
+    airConAccessory.serviceManager.setCharacteristic(Characteristic.TargetTemperature, 26);
+
+    await delayForDuration(0.3);
+
+    hexCheck({ device, codes: [], count: 0 });
   });
 
   it('set cool temperature', async () => {
