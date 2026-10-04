@@ -7,6 +7,13 @@ const { addDevice } = require('../../helpers/getDevice')
 global.Service = hap.Service;
 global.Characteristic = hap.Characteristic;
 
+// In production index.js assigns the global HistoryService from fakegato-history once the
+// plugin registers with Homebridge; unit tests never run that path, so stub what accessories call
+global.HistoryService = class FakeHistoryService {
+  constructor () {this.log = () => {};}
+  addEntry () {}
+};
+
 const log = (message, more) => {
   if (more) {
     // console.log(message, more)

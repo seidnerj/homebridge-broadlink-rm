@@ -27,7 +27,9 @@ describe('disableLogs', () => {
     const accessories = await getAccessories(config, log);
 
     const logFunctionAsString = accessories[0].log.toString();
-    const isEmptyFunction = logFunctionAsString === '() => {}';
+    // Normalize whitespace: the disabled-log no-op stringifies as "() => { }" on
+    // some engines and "() => {}" on others; compare structure, not exact spacing.
+    const isEmptyFunction = logFunctionAsString.replace(/\s/g, '') === '()=>{}';
     
     expect(isEmptyFunction).to.equal(true);
   });
@@ -48,7 +50,9 @@ describe('disableLogs', () => {
     const accessories = await getAccessories(config, log);
   
     const logFunctionAsString = accessories[0].log.toString();
-    const isEmptyFunction = logFunctionAsString === '() => {}';
+    // Normalize whitespace: the disabled-log no-op stringifies as "() => { }" on
+    // some engines and "() => {}" on others; compare structure, not exact spacing.
+    const isEmptyFunction = logFunctionAsString.replace(/\s/g, '') === '()=>{}';
 
     expect(isEmptyFunction).to.equal(false);
   });

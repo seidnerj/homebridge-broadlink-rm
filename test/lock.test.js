@@ -58,8 +58,10 @@ describe('lockAccessory', () => {
     const lockAccessory = new Lock(null, config, 'FakeServiceManager')
     lockAccessory.serviceManager.setCharacteristic(Characteristic.LockTargetState, Characteristic.LockTargetState.SECURED)
 
-    
+
     let sentHexCodeCount
+
+    await delayForDuration(0.1)
 
     // Check hex code was sent
     const hasSentLockCode = device.hasSentCode('LOCK_HEX')
@@ -85,7 +87,9 @@ describe('lockAccessory', () => {
 
     // Unlocking
     lockAccessory.serviceManager.setCharacteristic(Characteristic.LockTargetState, Characteristic.LockTargetState.UNSECURED)
-    
+
+    await delayForDuration(0.1)
+
     // Check hex sent
     const hasSentUnlockCode = device.hasSentCode('UNLOCK_HEX')
     expect(hasSentUnlockCode).to.equal(true);

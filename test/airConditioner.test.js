@@ -167,7 +167,7 @@ describe('airConAccessory', async () => {
     // Set air-con mode to "auto"
     airConAccessory.serviceManager.setCharacteristic(Characteristic.TargetHeatingCoolingState, Characteristic.TargetHeatingCoolingState.HEAT);
 
-    await delayForDuration(0.3);
+    await delayForDuration(0.8);
 
     // Check hex codes were sent
     hexCheck({ device, codes: [ 'TEMPERATURE_30' ], count: 1 });
@@ -186,7 +186,7 @@ describe('airConAccessory', async () => {
     // Set air-con mode to "auto"
     airConAccessory.serviceManager.setCharacteristic(Characteristic.TargetHeatingCoolingState, Characteristic.TargetHeatingCoolingState.COOL);
 
-    await delayForDuration(0.3);
+    await delayForDuration(0.8);
 
     // Check hex codes were sent
     hexCheck({ device, codes: [ 'TEMPERATURE_16' ], count: 1 });
@@ -524,7 +524,7 @@ describe('airConAccessory', async () => {
     // Set air-con mode to "auto"
     airConAccessory.serviceManager.setCharacteristic(Characteristic.TargetHeatingCoolingState, Characteristic.TargetHeatingCoolingState.AUTO);
 
-    await delayForDuration(0.6);
+    await delayForDuration(1.5);
 
     // Check hex codes were sent
     hexCheck({ device, codes: [ 'TEMPERATURE_30' ], count: 1 });

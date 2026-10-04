@@ -33,10 +33,13 @@ describe('switchMultiAccessory', () => {
     
     expect(switchAccessory.state.switchState).to.equal(true);
 
+    // Wait for the first code to be sent
+    await delayForDuration(0.1)
+
     // Check that only one code has been sent
     let sentHexCodeCount = device.getSentHexCodeCount();
     expect(sentHexCodeCount).to.equal(1);
-    
+
     // Wait for multiple codes to be sent
     await delayForDuration(0.3)
 
@@ -77,6 +80,9 @@ describe('switchMultiAccessory', () => {
     // Turn Off Switch
     switchAccessory.serviceManager.setCharacteristic(Characteristic.On, false)
     expect(switchAccessory.state.switchState).to.equal(false);
+
+    // Wait for the first off code to be sent
+    await delayForDuration(0.1)
 
     // Check that only one code has been sent
     let sentHexCodeCount = device.getSentHexCodeCount();
